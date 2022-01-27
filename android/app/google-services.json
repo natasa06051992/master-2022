@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "743337865099",
+    "project_id": "flutter-master-6103a",
+    "storage_bucket": "flutter-master-6103a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:743337865099:android:63c0f55b0f3108739e898e",
+        "android_client_info": {
+          "package_name": "com.example.flutter_master"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "743337865099-lb2ib4c6qhp62psi0qnmbd7dpo3dh46o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBBJxtQQxrs9OUOK0RjY7__DBTG3NtwqTg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "743337865099-lb2ib4c6qhp62psi0qnmbd7dpo3dh46o.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

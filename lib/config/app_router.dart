@@ -8,8 +8,6 @@ class AppRouter {
   static Route onGenerateRoute(RouteSettings settings) {
     print('Route: ${settings.name}');
     switch (settings.name) {
-      case '/':
-        return HomeScreen.route();
       case HomeScreen.routeName:
         return HomeScreen.route();
       case LocationScreen.routeName:
@@ -24,6 +22,12 @@ class AppRouter {
         return ChatScreen.route();
       case ChatsListingScreen.routeName:
         return ChatsListingScreen.route();
+      case LoginScreen.routeName:
+        return LoginScreen.route();
+      case ForgotPasswordScreen.routeName:
+        return ForgotPasswordScreen.route();
+      case SignupScreen.routeName:
+        return SignupScreen.route();
       default:
         return _errorRoute();
     }
