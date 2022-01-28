@@ -8,7 +8,7 @@ import 'package:flutter_master/widgets/customButton.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 
 class LoginScreen extends StatefulWidget {
-  static const String routeName = '/';
+  static const String routeName = '/login';
   static Route route() {
     return MaterialPageRoute(
         builder: (_) => LoginScreen(),
@@ -43,7 +43,8 @@ class _LoginScreenState extends State<LoginScreen> {
               state is AuthGoogleSuccess ||
               state is AuthFBSuccess) {
             formKey.currentState!.reset();
-            Navigator.pushNamed(context, '/home');
+            Navigator.pushNamedAndRemoveUntil(
+                context, HomeScreen.routeName, (Route<dynamic> route) => false);
           }
         },
         builder: (context, state) {
@@ -140,10 +141,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                 BlocProvider.of<AuthCubit>(context);
                             await authCubit.facebookAuth();
                           }),
-                      CustomButton(
-                          child: const Text("Create Account"),
-                          onPressed: () => Navigator.pushNamed(
-                              context, SignupScreen.routeName))
                     ],
                   ),
                 ),

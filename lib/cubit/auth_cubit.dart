@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+import 'package:flutter_master/model/user.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 part 'auth_state.dart';
@@ -124,9 +125,15 @@ class AuthCubit extends Cubit<AuthState> {
     emit(const AuthLogout());
   }
 
-  // auth logout
+  // auth logou
   Future logout() async {
     await firebaseAuth.signOut();
     emit(const AuthLogout());
+  }
+
+  Future<UserModel> getUser() async {
+    var firebaseUser = firebaseAuth.currentUser!;
+    return UserModel.create(firebaseUser.uid, firebaseUser.displayName!,
+        firebaseUser.email!, firebaseUser.phoneNumber);
   }
 }

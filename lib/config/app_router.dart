@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_master/screens/filter/filter_screen.dart';
+import 'package:flutter_master/screens/choose_service/choose_service_screen.dart';
+import 'package:flutter_master/screens/onboarding/onboarding_screen.dart';
+import 'package:flutter_master/screens/profile/profile_screen.dart';
 import 'package:flutter_master/screens/screens.dart';
-import 'package:flutter_master/screens/service_details/service_details_screen.dart';
-import 'package:flutter_master/screens/service_listing/service_listing_screen.dart';
 
 class AppRouter {
   static Route onGenerateRoute(RouteSettings settings) {
@@ -18,16 +18,20 @@ class AppRouter {
         return ServiceDetailScreen.route();
       case ServiceListingScreen.routeName:
         return ServiceListingScreen.route();
-      case ChatScreen.routeName:
-        return ChatScreen.route();
-      case ChatsListingScreen.routeName:
-        return ChatsListingScreen.route();
       case LoginScreen.routeName:
         return LoginScreen.route();
       case ForgotPasswordScreen.routeName:
         return ForgotPasswordScreen.route();
       case SignupScreen.routeName:
         return SignupScreen.route();
+      case ProfileScreen.routeName:
+        return ProfileScreen.route();
+      case OnBoardingScreen.routeName:
+        return OnBoardingScreen.route();
+      case RoleScreen.routeName:
+        return RoleScreen.route();
+      case ChooseServiceScreen.routeName:
+        return ChooseServiceScreen.route();
       default:
         return _errorRoute();
     }

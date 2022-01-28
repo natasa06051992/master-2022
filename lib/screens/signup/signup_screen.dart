@@ -30,20 +30,24 @@ class _SignupScreenState extends State<SignupScreen> {
         ),
         body: BlocConsumer<AuthCubit, AuthState>(
           listener: (context, state) {
-            if (state is AuthSignUpError) {
+            if (state is AuthSignUpError ||
+                state is AuthGoogleError ||
+                state is AuthFBError) {
               ScaffoldMessenger.of(context)
                 ..hideCurrentSnackBar()
                 ..showSnackBar(SnackBar(
-                  content: Text(state.err!),
+                  content: Text(state.errorMessage!),
                 ));
-            } else if (state is AuthSignUpSuccess) {
+            } else if (state is AuthSignUpSuccess ||
+                state is AuthGoogleSuccess ||
+                state is AuthFBSuccess) {
               ScaffoldMessenger.of(context)
                 ..hideCurrentSnackBar()
                 ..showSnackBar(const SnackBar(
                   content: Text("Account successfully created!"),
                 ));
               formKey.currentState!.reset();
-              Navigator.pushNamed(context, '/home');
+              Navigator.pushNamed(context, '/location');
             }
           },
           builder: (context, state) {
@@ -139,6 +143,20 @@ class _SignupScreenState extends State<SignupScreen> {
                             }
                           },
                         ),
+                        CustomButton(
+                            child: Text('Google'),
+                            onPressed: () async {
+                              final authCubit =
+                                  BlocProvider.of<AuthCubit>(context);
+                              await authCubit.googleAuth();
+                            }),
+                        CustomButton(
+                            child: Text('Facebook'),
+                            onPressed: () async {
+                              final authCubit =
+                                  BlocProvider.of<AuthCubit>(context);
+                              await authCubit.facebookAuth();
+                            }),
                       ],
                     ),
                   ),
@@ -168,7 +186,7 @@ class SignUpButton extends StatelessWidget {
                       valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                     ));
               } else {
-                return const Text('Create');
+                return const Text('Create acount');
               }
             },
             listener: (context, state) {}),

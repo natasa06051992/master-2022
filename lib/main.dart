@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_master/config/theme.dart';
 import 'package:flutter_master/cubit/auth_cubit.dart';
+import 'package:flutter_master/locator.dart';
 import 'package:flutter_master/screens/screens.dart';
 import 'package:provider/provider.dart';
 
@@ -11,6 +12,7 @@ import 'config/app_router.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  setupServices();
   runApp(const MyApp());
 }
 
@@ -26,7 +28,7 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         title: 'Flutter Demo',
         theme: theme(),
-        initialRoute: LoginScreen.routeName,
+        initialRoute: OnBoardingScreen.routeName,
         onGenerateRoute: AppRouter.onGenerateRoute,
       ),
     );
