@@ -4,7 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_master/config/theme.dart';
 import 'package:flutter_master/cubit/auth_cubit.dart';
 import 'package:flutter_master/locator.dart';
-import 'package:flutter_master/screens/screens.dart';
+import 'package:flutter_master/view/screens.dart';
+import 'package:flutter_master/view_controller/user_controller.dart';
 import 'package:provider/provider.dart';
 
 import 'config/app_router.dart';
@@ -30,6 +31,15 @@ class MyApp extends StatelessWidget {
         theme: theme(),
         initialRoute: OnBoardingScreen.routeName,
         onGenerateRoute: AppRouter.onGenerateRoute,
+        home: StreamBuilder(
+            stream: locator.get<AuthCubit>().firebaseAuth.authStateChanges(),
+            builder: (ctx, userSnapshot) {
+              if (userSnapshot.hasData &&
+                  locator.get<UserController>().currentUser != null) {
+                return HomeScreen();
+              }
+              return OnBoardingScreen();
+            }),
       ),
     );
   }

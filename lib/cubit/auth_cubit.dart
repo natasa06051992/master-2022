@@ -2,7 +2,11 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+import 'package:flutter_master/cubit/firebase_firestore_repo.dart';
+import 'package:flutter_master/cubit/storage_repo.dart';
+import 'package:flutter_master/locator.dart';
 import 'package:flutter_master/model/user.dart';
+import 'package:flutter_master/view_controller/user_controller.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 part 'auth_state.dart';
@@ -12,7 +16,7 @@ class AuthCubit extends Cubit<AuthState> {
 
   // initalizing the instance for our facebook
   // google and firebase
-  final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+  FirebaseAuth get firebaseAuth => FirebaseAuth.instance;
   final GoogleSignIn googleSignIn = GoogleSignIn();
   final FacebookAuth facebookSignIn = FacebookAuth.instance;
 
@@ -26,6 +30,19 @@ class AuthCubit extends Cubit<AuthState> {
 
       // login success state
       if (user != null) {
+        String selectedRole =
+            await locator.get<FirebaseFirestoreRepo>().getRole(user);
+        String? selectedService;
+        if (selectedRole.contains('Handyman')) {
+          selectedService =
+              await locator.get<FirebaseFirestoreRepo>().getService(user);
+        }
+        await locator
+            .get<FirebaseFirestoreRepo>()
+            .getLocation(user)
+            .then((value) => createUser(value, selectedRole, selectedService));
+
+        ;
         emit(AuthLoginSuccess(user: user));
       }
     } on FirebaseAuthException catch (e) {
@@ -33,18 +50,40 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
+  Future<String> getDownloadUrl(String uid) async {
+    return await locator.get<StorageRepo>().getUserProfileImageUrl(uid);
+  }
+
   // signup method
-  Future signUp(String name, String password, String email) async {
+  Future signUp(
+      String name,
+      String password,
+      String email,
+      String selectedLocation,
+      String selectedRole,
+      String selectedService,
+      bool isAlreadyCreatedAcount) async {
     emit(const AuthSignUpLoading());
     try {
-      User? user = (await firebaseAuth.createUserWithEmailAndPassword(
-              email: email, password: password))
-          .user;
+      User? user;
+
+      if (!isAlreadyCreatedAcount && firebaseAuth.currentUser!.email != email) {
+        user = (await firebaseAuth.createUserWithEmailAndPassword(
+                email: email, password: password))
+            .user;
+      } else {
+        user = firebaseAuth.currentUser;
+      }
 
       // if the user is not null
       if (user != null) {
-        user.updateDisplayName(name);
-        emit(const AuthSignUpSuccess());
+        user
+            .updateDisplayName(name)
+            .then((value) =>
+                createUser(selectedLocation, selectedRole, selectedService))
+            .then((value) =>
+                locator.get<FirebaseFirestoreRepo>().addUserToFirebase(value))
+            .then((value) => emit(const AuthSignUpSuccess()));
       }
     } on FirebaseAuthException catch (e) {
       emit(AuthSignUpError(e.message));
@@ -68,9 +107,7 @@ class AuthCubit extends Cubit<AuthState> {
     emit(const AuthGoogleLoading());
     try {
       final GoogleSignInAccount? _googleUser = await googleSignIn.signIn();
-      // if (_googleUser != null) {
-      //   emit(AuthDefault());
-      // } else {
+
       final GoogleSignInAuthentication googleAuth =
           await _googleUser!.authentication;
       final AuthCredential credential = GoogleAuthProvider.credential(
@@ -78,10 +115,14 @@ class AuthCubit extends Cubit<AuthState> {
         accessToken: googleAuth.accessToken,
       );
       User? user = (await firebaseAuth.signInWithCredential(credential)).user;
-      if (user != null) {
+      bool isSigndUpUser = await locator
+          .get<FirebaseFirestoreRepo>()
+          .checkIfUserIsSignedUp(user!.uid);
+      if (user != null && isSigndUpUser) {
         emit(AuthGoogleSuccess(user: user));
+      } else {
+        emit(AuthGoogleError(error: "User is not signed up!"));
       }
-      // }
     } catch (e) {
       emit(AuthGoogleError(error: e.toString()));
     }
@@ -99,7 +140,10 @@ class AuthCubit extends Cubit<AuthState> {
           User? userCredential =
               (await firebaseAuth.signInWithCredential(facebookCredential))
                   .user;
-          if (userCredential != null) {
+          bool isSigndUpUser = await locator
+              .get<FirebaseFirestoreRepo>()
+              .checkIfUserIsSignedUp(userCredential!.uid);
+          if (userCredential != null && isSigndUpUser) {
             emit(AuthFBSuccess(user: userCredential));
           }
           return;
@@ -116,24 +160,54 @@ class AuthCubit extends Cubit<AuthState> {
   }
 
   Future googleLogout() async {
+    userModel = null;
     await googleSignIn.signOut();
     emit(const AuthLogout());
   }
 
   Future fbLogout() async {
+    userModel = null;
     await facebookSignIn.logOut();
     emit(const AuthLogout());
   }
 
   // auth logou
   Future logout() async {
+    userModel = null;
     await firebaseAuth.signOut();
     emit(const AuthLogout());
   }
 
-  Future<UserModel> getUser() async {
+  static UserModel? userModel;
+  String? role;
+  getUser() {
+    if (firebaseAuth.currentUser != null && userModel != null) {
+      return userModel;
+    }
+  }
+
+  void updateDisplayName(String text) async {
+    firebaseAuth.currentUser!.updateDisplayName(text);
+  }
+
+  createUser(
+      String selectedLocation, String selectedRole, String? selectedService) {
     var firebaseUser = firebaseAuth.currentUser!;
-    return UserModel.create(firebaseUser.uid, firebaseUser.displayName!,
-        firebaseUser.email!, firebaseUser.phoneNumber);
+    if (userModel == null && firebaseAuth.currentUser != null) {
+      if (selectedRole.contains('Handyman')) {
+        userModel = HandymanModel(
+            firebaseUser.uid,
+            firebaseUser.displayName!,
+            firebaseUser.email!,
+            firebaseUser.phoneNumber,
+            selectedService,
+            selectedLocation);
+      } else {
+        userModel = CustomerModel(firebaseUser.uid, firebaseUser.displayName!,
+            firebaseUser.email!, firebaseUser.phoneNumber, selectedLocation);
+      }
+    }
+    locator.get<UserController>().initUser(userModel);
+    return userModel;
   }
 }

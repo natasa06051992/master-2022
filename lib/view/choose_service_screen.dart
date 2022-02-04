@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_master/locator.dart';
-import 'package:flutter_master/screens/role/role.dart';
+import 'package:flutter_master/model/user.dart';
 import 'package:flutter_master/view_controller/user_controller.dart';
-import 'package:flutter_master/widgets/app_bar.dart';
+
+import 'screens.dart';
 
 class ChooseServiceScreen extends StatefulWidget {
   static const String routeName = '/choose_service';
@@ -47,10 +48,7 @@ class _ChooseServiceScreenState extends State<ChooseServiceScreen> {
             )),
         ElevatedButton(
           onPressed: () {
-            locator
-                .get<UserController>()
-                .currentUser
-                .setService(_selectedService);
+            //  locator.get<UserController>().setService(_selectedService);
             Navigator.pushNamed(context, RoleScreen.routeName);
           },
           child: Text("Next"),

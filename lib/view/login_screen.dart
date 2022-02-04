@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:flutter_master/config/app_router.dart';
 import 'package:flutter_master/cubit/auth_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_master/screens/forgotpassword/forgotpassword_screen.dart';
-import 'package:flutter_master/screens/screens.dart';
+import 'package:flutter_master/locator.dart';
+import 'package:flutter_master/view_controller/user_controller.dart';
 import 'package:flutter_master/widgets/customButton.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
+
+import 'screens.dart';
 
 class LoginScreen extends StatefulWidget {
   static const String routeName = '/login';
@@ -39,6 +42,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ..showSnackBar(SnackBar(
                 content: Text(state.errorMessage!),
               ));
+            Navigator.push(context, SignupScreen.route());
           } else if (state is AuthLoginSuccess ||
               state is AuthGoogleSuccess ||
               state is AuthFBSuccess) {
@@ -117,6 +121,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                 formKey.currentState!.fields['email']!.value,
                                 formKey
                                     .currentState!.fields['password']!.value);
+
+                            // await locator.get<UserController>().login(
+                            //     formKey.currentState!.fields['email']!.value,
+                            //     formKey
+                            //         .currentState!.fields['password']!.value);
                           }
                         },
                       ),
@@ -171,7 +180,7 @@ class LoginButton extends StatelessWidget {
                       valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                     ));
               } else {
-                return Text('Login');
+                return const Text('Login');
               }
             },
             listener: (context, state) {}),

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_master/screens/choose_service/choose_service_screen.dart';
-import 'package:flutter_master/screens/onboarding/onboarding_screen.dart';
-import 'package:flutter_master/screens/profile/profile_screen.dart';
-import 'package:flutter_master/screens/screens.dart';
+import 'package:flutter_master/view/customers_projects_screen.dart';
+import 'package:flutter_master/view/screens.dart';
+import 'package:flutter_master/view/signUp_additional_screen.dart';
 
 class AppRouter {
   static Route onGenerateRoute(RouteSettings settings) {
@@ -32,6 +31,8 @@ class AppRouter {
         return RoleScreen.route();
       case ChooseServiceScreen.routeName:
         return ChooseServiceScreen.route();
+      case CustomersProjects.routeName:
+        return CustomersProjects.route();
       default:
         return _errorRoute();
     }

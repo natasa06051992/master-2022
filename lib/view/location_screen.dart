@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_master/locator.dart';
-import 'package:flutter_master/screens/role/role.dart';
 import 'package:flutter_master/view_controller/user_controller.dart';
+
+import 'screens.dart';
 
 class LocationScreen extends StatefulWidget {
   static const String routeName = '/location';
@@ -49,13 +50,10 @@ class _LocationScreenState extends State<LocationScreen> {
             )),
         ElevatedButton(
           onPressed: () {
-            locator
-                .get<UserController>()
-                .currentUser
-                .setLocation(_selectedLocation);
+            //   locator.get<UserController>().setLocation(_selectedLocation);
             Navigator.pushNamed(context, RoleScreen.routeName);
           },
-          child: Text("Next"),
+          child: const Text("Next"),
         ),
       ]),
     );

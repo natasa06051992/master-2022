@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_master/cubit/auth_cubit.dart';
+import 'package:flutter_master/cubit/firebase_firestore_repo.dart';
+import 'package:flutter_master/locator.dart';
+import 'package:flutter_master/view/screens.dart';
+import 'package:flutter_master/view_controller/user_controller.dart';
 import 'package:flutter_master/widgets/customButton.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 
@@ -18,7 +22,15 @@ class SignupScreen extends StatefulWidget {
   State<SignupScreen> createState() => _SignupScreenState();
 }
 
+final List<String> _locations = ['Novi Sad', 'Beograd', 'Nis', 'Vrsac'];
+String _selectedLocation = 'Novi Sad';
+final List<String> _role = ['Handyman', 'Customer'];
+String _selectedRole = 'Customer';
 bool isObscurePassword = true;
+final List<String> _services = ['House cleaning', 'Handyman', 'Plumber'];
+
+String _selectedService = 'House cleaning';
+bool isAlreadyCreatedAcount = false;
 
 class _SignupScreenState extends State<SignupScreen> {
   final formKey = GlobalKey<FormBuilderState>();
@@ -30,14 +42,14 @@ class _SignupScreenState extends State<SignupScreen> {
         ),
         body: BlocConsumer<AuthCubit, AuthState>(
           listener: (context, state) {
-            if (state is AuthSignUpError ||
-                state is AuthGoogleError ||
-                state is AuthFBError) {
+            if (state is AuthSignUpError) {
               ScaffoldMessenger.of(context)
                 ..hideCurrentSnackBar()
                 ..showSnackBar(SnackBar(
-                  content: Text(state.errorMessage!),
+                  content: Text(state.err!),
                 ));
+              Navigator.pushNamedAndRemoveUntil(context, SignupScreen.routeName,
+                  (Route<dynamic> route) => false);
             } else if (state is AuthSignUpSuccess ||
                 state is AuthGoogleSuccess ||
                 state is AuthFBSuccess) {
@@ -47,7 +59,10 @@ class _SignupScreenState extends State<SignupScreen> {
                   content: Text("Account successfully created!"),
                 ));
               formKey.currentState!.reset();
-              Navigator.pushNamed(context, '/location');
+              Navigator.pushNamedAndRemoveUntil(context, HomeScreen.routeName,
+                  (Route<dynamic> route) => false);
+            } else if (state is AuthGoogleError || state is AuthFBError) {
+              isAlreadyCreatedAcount = true;
             }
           },
           builder: (context, state) {
@@ -72,11 +87,12 @@ class _SignupScreenState extends State<SignupScreen> {
                             width: MediaQuery.of(context).size.width * 0.9,
                             child: FormBuilderTextField(
                               name: 'name',
-                              validator: FormBuilderValidators.compose([
-                                FormBuilderValidators.min(context, 2,
-                                    errorText:
-                                        "Name should have at least 2 letters!")
-                              ]),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter name';
+                                }
+                                return null;
+                              },
                               decoration: InputDecoration(
                                   prefixIcon: const Icon(Icons.person),
                                   contentPadding: const EdgeInsets.all(8),
@@ -109,6 +125,12 @@ class _SignupScreenState extends State<SignupScreen> {
                             width: MediaQuery.of(context).size.width * 0.9,
                             child: FormBuilderTextField(
                               name: 'password',
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter password';
+                                }
+                                return null;
+                              },
                               obscureText: isObscurePassword,
                               decoration: InputDecoration(
                                   prefixIcon: const Icon(Icons.lock),
@@ -127,6 +149,93 @@ class _SignupScreenState extends State<SignupScreen> {
                                   )),
                               textInputAction: TextInputAction.done,
                             )),
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.9,
+                          child: Row(
+                            children: [
+                              SizedBox(
+                                width: 15,
+                              ),
+                              Icon(Icons.pin_drop),
+                              SizedBox(
+                                width: 15,
+                              ),
+                              DropdownButton(
+                                hint: const Text(
+                                    'Please choose a location'), // Not necessary for Option 1
+                                value: _selectedLocation,
+                                onChanged: (newValue) {
+                                  setState(() {
+                                    _selectedLocation = newValue.toString();
+                                  });
+                                },
+                                items: _locations.map((location) {
+                                  return DropdownMenuItem(
+                                    child: Text(location),
+                                    value: location,
+                                  );
+                                }).toList(),
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.9,
+                          child: Row(
+                            children: [
+                              SizedBox(
+                                width: 15,
+                              ),
+                              Icon(Icons.handyman),
+                              SizedBox(
+                                width: 15,
+                              ),
+                              DropdownButton(
+                                value: _selectedRole,
+                                onChanged: (newValue) {
+                                  setState(() {
+                                    _selectedRole = newValue.toString();
+                                  });
+                                },
+                                items: _role.map((role) {
+                                  return DropdownMenuItem(
+                                    child: Text(role),
+                                    value: role,
+                                  );
+                                }).toList(),
+                              ),
+                            ],
+                          ),
+                        ),
+                        if (_selectedRole.contains('Handyman'))
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.9,
+                            child: Row(
+                              children: [
+                                SizedBox(
+                                  width: 15,
+                                ),
+                                Icon(Icons.room_service),
+                                SizedBox(
+                                  width: 15,
+                                ),
+                                DropdownButton(
+                                  value: _selectedService,
+                                  onChanged: (newValue) {
+                                    setState(() {
+                                      _selectedService = newValue.toString();
+                                    });
+                                  },
+                                  items: _services.map((service) {
+                                    return DropdownMenuItem(
+                                      child: Text(service),
+                                      value: service,
+                                    );
+                                  }).toList(),
+                                ),
+                              ],
+                            ),
+                          ),
                         const SizedBox(
                           height: 20,
                         ),
@@ -139,24 +248,14 @@ class _SignupScreenState extends State<SignupScreen> {
                                   formKey.currentState!.fields['name']!.value,
                                   formKey
                                       .currentState!.fields['password']!.value,
-                                  formKey.currentState!.fields['email']!.value);
+                                  formKey.currentState!.fields['email']!.value,
+                                  _selectedLocation,
+                                  _selectedRole,
+                                  _selectedService,
+                                  isAlreadyCreatedAcount);
                             }
                           },
                         ),
-                        CustomButton(
-                            child: Text('Google'),
-                            onPressed: () async {
-                              final authCubit =
-                                  BlocProvider.of<AuthCubit>(context);
-                              await authCubit.googleAuth();
-                            }),
-                        CustomButton(
-                            child: Text('Facebook'),
-                            onPressed: () async {
-                              final authCubit =
-                                  BlocProvider.of<AuthCubit>(context);
-                              await authCubit.facebookAuth();
-                            }),
                       ],
                     ),
                   ),

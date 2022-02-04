@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_master/screens/profile/profile_screen.dart';
+import 'package:flutter_master/view/profile_screen.dart';
 
 PreferredSizeWidget buildAppBar(BuildContext context, String title) {
   return AppBar(title: Text(title), actions: [

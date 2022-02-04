@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_master/screens/screens.dart';
-import 'package:flutter_master/screens/signup/signup_screen.dart';
+
+import 'screens.dart';
 
 class OnBoardingScreen extends StatelessWidget {
   static const String routeName = '/';
