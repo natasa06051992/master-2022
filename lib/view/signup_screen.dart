@@ -59,7 +59,9 @@ class _SignupScreenState extends State<SignupScreen> {
                   content: Text("Account successfully created!"),
                 ));
               formKey.currentState!.reset();
-              Navigator.pushNamedAndRemoveUntil(context, HomeScreen.routeName,
+              Navigator.pushNamedAndRemoveUntil(
+                  context,
+                  HomeCustomerScreen.routeName,
                   (Route<dynamic> route) => false);
             } else if (state is AuthGoogleError || state is AuthFBError) {
               isAlreadyCreatedAcount = true;

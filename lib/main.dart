@@ -36,7 +36,7 @@ class MyApp extends StatelessWidget {
             builder: (ctx, userSnapshot) {
               if (userSnapshot.hasData &&
                   locator.get<UserController>().currentUser != null) {
-                return HomeScreen();
+                return HomeCustomerScreen();
               }
               return OnBoardingScreen();
             }),

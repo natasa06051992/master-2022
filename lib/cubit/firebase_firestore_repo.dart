@@ -90,4 +90,14 @@ class FirebaseFirestoreRepo {
         });
     return isSignedUp;
   }
+
+  Future<QuerySnapshot<Map<String, dynamic>>>? getHandymanByService(
+      String choosenService) async {
+    var handymans = await FirebaseFirestore.instance
+        .collection(collection)
+        .where("role", isEqualTo: "Handyman")
+        .where("service", isEqualTo: choosenService)
+        .get();
+    return handymans;
+  }
 }

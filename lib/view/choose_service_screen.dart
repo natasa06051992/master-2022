@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_master/locator.dart';
-import 'package:flutter_master/model/user.dart';
-import 'package:flutter_master/view_controller/user_controller.dart';
-
+import '../config/constants.dart';
 import 'screens.dart';
 
 class ChooseServiceScreen extends StatefulWidget {
@@ -18,8 +15,6 @@ class ChooseServiceScreen extends StatefulWidget {
 }
 
 class _ChooseServiceScreenState extends State<ChooseServiceScreen> {
-  final List<String> _services = ['House cleaning', 'Handyman', 'Plumber'];
-
   String _selectedService = 'House cleaning';
 
   @override
@@ -39,7 +34,7 @@ class _ChooseServiceScreenState extends State<ChooseServiceScreen> {
                   _selectedService = newValue.toString();
                 });
               },
-              items: _services.map((location) {
+              items: Constants.services.map((location) {
                 return DropdownMenuItem(
                   child: Text(location),
                   value: location,

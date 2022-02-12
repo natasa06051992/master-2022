@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_master/config/constants.dart';
 
 import 'package:flutter_master/cubit/auth_cubit.dart';
 import 'package:flutter_master/locator.dart';
@@ -19,8 +20,8 @@ class InformationsAboutUserWidget extends StatefulWidget {
       _InformationsAboutUserWidgetState();
 }
 
-final List<String> _locations = ['Novi Sad', 'Beograd', 'Nis', 'Vrsac'];
-String _selectedLocation = 'Novi Sad';
+String _selectedLocation = Constants.locations[0];
+String _selectedServices = Constants.services[0];
 
 class _InformationsAboutUserWidgetState
     extends State<InformationsAboutUserWidget> {
@@ -69,17 +70,29 @@ class _InformationsAboutUserWidgetState
               _selectedLocation = newValue.toString();
             });
           },
-          items: _locations.map((location) {
+          items: Constants.services.map((service) {
             return DropdownMenuItem(
-              child: Text(location),
-              value: location,
+              child: Text(service),
+              value: service,
             );
           }).toList(),
         ),
         if (widget.currentUser is HandymanModel)
-          TextFormField(
-            decoration: InputDecoration(hintText: "Service"),
-            controller: _serviceController,
+          DropdownButton(
+            hint: const Text(
+                'Please choose a service'), // Not necessary for Option 1
+            value: _selectedServices,
+            onChanged: (newValue) {
+              setState(() {
+                _selectedServices = newValue.toString();
+              });
+            },
+            items: Constants.locations.map((_selectedService) {
+              return DropdownMenuItem(
+                child: Text('service'),
+                value: _selectedService,
+              );
+            }).toList(),
           ),
         if (widget.currentUser is CustomerModel)
           ElevatedButton(

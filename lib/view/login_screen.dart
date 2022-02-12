@@ -47,8 +47,8 @@ class _LoginScreenState extends State<LoginScreen> {
               state is AuthGoogleSuccess ||
               state is AuthFBSuccess) {
             formKey.currentState!.reset();
-            Navigator.pushNamedAndRemoveUntil(
-                context, HomeScreen.routeName, (Route<dynamic> route) => false);
+            Navigator.pushNamedAndRemoveUntil(context,
+                HomeCustomerScreen.routeName, (Route<dynamic> route) => false);
           }
         },
         builder: (context, state) {

@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_master/view/customers_projects_screen.dart';
 import 'package:flutter_master/view/screens.dart';
@@ -7,16 +8,18 @@ class AppRouter {
   static Route onGenerateRoute(RouteSettings settings) {
     print('Route: ${settings.name}');
     switch (settings.name) {
-      case HomeScreen.routeName:
-        return HomeScreen.route();
+      case HomeCustomerScreen.routeName:
+        return HomeCustomerScreen.route();
       case LocationScreen.routeName:
         return LocationScreen.route();
       case FilterScreen.routeName:
         return FilterScreen.route();
-      case ServiceDetailScreen.routeName:
-        return ServiceDetailScreen.route();
+      case HandymanDetailScreen.routeName:
+        final args = settings.arguments as DocumentSnapshot;
+        return HandymanDetailScreen.route(args);
       case ServiceListingScreen.routeName:
-        return ServiceListingScreen.route();
+        final args = settings.arguments as String;
+        return ServiceListingScreen.route(args);
       case LoginScreen.routeName:
         return LoginScreen.route();
       case ForgotPasswordScreen.routeName:

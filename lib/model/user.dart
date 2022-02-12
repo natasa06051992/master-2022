@@ -4,49 +4,67 @@ class UserModel {
   String? avatarUrl;
   String? email;
   String? phoneNumber;
-  String? location;
+  String location;
 
   bool isHandyman = false;
-  set setAvatarUrl(String avatarUrl) {
-    this.avatarUrl = avatarUrl;
-  }
 
   UserModel(this.uid,
       {this.displayName,
       this.avatarUrl,
       this.email,
       this.phoneNumber,
-      this.location});
-  UserModel.create(this.uid, this.displayName, this.email, this.phoneNumber);
+      required this.location});
 
-  void setLocation(String loc) {
-    this.location = loc;
+  void setAvatarUrl(String url) {
+    avatarUrl = avatarUrl;
   }
 }
 
 class HandymanModel extends UserModel {
   String? service;
+  double? stars;
+  double? startingPrice;
+  String? description;
+  List<String>? urlToGallery;
   HandymanModel(String uid, displayName, email, phoneNumber, service,
-      String selectedLocation)
+      String selectedLocation, String? url)
       : super(uid,
             displayName: displayName,
             email: email,
             phoneNumber: phoneNumber,
-            location: selectedLocation) {
+            location: selectedLocation,
+            avatarUrl: url) {
     this.service = service;
+    urlToGallery = <String>[];
+  }
+  addToGallery(String url) {
+    urlToGallery?.add(url);
+  }
+
+  void setStartingPrice(double price) {
+    startingPrice = price;
+  }
+
+  void setDescription(String description) {
+    this.description = description;
   }
 
   void setService(String service) {
     this.service = service;
   }
+
+  void setStars(double stars) {
+    this.stars = stars;
+  }
 }
 
 class CustomerModel extends UserModel {
-  CustomerModel(
-      String uid, displayName, email, phoneNumber, String selectedLocation)
+  CustomerModel(String uid, displayName, email, phoneNumber,
+      String selectedLocation, String? url)
       : super(uid,
             displayName: displayName,
             email: email,
             phoneNumber: phoneNumber,
-            location: selectedLocation);
+            location: selectedLocation,
+            avatarUrl: url);
 }

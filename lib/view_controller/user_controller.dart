@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_master/cubit/auth_cubit.dart';
 import 'package:flutter_master/cubit/firebase_firestore_repo.dart';
 import 'package:flutter_master/cubit/storage_repo.dart';
@@ -49,5 +50,10 @@ class UserController {
   void updatePhoneNumber(String text) {
     _currentUser!.phoneNumber = text;
     _firebaseFirestoreRepo.updatePhoneNumber(_currentUser!, text);
+  }
+
+  Future<QuerySnapshot<Map<String, dynamic>>>? getHandymanByService(
+      String choosenService) {
+    _firebaseFirestoreRepo.getHandymanByService(choosenService);
   }
 }

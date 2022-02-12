@@ -25,7 +25,9 @@ class RoleScreen extends StatelessWidget {
             onPressed: () {
               locator.get<UserController>().currentUser as CustomerModel;
 
-              Navigator.pushNamedAndRemoveUntil(context, HomeScreen.routeName,
+              Navigator.pushNamedAndRemoveUntil(
+                  context,
+                  HomeCustomerScreen.routeName,
                   (Route<dynamic> route) => false);
             },
             child: const Text("Hiring"),

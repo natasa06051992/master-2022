@@ -30,19 +30,8 @@ class AuthCubit extends Cubit<AuthState> {
 
       // login success state
       if (user != null) {
-        String selectedRole =
-            await locator.get<FirebaseFirestoreRepo>().getRole(user);
-        String? selectedService;
-        if (selectedRole.contains('Handyman')) {
-          selectedService =
-              await locator.get<FirebaseFirestoreRepo>().getService(user);
-        }
-        await locator
-            .get<FirebaseFirestoreRepo>()
-            .getLocation(user)
-            .then((value) => createUser(value, selectedRole, selectedService));
+        await createCurrentUser(user);
 
-        ;
         emit(AuthLoginSuccess(user: user));
       }
     } on FirebaseAuthException catch (e) {
@@ -50,7 +39,21 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
-  Future<String> getDownloadUrl(String uid) async {
+  Future<void> createCurrentUser(User user) async {
+    String selectedRole =
+        await locator.get<FirebaseFirestoreRepo>().getRole(user);
+    String? selectedService;
+    if (selectedRole.contains('Handyman')) {
+      selectedService =
+          await locator.get<FirebaseFirestoreRepo>().getService(user);
+    }
+    await locator
+        .get<FirebaseFirestoreRepo>()
+        .getLocation(user)
+        .then((value) => createUser(value, selectedRole, selectedService));
+  }
+
+  Future<String?> getDownloadUrl(String uid) async {
     return await locator.get<StorageRepo>().getUserProfileImageUrl(uid);
   }
 
@@ -67,7 +70,7 @@ class AuthCubit extends Cubit<AuthState> {
     try {
       User? user;
 
-      if (!isAlreadyCreatedAcount && firebaseAuth.currentUser!.email != email) {
+      if (!isAlreadyCreatedAcount) {
         user = (await firebaseAuth.createUserWithEmailAndPassword(
                 email: email, password: password))
             .user;
@@ -86,6 +89,7 @@ class AuthCubit extends Cubit<AuthState> {
             .then((value) => emit(const AuthSignUpSuccess()));
       }
     } on FirebaseAuthException catch (e) {
+      firebaseAuth.currentUser?.delete();
       emit(AuthSignUpError(e.message));
     }
   }
@@ -119,6 +123,7 @@ class AuthCubit extends Cubit<AuthState> {
           .get<FirebaseFirestoreRepo>()
           .checkIfUserIsSignedUp(user!.uid);
       if (user != null && isSigndUpUser) {
+        await createCurrentUser(user);
         emit(AuthGoogleSuccess(user: user));
       } else {
         emit(AuthGoogleError(error: "User is not signed up!"));
@@ -144,6 +149,7 @@ class AuthCubit extends Cubit<AuthState> {
               .get<FirebaseFirestoreRepo>()
               .checkIfUserIsSignedUp(userCredential!.uid);
           if (userCredential != null && isSigndUpUser) {
+            await createCurrentUser(userCredential);
             emit(AuthFBSuccess(user: userCredential));
           }
           return;
@@ -190,10 +196,11 @@ class AuthCubit extends Cubit<AuthState> {
     firebaseAuth.currentUser!.updateDisplayName(text);
   }
 
-  createUser(
-      String selectedLocation, String selectedRole, String? selectedService) {
+  createUser(String selectedLocation, String selectedRole,
+      String? selectedService) async {
     var firebaseUser = firebaseAuth.currentUser!;
     if (userModel == null && firebaseAuth.currentUser != null) {
+      String? url = await getDownloadUrl(firebaseUser.uid);
       if (selectedRole.contains('Handyman')) {
         userModel = HandymanModel(
             firebaseUser.uid,
@@ -201,10 +208,16 @@ class AuthCubit extends Cubit<AuthState> {
             firebaseUser.email!,
             firebaseUser.phoneNumber,
             selectedService,
-            selectedLocation);
+            selectedLocation,
+            url);
       } else {
-        userModel = CustomerModel(firebaseUser.uid, firebaseUser.displayName!,
-            firebaseUser.email!, firebaseUser.phoneNumber, selectedLocation);
+        userModel = CustomerModel(
+            firebaseUser.uid,
+            firebaseUser.displayName!,
+            firebaseUser.email!,
+            firebaseUser.phoneNumber,
+            selectedLocation,
+            url);
       }
     }
     locator.get<UserController>().initUser(userModel);
