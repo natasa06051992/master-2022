@@ -56,4 +56,19 @@ class UserController {
       String choosenService) {
     _firebaseFirestoreRepo.getHandymanByService(choosenService);
   }
+
+  void updateDescription(String text) {
+    (_currentUser! as HandymanModel).description = text;
+    _firebaseFirestoreRepo.updateDescription(_currentUser!);
+  }
+
+  void updateStartingCost(int cost) {
+    (_currentUser! as HandymanModel).startingPrice = cost;
+    _firebaseFirestoreRepo.updateStartingCost(_currentUser!);
+  }
+
+  void updateYearsInBusiness(int years) {
+    (_currentUser! as HandymanModel).yearsInBusiness = years;
+    _firebaseFirestoreRepo.updateYearsInBusiness(_currentUser!);
+  }
 }

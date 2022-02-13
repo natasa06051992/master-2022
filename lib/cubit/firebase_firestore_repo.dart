@@ -22,6 +22,9 @@ class FirebaseFirestoreRepo {
   void addService(UserModel user, Map<String, dynamic> data) {
     if (user is HandymanModel) {
       data['service'] = user.service;
+      data['description'] = user.description;
+      data['startingPrice'] = user.startingPrice;
+      data['yearsInBusiness'] = user.yearsInBusiness;
     }
   }
 
@@ -74,14 +77,6 @@ class FirebaseFirestoreRepo {
     return snap['service'];
   }
 
-  void updateAvatarUrl(UserModel userModel) {
-    final Map<String, dynamic> data = {'avatarUrl': userModel.avatarUrl};
-    FirebaseFirestore.instance
-        .collection(collection)
-        .doc(userModel.uid)
-        .update(data);
-  }
-
   checkIfUserIsSignedUp(String uid) async {
     var usersRef = FirebaseFirestore.instance.collection(collection).doc(uid);
     bool isSignedUp = false;
@@ -99,5 +94,43 @@ class FirebaseFirestoreRepo {
         .where("service", isEqualTo: choosenService)
         .get();
     return handymans;
+  }
+
+  void updateAvatarUrl(UserModel userModel) {
+    final Map<String, dynamic> data = {'avatarUrl': userModel.avatarUrl};
+    FirebaseFirestore.instance
+        .collection(collection)
+        .doc(userModel.uid)
+        .update(data);
+  }
+
+  void updateDescription(UserModel userModel) {
+    final Map<String, dynamic> data = {
+      'description': (userModel as HandymanModel).description
+    };
+    FirebaseFirestore.instance
+        .collection(collection)
+        .doc(userModel.uid)
+        .update(data);
+  }
+
+  void updateStartingCost(UserModel userModel) {
+    final Map<String, dynamic> data = {
+      'startingPrice': (userModel as HandymanModel).startingPrice
+    };
+    FirebaseFirestore.instance
+        .collection(collection)
+        .doc(userModel.uid)
+        .update(data);
+  }
+
+  void updateYearsInBusiness(UserModel userModel) {
+    final Map<String, dynamic> data = {
+      'yearsInBusiness': (userModel as HandymanModel).yearsInBusiness
+    };
+    FirebaseFirestore.instance
+        .collection(collection)
+        .doc(userModel.uid)
+        .update(data);
   }
 }

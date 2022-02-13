@@ -23,8 +23,9 @@ class UserModel {
 class HandymanModel extends UserModel {
   String? service;
   double? stars;
-  double? startingPrice;
+  int? startingPrice;
   String? description;
+  int? yearsInBusiness;
   List<String>? urlToGallery;
   HandymanModel(String uid, displayName, email, phoneNumber, service,
       String selectedLocation, String? url)
@@ -41,8 +42,12 @@ class HandymanModel extends UserModel {
     urlToGallery?.add(url);
   }
 
-  void setStartingPrice(double price) {
+  void setStartingPrice(int price) {
     startingPrice = price;
+  }
+
+  void setYearsInBusiness(int years) {
+    yearsInBusiness = years;
   }
 
   void setDescription(String description) {
