@@ -1,3 +1,4 @@
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
@@ -6,9 +7,11 @@ import 'package:flutter_master/config/constants.dart';
 import 'package:flutter_master/cubit/auth_cubit.dart';
 import 'package:flutter_master/locator.dart';
 import 'package:flutter_master/model/user.dart';
+import 'package:flutter_master/view/add_pictures_featured_projects.dart';
 import 'package:flutter_master/view/customers_projects_screen.dart';
 import 'package:flutter_master/view/screens.dart';
 import 'package:flutter_master/view_controller/user_controller.dart';
+import 'package:flutter_master/widgets/avatar.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 
 class InformationsAboutUserWidget extends StatefulWidget {
@@ -59,6 +62,44 @@ class _InformationsAboutUserWidgetState
 
   @override
   Widget build(BuildContext context) {
+    List<Widget> imageSliders = [];
+    if ((widget.currentUser as HandymanModel).urlToGallery != null) {
+      imageSliders = (widget.currentUser as HandymanModel)
+          .urlToGallery!
+          .map((item) => Container(
+                child: Container(
+                  margin: EdgeInsets.all(5.0),
+                  child: ClipRRect(
+                      borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                      child: Stack(
+                        children: <Widget>[
+                          Image.network(item, fit: BoxFit.cover, width: 1000.0),
+                          Positioned(
+                            bottom: 0.0,
+                            left: 0.0,
+                            right: 0.0,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [
+                                    Color.fromARGB(200, 0, 0, 0),
+                                    Color.fromARGB(0, 0, 0, 0)
+                                  ],
+                                  begin: Alignment.bottomCenter,
+                                  end: Alignment.topCenter,
+                                ),
+                              ),
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 10.0, horizontal: 20.0),
+                            ),
+                          ),
+                        ],
+                      )),
+                ),
+              ))
+          .toList();
+    }
+
     final formKey = GlobalKey<FormBuilderState>();
     String _selectedLocation = widget.currentUser.location;
     String? _selectedServices = widget.currentUser is HandymanModel
@@ -136,6 +177,25 @@ class _InformationsAboutUserWidgetState
                 onPressed: () =>
                     Navigator.pushNamed(context, CustomersProjects.routeName),
                 child: Text('My Projects')),
+          SizedBox(height: 20.0),
+          if (imageSliders.length > 0)
+            Container(
+                child: CarouselSlider(
+              options: CarouselOptions(
+                aspectRatio: 2.0,
+                enlargeCenterPage: true,
+                enableInfiniteScroll: false,
+                initialPage: 2,
+                autoPlay: true,
+              ),
+              items: imageSliders,
+            )),
+          ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(
+                    context, AddPicturesFeaturedProjects.routeName);
+              },
+              child: Text("Add pictures of featured projects")),
           SizedBox(height: 20.0),
           RaisedButton(
             onPressed: () {

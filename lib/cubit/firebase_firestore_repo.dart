@@ -133,4 +133,14 @@ class FirebaseFirestoreRepo {
         .doc(userModel.uid)
         .update(data);
   }
+
+  void updateUrlToGallery(UserModel userModel) {
+    final Map<String, dynamic> data = {
+      'urlToGallery': (userModel as HandymanModel).urlToGallery
+    };
+    FirebaseFirestore.instance
+        .collection(collection)
+        .doc(userModel.uid)
+        .update(data);
+  }
 }

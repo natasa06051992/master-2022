@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_master/view/add_pictures_featured_projects.dart';
 import 'package:flutter_master/view/customers_projects_screen.dart';
 import 'package:flutter_master/view/screens.dart';
 import 'package:flutter_master/view/signUp_additional_screen.dart';
@@ -36,6 +37,8 @@ class AppRouter {
         return ChooseServiceScreen.route();
       case CustomersProjects.routeName:
         return CustomersProjects.route();
+      case AddPicturesFeaturedProjects.routeName:
+        return AddPicturesFeaturedProjects.route();
       default:
         return _errorRoute();
     }

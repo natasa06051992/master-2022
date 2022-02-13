@@ -2,7 +2,8 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:firebase_storage/firebase_storage.dart';
-
+import 'package:flutter/material.dart';
+import 'package:path/path.dart' as Path;
 import 'package:flutter_master/cubit/auth_cubit.dart';
 import 'package:flutter_master/locator.dart';
 import 'package:flutter_master/model/user.dart';
@@ -35,5 +36,20 @@ class StorageRepo {
       return null;
       // Doesn't exist... or potentially some other error
     }
+  }
+
+  Future<List<String>?> uploadImagesFeaturedProjects(
+      List<File> images, UserModel userModel) async {
+    List<String> listOfUrls = [];
+    for (var img in images) {
+      var ref = FirebaseStorage.instance.ref().child(
+          "user/featuredProjects/${userModel.uid}/${Path.basename(img.path)}");
+      await ref.putFile(img).whenComplete(() async {
+        await ref.getDownloadURL().then((value) {
+          listOfUrls.add(value);
+        });
+      });
+    }
+    return listOfUrls;
   }
 }

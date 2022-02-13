@@ -71,4 +71,15 @@ class UserController {
     (_currentUser! as HandymanModel).yearsInBusiness = years;
     _firebaseFirestoreRepo.updateYearsInBusiness(_currentUser!);
   }
+
+  uploadFiles(List<File> images) async {
+    if (images != null) {
+      await _storageRepo
+          .uploadImagesFeaturedProjects(images, _currentUser!)
+          .then((value) {
+        (_currentUser! as HandymanModel).urlToGallery?.addAll(value!);
+        _firebaseFirestoreRepo.updateUrlToGallery(_currentUser!);
+      });
+    }
+  }
 }
