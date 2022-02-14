@@ -39,7 +39,7 @@ dependencies:
   equatable: ^2.0.3
   flutter_bloc: ^8.0.1
   flutter_form_builder: ^7.0.0
-  font_awesome_flutter: ^9.2.0
+  font_awesome_flutter: ^8.7.0
   form_builder_validators: ^7.3.0
   google_sign_in: ^5.2.3
   provider: ^6.0.2
@@ -51,6 +51,7 @@ dependencies:
   cloud_firestore: ^3.1.7
   transparent_image: ^2.0.0
   carousel_slider: ^4.0.0
+  quick_feedback: ^0.1.1
 
 dev_dependencies:
   flutter_test:

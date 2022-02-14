@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:quick_feedback/quick_feedback.dart';
+
 import 'package:flutter_master/widgets/avatar.dart';
 
 class HandymanDetailScreen extends StatelessWidget {
@@ -10,6 +12,28 @@ class HandymanDetailScreen extends StatelessWidget {
     return MaterialPageRoute(
         builder: (_) => HandymanDetailScreen(),
         settings: RouteSettings(name: routeName));
+  }
+
+  void _showFeedback(context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return QuickFeedback(
+          title: 'Leave a feedback',
+          showTextBox: true,
+          textBoxHint: 'Share your feedback',
+          submitText: 'SUBMIT',
+          onSubmitCallback: (feedback) {
+            print('$feedback'); // map { rating: 2, feedback: 'some feedback' }
+            Navigator.of(context).pop();
+          },
+          askLaterText: 'ASK LATER',
+          onAskLaterCallback: () {
+            print('Do something on ask later click');
+          },
+        );
+      },
+    );
   }
 
   @override
@@ -29,8 +53,12 @@ class HandymanDetailScreen extends StatelessWidget {
                 ),
                 Text(
                   documentSnapshot['username'],
-                )
+                ),
               ],
+            ),
+            FlatButton(
+              onPressed: () => _showFeedback(context),
+              child: Text('Add feedback'),
             ),
           ]),
         ));

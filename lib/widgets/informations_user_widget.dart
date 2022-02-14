@@ -199,57 +199,8 @@ class _InformationsAboutUserWidgetState
           SizedBox(height: 20.0),
           RaisedButton(
             onPressed: () {
-              if (_displayNameController.text !=
-                  widget.currentUser.displayName) {
-                locator
-                    .get<UserController>()
-                    .updateDisplayName(_displayNameController.text);
-              }
-              if (_phoneNumberController.text !=
-                  widget.currentUser.phoneNumber) {
-                locator
-                    .get<UserController>()
-                    .updatePhoneNumber(_phoneNumberController.text);
-              }
-              if (_selectedLocation != widget.currentUser.location) {
-                locator.get<UserController>().updateLocation(_selectedLocation);
-              }
-              if (widget.currentUser is HandymanModel &&
-                  _selectedServices != null &&
-                  _selectedServices !=
-                      (widget.currentUser as HandymanModel).service) {
-                locator.get<UserController>().updateService(_selectedServices!);
-              }
-              if (widget.currentUser is HandymanModel &&
-                  _descriptionController.text != "" &&
-                  _descriptionController.text !=
-                      (widget.currentUser as HandymanModel).description) {
-                locator
-                    .get<UserController>()
-                    .updateDescription(_descriptionController.text);
-              }
-              if (widget.currentUser is HandymanModel &&
-                  _startingCostController.text != "contact for price" &&
-                  formKey.currentState!.validate() &&
-                  _startingCostController.text !=
-                      (widget.currentUser as HandymanModel)
-                          .startingPrice
-                          .toString()) {
-                locator
-                    .get<UserController>()
-                    .updateStartingCost(_startingCostController.text as int);
-              }
-              if (widget.currentUser is HandymanModel &&
-                  _yearsInBusinessController.text != "" &&
-                  formKey.currentState!.validate() &&
-                  _yearsInBusinessController.text !=
-                      (widget.currentUser as HandymanModel)
-                          .yearsInBusiness
-                          .toString()) {
-                locator.get<UserController>().updateYearsInBusiness(
-                    _yearsInBusinessController.text as int);
-              }
-              Navigator.pop(context);
+              SaveProfile(
+                  _selectedLocation, _selectedServices, formKey, context);
             },
             child: Text("Save Profile"),
           ),
@@ -266,50 +217,104 @@ class _InformationsAboutUserWidgetState
               Navigator.pushNamed(context, '/home');
             }
           }, builder: (context, state) {
-            return Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  TextButton.icon(
-                    icon: Icon(Icons.exit_to_app),
-                    label: Text('Logout'),
-                    onPressed: () async {
-                      if (state is AuthDefault || state is AuthGoogleSuccess) {
-                        final authCubit = BlocProvider.of<AuthCubit>(context);
-                        await authCubit.googleLogout();
-                        ScaffoldMessenger.of(context)
-                          ..hideCurrentSnackBar()
-                          ..showSnackBar(const SnackBar(
-                            content: Text("Logout was successuful"),
-                          ));
-                      } else if (state is AuthLoginSuccess ||
-                          state is AuthSignUpSuccess) {
-                        final authCubit = BlocProvider.of<AuthCubit>(context);
-                        await authCubit.logout();
-                        ScaffoldMessenger.of(context)
-                          ..hideCurrentSnackBar()
-                          ..showSnackBar(const SnackBar(
-                            content: Text("Logout was successuful"),
-                          ));
-                      } else if (state is AuthFBSuccess) {
-                        final authCubit = BlocProvider.of<AuthCubit>(context);
-                        await authCubit.fbLogout();
-                        ScaffoldMessenger.of(context)
-                          ..hideCurrentSnackBar()
-                          ..showSnackBar(const SnackBar(
-                            content: Text("Logout was successuful"),
-                          ));
-                      }
-
-                      Navigator.pushNamedAndRemoveUntil(
-                          context,
-                          OnBoardingScreen.routeName,
-                          (Route<dynamic> route) => false);
-                    },
-                  )
-                ]);
+            return Logout(state);
           })
         ]),
       ),
     );
+  }
+
+  void SaveProfile(String _selectedLocation, String? _selectedServices,
+      GlobalKey<FormBuilderState> formKey, BuildContext context) {
+    if (_displayNameController.text != widget.currentUser.displayName) {
+      locator
+          .get<UserController>()
+          .updateDisplayName(_displayNameController.text);
+    }
+    if (_phoneNumberController.text != widget.currentUser.phoneNumber) {
+      locator
+          .get<UserController>()
+          .updatePhoneNumber(_phoneNumberController.text);
+    }
+    if (_selectedLocation != widget.currentUser.location) {
+      locator.get<UserController>().updateLocation(_selectedLocation);
+    }
+    if (widget.currentUser is HandymanModel &&
+        _selectedServices != null &&
+        _selectedServices != (widget.currentUser as HandymanModel).service) {
+      locator.get<UserController>().updateService(_selectedServices!);
+    }
+    if (widget.currentUser is HandymanModel &&
+        _descriptionController.text != "" &&
+        _descriptionController.text !=
+            (widget.currentUser as HandymanModel).description) {
+      locator
+          .get<UserController>()
+          .updateDescription(_descriptionController.text);
+    }
+    if (widget.currentUser is HandymanModel &&
+        _startingCostController.text != "contact for price" &&
+        formKey.currentState!.validate() &&
+        _startingCostController.text !=
+            (widget.currentUser as HandymanModel).startingPrice.toString()) {
+      locator
+          .get<UserController>()
+          .updateStartingCost(_startingCostController.text as int);
+    }
+    if (widget.currentUser is HandymanModel &&
+        _yearsInBusinessController.text != "" &&
+        formKey.currentState!.validate() &&
+        _yearsInBusinessController.text !=
+            (widget.currentUser as HandymanModel).yearsInBusiness.toString()) {
+      locator
+          .get<UserController>()
+          .updateYearsInBusiness(_yearsInBusinessController.text as int);
+    }
+    Navigator.pop(context);
+  }
+}
+
+class Logout extends StatelessWidget {
+  final AuthState state;
+  Logout(this.state);
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
+      TextButton.icon(
+        icon: Icon(Icons.exit_to_app),
+        label: Text('Logout'),
+        onPressed: () async {
+          if (state is AuthDefault || state is AuthGoogleSuccess) {
+            final authCubit = BlocProvider.of<AuthCubit>(context);
+            await authCubit.googleLogout();
+            ScaffoldMessenger.of(context)
+              ..hideCurrentSnackBar()
+              ..showSnackBar(const SnackBar(
+                content: Text("Logout was successuful"),
+              ));
+          } else if (state is AuthLoginSuccess || state is AuthSignUpSuccess) {
+            final authCubit = BlocProvider.of<AuthCubit>(context);
+            await authCubit.logout();
+            ScaffoldMessenger.of(context)
+              ..hideCurrentSnackBar()
+              ..showSnackBar(const SnackBar(
+                content: Text("Logout was successuful"),
+              ));
+          } else if (state is AuthFBSuccess) {
+            final authCubit = BlocProvider.of<AuthCubit>(context);
+            await authCubit.fbLogout();
+            ScaffoldMessenger.of(context)
+              ..hideCurrentSnackBar()
+              ..showSnackBar(const SnackBar(
+                content: Text("Logout was successuful"),
+              ));
+          }
+
+          Navigator.pushNamedAndRemoveUntil(context, OnBoardingScreen.routeName,
+              (Route<dynamic> route) => false);
+        },
+      )
+    ]);
   }
 }
