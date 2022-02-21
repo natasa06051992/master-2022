@@ -1,43 +1,32 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:quick_feedback/quick_feedback.dart';
+import 'package:flutter_master/model/user.dart';
+import 'package:flutter_master/view/reviews_screen.dart';
 
 import 'package:flutter_master/widgets/avatar.dart';
 
-class HandymanDetailScreen extends StatelessWidget {
-  static const String routeName = '/service_detail';
-  static late DocumentSnapshot documentSnapshot;
+class HandymanDetailScreen extends StatefulWidget {
+  static const String routeName = '/handyman_detail';
+
+  static List<DocumentSnapshot> documentSnapshots = [];
   static Route route(DocumentSnapshot snapshot) {
-    documentSnapshot = snapshot;
+    documentSnapshots.add(snapshot);
     return MaterialPageRoute(
         builder: (_) => HandymanDetailScreen(),
         settings: RouteSettings(name: routeName));
   }
 
-  void _showFeedback(context) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return QuickFeedback(
-          title: 'Leave a feedback',
-          showTextBox: true,
-          textBoxHint: 'Share your feedback',
-          submitText: 'SUBMIT',
-          onSubmitCallback: (feedback) {
-            print('$feedback'); // map { rating: 2, feedback: 'some feedback' }
-            Navigator.of(context).pop();
-          },
-          askLaterText: 'ASK LATER',
-          onAskLaterCallback: () {
-            print('Do something on ask later click');
-          },
-        );
-      },
-    );
-  }
+  @override
+  State<HandymanDetailScreen> createState() => _HandymanDetailScreenState();
+}
+
+class _HandymanDetailScreenState extends State<HandymanDetailScreen> {
+  late HandymanModel handymanModel;
 
   @override
   Widget build(BuildContext context) {
+    handymanModel = HandymanModel.fromDocumentSnapshot(
+        HandymanDetailScreen.documentSnapshots[0]);
     return Scaffold(
         appBar: AppBar(
           title: Text('Details'),
@@ -48,17 +37,32 @@ class HandymanDetailScreen extends StatelessWidget {
             Row(
               children: [
                 Avatar(
-                  avatarUrl: documentSnapshot['avatarUrl'] ?? null,
+                  avatarUrl: handymanModel.avatarUrl ?? null,
                   onTap: () {},
                 ),
                 Text(
-                  documentSnapshot['username'],
+                  handymanModel.displayName ?? "anonyms",
+                ),
+                SizedBox(
+                  width: 20,
+                ),
+                Row(
+                  children: [
+                    Text(
+                      handymanModel.averageReviews != null
+                          ? handymanModel.averageReviews.toString()
+                          : "",
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        Navigator.pushNamed(context, ReviewsScreen.routeName,
+                            arguments: handymanModel);
+                      },
+                      icon: Icon(Icons.star, size: 17),
+                    ),
+                  ],
                 ),
               ],
-            ),
-            FlatButton(
-              onPressed: () => _showFeedback(context),
-              child: Text('Add feedback'),
             ),
           ]),
         ));

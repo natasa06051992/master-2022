@@ -5,7 +5,9 @@ import 'package:flutter_master/cubit/auth_cubit.dart';
 import 'package:flutter_master/cubit/firebase_firestore_repo.dart';
 import 'package:flutter_master/cubit/storage_repo.dart';
 import 'package:flutter_master/locator.dart';
+import 'package:flutter_master/model/reviewModel.dart';
 import 'package:flutter_master/model/user.dart';
+import 'package:intl/intl.dart';
 
 class UserController {
   UserModel? _currentUser;
@@ -47,6 +49,26 @@ class UserController {
     _firebaseFirestoreRepo.updateLocation(_currentUser!, text);
   }
 
+  void addReview(rating, feedback, HandymanModel user) {
+    final DateFormat formatter = DateFormat('yyyy-MM-dd hh:mm');
+    var review = ReviewModel(
+        image: _currentUser?.avatarUrl,
+        name: _currentUser?.displayName,
+        rating: rating,
+        date: formatter.format(DateTime.now()),
+        comment: feedback,
+        idReviewer: _currentUser!.uid);
+    user.addReview(review);
+    _firebaseFirestoreRepo.addReviewToFirestore(
+        user.uid, review, _currentUser!.uid);
+
+    var averageReview =
+        user.reviews!.map((e) => e.rating).reduce((a, b) => a + b) /
+            user.reviews!.length;
+    user.averageReviews = averageReview;
+    _firebaseFirestoreRepo.updateAverageReviews(user.uid, averageReview);
+  }
+
   void updatePhoneNumber(String text) {
     _currentUser!.phoneNumber = text;
     _firebaseFirestoreRepo.updatePhoneNumber(_currentUser!, text);
@@ -81,5 +103,14 @@ class UserController {
         _firebaseFirestoreRepo.updateUrlToGallery(_currentUser!);
       });
     }
+  }
+
+  Future<List<ReviewModel>?> getReviews(HandymanModel handymanModel) async {
+    return await _firebaseFirestoreRepo.getReviews(handymanModel);
+  }
+
+  void addNewProject(String selectedService, String description, String title) {
+    _firebaseFirestoreRepo.addNewProject(
+        selectedService, description, title, currentUser);
   }
 }

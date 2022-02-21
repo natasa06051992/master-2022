@@ -1,10 +1,14 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_master/model/reviewModel.dart';
+
 class UserModel {
-  String uid;
+  late String uid;
   String? displayName;
   String? avatarUrl;
   String? email;
   String? phoneNumber;
-  String location;
+  late String location;
+  late String role;
 
   bool isHandyman = false;
 
@@ -13,10 +17,23 @@ class UserModel {
       this.avatarUrl,
       this.email,
       this.phoneNumber,
-      required this.location});
+      required this.location,
+      required this.role});
 
   void setAvatarUrl(String url) {
     avatarUrl = avatarUrl;
+  }
+
+  UserModel.fromDocumentSnapshot(DocumentSnapshot snapshot) {
+    uid = snapshot.id;
+    displayName = snapshot['username'];
+    email = snapshot['email'];
+    phoneNumber = snapshot['phoneNumber'];
+    location = snapshot['location'];
+    email = snapshot['email'];
+    phoneNumber = snapshot['phoneNumber'];
+    avatarUrl = snapshot['avatarUrl'];
+    role = snapshot['role'];
   }
 }
 
@@ -26,18 +43,41 @@ class HandymanModel extends UserModel {
   int? startingPrice;
   String? description;
   int? yearsInBusiness;
+  double? averageReviews;
   List<String>? urlToGallery;
+  List<ReviewModel>? reviews;
   HandymanModel(String uid, displayName, email, phoneNumber, service,
-      String selectedLocation, String? url)
+      String selectedLocation, String? url, double? averageReviews)
       : super(uid,
             displayName: displayName,
             email: email,
             phoneNumber: phoneNumber,
             location: selectedLocation,
-            avatarUrl: url) {
-    this.service = service;
+            avatarUrl: url,
+            role: "Handyman") {
+    averageReviews = averageReviews;
+    service = service;
     urlToGallery = <String>[];
+    reviews = <ReviewModel>[];
   }
+
+  HandymanModel.fromDocumentSnapshot(DocumentSnapshot snapshot)
+      : super.fromDocumentSnapshot(snapshot) {
+    service = snapshot['service'];
+    averageReviews = snapshot['averageReviews'].toDouble();
+    role = snapshot['role'];
+    service = service;
+    urlToGallery = <String>[];
+    reviews = <ReviewModel>[];
+  }
+  void setAverageReviews(double averageReviews) {
+    averageReviews = averageReviews;
+  }
+
+  addReview(ReviewModel review) {
+    reviews?.add(review);
+  }
+
   addToGallery(String url) {
     urlToGallery?.add(url);
   }
@@ -61,6 +101,16 @@ class HandymanModel extends UserModel {
   void setStars(double stars) {
     this.stars = stars;
   }
+
+  void addReviews(List<QueryDocumentSnapshot<Object?>> docs) {
+    for (var review in docs) {
+      this.reviews?.add(ReviewModel.fromDocumentSnapshot(review));
+    }
+  }
+
+  clearReviews() {
+    this.reviews!.clear();
+  }
 }
 
 class CustomerModel extends UserModel {
@@ -71,5 +121,6 @@ class CustomerModel extends UserModel {
             email: email,
             phoneNumber: phoneNumber,
             location: selectedLocation,
-            avatarUrl: url);
+            avatarUrl: url,
+            role: "Customer");
 }

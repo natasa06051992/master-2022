@@ -43,14 +43,15 @@ class AuthCubit extends Cubit<AuthState> {
     String selectedRole =
         await locator.get<FirebaseFirestoreRepo>().getRole(user);
     String? selectedService;
+    double? averageReviews;
     if (selectedRole.contains('Handyman')) {
       selectedService =
           await locator.get<FirebaseFirestoreRepo>().getService(user);
+      averageReviews =
+          await locator.get<FirebaseFirestoreRepo>().getAverageReviews(user);
     }
-    await locator
-        .get<FirebaseFirestoreRepo>()
-        .getLocation(user)
-        .then((value) => createUser(value, selectedRole, selectedService));
+    await locator.get<FirebaseFirestoreRepo>().getLocation(user).then((value) =>
+        createUser(value, selectedRole, selectedService, averageReviews));
   }
 
   Future<String?> getDownloadUrl(String uid) async {
@@ -82,8 +83,8 @@ class AuthCubit extends Cubit<AuthState> {
       if (user != null) {
         user
             .updateDisplayName(name)
-            .then((value) =>
-                createUser(selectedLocation, selectedRole, selectedService))
+            .then((value) => createUser(
+                selectedLocation, selectedRole, selectedService, null))
             .then((value) =>
                 locator.get<FirebaseFirestoreRepo>().addUserToFirebase(value))
             .then((value) => emit(const AuthSignUpSuccess()));
@@ -197,7 +198,7 @@ class AuthCubit extends Cubit<AuthState> {
   }
 
   createUser(String selectedLocation, String selectedRole,
-      String? selectedService) async {
+      String? selectedService, double? averageReviews) async {
     var firebaseUser = firebaseAuth.currentUser!;
     if (userModel == null && firebaseAuth.currentUser != null) {
       String? url = await getDownloadUrl(firebaseUser.uid);
@@ -209,7 +210,8 @@ class AuthCubit extends Cubit<AuthState> {
             firebaseUser.phoneNumber,
             selectedService,
             selectedLocation,
-            url);
+            url,
+            averageReviews);
       } else {
         userModel = CustomerModel(
             firebaseUser.uid,

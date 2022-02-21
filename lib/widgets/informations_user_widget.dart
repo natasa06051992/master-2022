@@ -63,7 +63,8 @@ class _InformationsAboutUserWidgetState
   @override
   Widget build(BuildContext context) {
     List<Widget> imageSliders = [];
-    if ((widget.currentUser as HandymanModel).urlToGallery != null) {
+    if (widget.currentUser is HandymanModel &&
+        (widget.currentUser as HandymanModel).urlToGallery != null) {
       imageSliders = (widget.currentUser as HandymanModel)
           .urlToGallery!
           .map((item) => Container(
@@ -178,7 +179,7 @@ class _InformationsAboutUserWidgetState
                     Navigator.pushNamed(context, CustomersProjects.routeName),
                 child: Text('My Projects')),
           SizedBox(height: 20.0),
-          if (imageSliders.length > 0)
+          if ((widget.currentUser is HandymanModel) && imageSliders.length > 0)
             Container(
                 child: CarouselSlider(
               options: CarouselOptions(
@@ -190,12 +191,13 @@ class _InformationsAboutUserWidgetState
               ),
               items: imageSliders,
             )),
-          ElevatedButton(
-              onPressed: () {
-                Navigator.pushNamed(
-                    context, AddPicturesFeaturedProjects.routeName);
-              },
-              child: Text("Add pictures of featured projects")),
+          if (widget.currentUser is HandymanModel)
+            ElevatedButton(
+                onPressed: () {
+                  Navigator.pushNamed(
+                      context, AddPicturesFeaturedProjects.routeName);
+                },
+                child: Text("Add pictures of featured projects")),
           SizedBox(height: 20.0),
           RaisedButton(
             onPressed: () {

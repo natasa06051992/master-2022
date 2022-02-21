@@ -1,9 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_master/model/reviewModel.dart';
 import 'package:flutter_master/model/user.dart';
+import 'package:intl/intl.dart';
 
 class FirebaseFirestoreRepo {
   String collection = 'users';
+
   addUserToFirebase(UserModel user) {
     String role = user is HandymanModel ? 'Handyman' : 'Customer';
     final Map<String, dynamic> data = {
@@ -15,16 +18,17 @@ class FirebaseFirestoreRepo {
       'role': role
     };
 
-    addService(user, data);
+    addHandymanDetails(user, data);
     FirebaseFirestore.instance.collection(collection).doc(user.uid).set(data);
   }
 
-  void addService(UserModel user, Map<String, dynamic> data) {
+  void addHandymanDetails(UserModel user, Map<String, dynamic> data) {
     if (user is HandymanModel) {
       data['service'] = user.service;
       data['description'] = user.description;
       data['startingPrice'] = user.startingPrice;
       data['yearsInBusiness'] = user.yearsInBusiness;
+      data['averageReviews'] = user.averageReviews;
     }
   }
 
@@ -75,6 +79,14 @@ class FirebaseFirestoreRepo {
         .doc(user.uid)
         .get();
     return snap['service'];
+  }
+
+  Future<double> getAverageReviews(User user) async {
+    var snap = await FirebaseFirestore.instance
+        .collection(collection)
+        .doc(user.uid)
+        .get();
+    return snap['averageReviews'];
   }
 
   checkIfUserIsSignedUp(String uid) async {
@@ -142,5 +154,64 @@ class FirebaseFirestoreRepo {
         .collection(collection)
         .doc(userModel.uid)
         .update(data);
+  }
+
+  void addReviewToFirestore(
+      String uid, ReviewModel review, String uidCustomer) {
+    final Map<String, dynamic> data = {
+      'comment': review.comment,
+      'date': review.date,
+      'image': review.image,
+      'name': review.name,
+      'rating': review.rating,
+      'idReviewer': review.idReviewer
+    };
+
+    FirebaseFirestore.instance
+        .collection("reviews")
+        .doc(uid)
+        .collection("review")
+        .doc(uidCustomer)
+        .set(data);
+  }
+
+  void addNewProject(String selectedService, String description, String title,
+      UserModel? currentUser) {
+    final DateFormat formatter = DateFormat('yyyy-MM-dd hh:mm');
+    final Map<String, dynamic> data = {
+      'uid': currentUser!.uid,
+      'description': description,
+      'service': selectedService,
+      'date': formatter.format(DateTime.now()),
+      'image': currentUser!.avatarUrl,
+      'name': currentUser!.displayName,
+      'location': currentUser!.location,
+      'phoneNumber': currentUser!.phoneNumber,
+      'title': title
+    };
+
+    FirebaseFirestore.instance.collection("projects").doc().set(data);
+  }
+
+  void updateAverageReviews(String uid, double averageReview) {
+    final Map<String, dynamic> data = {'averageReviews': averageReview};
+    FirebaseFirestore.instance.collection(collection).doc(uid).update(data);
+  }
+
+  Future<List<ReviewModel>?> getReviews(HandymanModel handymanModel) async {
+    QuerySnapshot firebaseReviews = await FirebaseFirestore.instance
+        .collection("reviews")
+        .doc(handymanModel.uid)
+        .collection("review")
+        .get();
+    List<ReviewModel> result = [];
+    firebaseReviews.docs.forEach((doc) {
+      var data = doc.data();
+      // result.add(ReviewModel.fromDocumentSnapshot(data ));
+    });
+    return result;
+    List<ReviewModel>? reviews = [];
+
+    //ReviewModel.fromDocumentSnapshot(reviews[0]);
   }
 }

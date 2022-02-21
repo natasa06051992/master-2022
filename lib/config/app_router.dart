@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_master/model/user.dart';
+import 'package:flutter_master/view/add_new_project.dart';
 import 'package:flutter_master/view/add_pictures_featured_projects.dart';
 import 'package:flutter_master/view/customers_projects_screen.dart';
 import 'package:flutter_master/view/screens.dart';
@@ -11,8 +13,7 @@ class AppRouter {
     switch (settings.name) {
       case HomeCustomerScreen.routeName:
         return HomeCustomerScreen.route();
-      case LocationScreen.routeName:
-        return LocationScreen.route();
+
       case FilterScreen.routeName:
         return FilterScreen.route();
       case HandymanDetailScreen.routeName:
@@ -31,10 +32,11 @@ class AppRouter {
         return ProfileScreen.route();
       case OnBoardingScreen.routeName:
         return OnBoardingScreen.route();
-      case RoleScreen.routeName:
-        return RoleScreen.route();
-      case ChooseServiceScreen.routeName:
-        return ChooseServiceScreen.route();
+      case ReviewsScreen.routeName:
+        final args = settings.arguments as HandymanModel;
+        return ReviewsScreen.route(args);
+      case AddNewProjectScreen.routeName:
+        return AddNewProjectScreen.route();
       case CustomersProjects.routeName:
         return CustomersProjects.route();
       case AddPicturesFeaturedProjects.routeName:
