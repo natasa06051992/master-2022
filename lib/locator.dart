@@ -1,4 +1,5 @@
 import 'package:flutter_master/cubit/auth_cubit.dart';
+import 'package:flutter_master/cubit/push_notification_service.dart';
 import 'package:flutter_master/cubit/storage_repo.dart';
 import 'package:flutter_master/view_controller/user_controller.dart';
 import 'package:get_it/get_it.dart';
@@ -13,4 +14,5 @@ void setupServices() {
 
   locator.registerSingleton<FirebaseFirestoreRepo>(FirebaseFirestoreRepo());
   locator.registerSingleton<UserController>(UserController());
+  locator.registerSingleton<FCMNotificationService>(FCMNotificationService());
 }

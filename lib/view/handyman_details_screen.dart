@@ -22,6 +22,13 @@ class HandymanDetailScreen extends StatefulWidget {
 
 class _HandymanDetailScreenState extends State<HandymanDetailScreen> {
   late HandymanModel handymanModel;
+  @override
+  void dispose() {
+    HandymanDetailScreen.documentSnapshots.clear();
+
+    // TODO: implement dispose
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {

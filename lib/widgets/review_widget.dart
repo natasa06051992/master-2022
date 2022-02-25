@@ -65,7 +65,7 @@ class ReviewUI extends StatelessWidget {
               SmoothStarRating(
                 isReadOnly: true,
                 starCount: 5,
-                rating: rating.toDouble(),
+                rating: double.parse(rating.toDouble().toStringAsFixed(2)),
                 size: 28.0,
                 color: Colors.orange,
                 borderColor: Colors.orange,

@@ -29,6 +29,7 @@ class FirebaseFirestoreRepo {
       data['startingPrice'] = user.startingPrice;
       data['yearsInBusiness'] = user.yearsInBusiness;
       data['averageReviews'] = user.averageReviews;
+      data['numberOfReviews'] = user.numberOfReviews;
     }
   }
 
@@ -65,6 +66,12 @@ class FirebaseFirestoreRepo {
     return snap['location'];
   }
 
+  Future<DocumentSnapshot<Map<String, dynamic>>> getUser(String uid) async {
+    var snap =
+        await FirebaseFirestore.instance.collection(collection).doc(uid).get();
+    return snap;
+  }
+
   Future<String> getRole(User user) async {
     var snap = await FirebaseFirestore.instance
         .collection(collection)
@@ -87,6 +94,14 @@ class FirebaseFirestoreRepo {
         .doc(user.uid)
         .get();
     return snap['averageReviews'];
+  }
+
+  Future<int> getNumOfReviews(User user) async {
+    var snap = await FirebaseFirestore.instance
+        .collection(collection)
+        .doc(user.uid)
+        .get();
+    return snap['numberOfReviews'];
   }
 
   checkIfUserIsSignedUp(String uid) async {
@@ -195,6 +210,11 @@ class FirebaseFirestoreRepo {
 
   void updateAverageReviews(String uid, double averageReview) {
     final Map<String, dynamic> data = {'averageReviews': averageReview};
+    FirebaseFirestore.instance.collection(collection).doc(uid).update(data);
+  }
+
+  void updateNumberOfReviews(String uid, int length) {
+    final Map<String, dynamic> data = {'numberOfReviews': length};
     FirebaseFirestore.instance.collection(collection).doc(uid).update(data);
   }
 

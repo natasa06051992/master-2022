@@ -1,14 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_master/cubit/push_notification_service.dart';
 import 'package:flutter_master/locator.dart';
-import 'package:flutter_master/model/reviewModel.dart';
 import 'package:flutter_master/model/user.dart';
-import 'package:flutter_master/view/screens.dart';
+import 'package:flutter_master/view/notification_service.dart';
 import 'package:flutter_master/view_controller/user_controller.dart';
 import 'package:flutter_master/widgets/review_widget.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:quick_feedback/quick_feedback.dart';
 import 'package:smooth_star_rating/smooth_star_rating.dart';
+import 'package:timezone/timezone.dart' as tz;
+import 'package:timezone/data/latest.dart' as tz;
 
 class ReviewsScreen extends StatefulWidget {
   static const String routeName = '/reviews';
@@ -27,9 +29,15 @@ class ReviewsScreen extends StatefulWidget {
 
 class _ReviewsScreenState extends State<ReviewsScreen> {
   @override
+  void initState() {
+    tz.initializeTimeZones();
+    // TODO: implement initState
+    super.initState();
+  }
+
+  @override
   void dispose() {
     ReviewsScreen.handymanModels.clear();
-
     // TODO: implement dispose
     super.dispose();
   }
@@ -50,11 +58,19 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                 !ReviewsScreen.handymanModels[0].reviews!.any((element) =>
                     element.idReviewer ==
                     locator.get<UserController>().currentUser!.uid)) {
+              var user = locator.get<UserController>().currentUser;
               locator.get<UserController>().addReview(feedback["rating"],
                   feedback["feedback"], ReviewsScreen.handymanModels[0]);
-              setState(() {});
-              print(
-                  '$feedback'); // map { rating: 2, feedback: 'some feedback' }
+              if (user!.uid == ReviewsScreen.handymanModels[0].uid) {
+                setState(() {});
+                locator
+                    .get<FCMNotificationService>()
+                    .sendNotificationToSpecificUser(
+                        "Dobio si ocenu!",
+                        "Korisnik ${user!.displayName} te ocenio!",
+                        ReviewsScreen.handymanModels[0].token!);
+                Navigator.of(context).pop();
+              }
             } else {
               ScaffoldMessenger.of(context)
                 ..hideCurrentSnackBar()
@@ -62,8 +78,6 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                   content: Text("User has already given feedback!"),
                 ));
             }
-
-            Navigator.of(context).pop();
           },
           askLaterText: 'ASK LATER',
           onAskLaterCallback: () {
@@ -132,7 +146,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                                     TextSpan(
                                       text: ReviewsScreen
                                               .handymanModels[0].averageReviews
-                                              ?.toString() ??
+                                              ?.toStringAsFixed(2) ??
                                           "0.0",
                                       style: TextStyle(fontSize: 48.0),
                                     ),
@@ -207,46 +221,32 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                       ),
                     ),
                     Expanded(
-                      child: ListView.builder(
+                      child: ListView.separated(
                         itemCount: (snapshot.data as QuerySnapshot).docs.length,
                         shrinkWrap: true,
                         itemBuilder: (BuildContext context, int index) {
                           DocumentSnapshot ds =
                               (snapshot.data as QuerySnapshot).docs[index];
-                          return Expanded(
-                            child: SizedBox(
-                              height: 200.0,
-                              child: ListView.separated(
-                                shrinkWrap: true,
-                                padding: EdgeInsets.only(bottom: 8.0, top: 8.0),
-                                itemCount: ReviewsScreen
-                                    .handymanModels[0].reviews!.length,
-                                separatorBuilder:
-                                    (BuildContext context, int index) {
-                                  return Divider(
-                                    thickness: 2.0,
-                                  );
-                                },
-                                itemBuilder: (BuildContext context, int index) {
-                                  return ReviewUI(
-                                    image: ReviewsScreen.handymanModels[0]
-                                        .reviews![index].image,
-                                    name: ReviewsScreen
-                                        .handymanModels[0].reviews![index].name,
-                                    date: ReviewsScreen
-                                        .handymanModels[0].reviews![index].date,
-                                    comment: ReviewsScreen.handymanModels[0]
-                                        .reviews![index].comment,
-                                    rating: ReviewsScreen.handymanModels[0]
-                                        .reviews![index].rating,
-                                    onTap: () => setState(() {
-                                      isMore = !isMore;
-                                    }),
-                                    isLess: isMore,
-                                  );
-                                },
-                              ),
-                            ),
+                          return ReviewUI(
+                            image: ReviewsScreen
+                                .handymanModels[0].reviews![index].image,
+                            name: ReviewsScreen
+                                .handymanModels[0].reviews![index].name,
+                            date: ReviewsScreen
+                                .handymanModels[0].reviews![index].date,
+                            comment: ReviewsScreen
+                                .handymanModels[0].reviews![index].comment,
+                            rating: ReviewsScreen
+                                .handymanModels[0].reviews![index].rating,
+                            onTap: () => setState(() {
+                              isMore = !isMore;
+                            }),
+                            isLess: isMore,
+                          );
+                        },
+                        separatorBuilder: (BuildContext context, int index) {
+                          return Divider(
+                            thickness: 2.0,
                           );
                         },
                       ),

@@ -66,7 +66,10 @@ class UserController {
         user.reviews!.map((e) => e.rating).reduce((a, b) => a + b) /
             user.reviews!.length;
     user.averageReviews = averageReview;
+    user.numberOfReviews = user.reviews!.length;
     _firebaseFirestoreRepo.updateAverageReviews(user.uid, averageReview);
+    _firebaseFirestoreRepo.updateNumberOfReviews(
+        user.uid, user.reviews!.length);
   }
 
   void updatePhoneNumber(String text) {
@@ -112,5 +115,9 @@ class UserController {
   void addNewProject(String selectedService, String description, String title) {
     _firebaseFirestoreRepo.addNewProject(
         selectedService, description, title, currentUser);
+  }
+
+  Future<DocumentSnapshot<Map<String, dynamic>>> getUser(String uid) async {
+    return await _firebaseFirestoreRepo.getUser(uid);
   }
 }

@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:flutter_master/cubit/firebase_firestore_repo.dart';
 import 'package:flutter_master/cubit/storage_repo.dart';
@@ -44,14 +45,18 @@ class AuthCubit extends Cubit<AuthState> {
         await locator.get<FirebaseFirestoreRepo>().getRole(user);
     String? selectedService;
     double? averageReviews;
+    int? numOfReviews;
     if (selectedRole.contains('Handyman')) {
       selectedService =
           await locator.get<FirebaseFirestoreRepo>().getService(user);
       averageReviews =
           await locator.get<FirebaseFirestoreRepo>().getAverageReviews(user);
+      numOfReviews =
+          await locator.get<FirebaseFirestoreRepo>().getNumOfReviews(user);
     }
     await locator.get<FirebaseFirestoreRepo>().getLocation(user).then((value) =>
-        createUser(value, selectedRole, selectedService, averageReviews));
+        createUser(value, selectedRole, selectedService, averageReviews,
+            numOfReviews));
   }
 
   Future<String?> getDownloadUrl(String uid) async {
@@ -84,7 +89,7 @@ class AuthCubit extends Cubit<AuthState> {
         user
             .updateDisplayName(name)
             .then((value) => createUser(
-                selectedLocation, selectedRole, selectedService, null))
+                selectedLocation, selectedRole, selectedService, null, 0))
             .then((value) =>
                 locator.get<FirebaseFirestoreRepo>().addUserToFirebase(value))
             .then((value) => emit(const AuthSignUpSuccess()));
@@ -197,11 +202,16 @@ class AuthCubit extends Cubit<AuthState> {
     firebaseAuth.currentUser!.updateDisplayName(text);
   }
 
-  createUser(String selectedLocation, String selectedRole,
-      String? selectedService, double? averageReviews) async {
+  createUser(
+      String selectedLocation,
+      String selectedRole,
+      String? selectedService,
+      double? averageReviews,
+      int? numOfReviewa) async {
     var firebaseUser = firebaseAuth.currentUser!;
     if (userModel == null && firebaseAuth.currentUser != null) {
       String? url = await getDownloadUrl(firebaseUser.uid);
+      String? token = await FirebaseMessaging.instance.getToken();
       if (selectedRole.contains('Handyman')) {
         userModel = HandymanModel(
             firebaseUser.uid,
@@ -211,7 +221,9 @@ class AuthCubit extends Cubit<AuthState> {
             selectedService,
             selectedLocation,
             url,
-            averageReviews);
+            averageReviews,
+            numOfReviewa,
+            token);
       } else {
         userModel = CustomerModel(
             firebaseUser.uid,
@@ -219,7 +231,8 @@ class AuthCubit extends Cubit<AuthState> {
             firebaseUser.email!,
             firebaseUser.phoneNumber,
             selectedLocation,
-            url);
+            url,
+            token);
       }
     }
     locator.get<UserController>().initUser(userModel);

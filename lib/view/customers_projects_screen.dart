@@ -40,7 +40,10 @@ class CustomersProjects extends StatelessWidget {
                           (snapshot.data as QuerySnapshot).docs[index];
                       return Center(
                           child: Card(
-                        child: Text(ds['description']),
+                        child: Text(
+                          ds['title'],
+                          style: TextStyle(fontSize: 20),
+                        ),
                       ));
                     });
               } else {

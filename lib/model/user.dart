@@ -9,7 +9,7 @@ class UserModel {
   String? phoneNumber;
   late String location;
   late String role;
-
+  late String? token;
   bool isHandyman = false;
 
   UserModel(this.uid,
@@ -18,10 +18,15 @@ class UserModel {
       this.email,
       this.phoneNumber,
       required this.location,
-      required this.role});
+      required this.role,
+      this.token});
 
   void setAvatarUrl(String url) {
     avatarUrl = avatarUrl;
+  }
+
+  void setToken(String token) {
+    this.token = token;
   }
 
   UserModel.fromDocumentSnapshot(DocumentSnapshot snapshot) {
@@ -34,6 +39,7 @@ class UserModel {
     phoneNumber = snapshot['phoneNumber'];
     avatarUrl = snapshot['avatarUrl'];
     role = snapshot['role'];
+    token = snapshot['token'];
   }
 }
 
@@ -46,16 +52,28 @@ class HandymanModel extends UserModel {
   double? averageReviews;
   List<String>? urlToGallery;
   List<ReviewModel>? reviews;
-  HandymanModel(String uid, displayName, email, phoneNumber, service,
-      String selectedLocation, String? url, double? averageReviews)
-      : super(uid,
+  int? numberOfReviews = 0;
+  HandymanModel(
+    String uid,
+    displayName,
+    email,
+    phoneNumber,
+    service,
+    String selectedLocation,
+    String? url,
+    double? averageReviews,
+    int? numberOfReviews,
+    String? token,
+  ) : super(uid,
             displayName: displayName,
             email: email,
             phoneNumber: phoneNumber,
             location: selectedLocation,
             avatarUrl: url,
-            role: "Handyman") {
+            role: "Handyman",
+            token: token) {
     averageReviews = averageReviews;
+    this.numberOfReviews = numberOfReviews;
     service = service;
     urlToGallery = <String>[];
     reviews = <ReviewModel>[];
@@ -64,14 +82,13 @@ class HandymanModel extends UserModel {
   HandymanModel.fromDocumentSnapshot(DocumentSnapshot snapshot)
       : super.fromDocumentSnapshot(snapshot) {
     service = snapshot['service'];
-    averageReviews = snapshot['averageReviews'].toDouble();
+    averageReviews = snapshot['averageReviews'];
     role = snapshot['role'];
+    numberOfReviews = snapshot['numberOfReviews'];
+    token = snapshot['token'];
     service = service;
     urlToGallery = <String>[];
     reviews = <ReviewModel>[];
-  }
-  void setAverageReviews(double averageReviews) {
-    averageReviews = averageReviews;
   }
 
   addReview(ReviewModel review) {
@@ -115,12 +132,13 @@ class HandymanModel extends UserModel {
 
 class CustomerModel extends UserModel {
   CustomerModel(String uid, displayName, email, phoneNumber,
-      String selectedLocation, String? url)
+      String selectedLocation, String? url, String? token)
       : super(uid,
             displayName: displayName,
             email: email,
             phoneNumber: phoneNumber,
             location: selectedLocation,
             avatarUrl: url,
-            role: "Customer");
+            role: "Customer",
+            token: token);
 }
