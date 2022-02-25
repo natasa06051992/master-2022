@@ -3,14 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_master/cubit/push_notification_service.dart';
 import 'package:flutter_master/locator.dart';
 import 'package:flutter_master/model/user.dart';
-import 'package:flutter_master/view/notification_service.dart';
 import 'package:flutter_master/view_controller/user_controller.dart';
 import 'package:flutter_master/widgets/review_widget.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:quick_feedback/quick_feedback.dart';
 import 'package:smooth_star_rating/smooth_star_rating.dart';
-import 'package:timezone/timezone.dart' as tz;
-import 'package:timezone/data/latest.dart' as tz;
 
 class ReviewsScreen extends StatefulWidget {
   static const String routeName = '/reviews';
@@ -28,13 +25,6 @@ class ReviewsScreen extends StatefulWidget {
 }
 
 class _ReviewsScreenState extends State<ReviewsScreen> {
-  @override
-  void initState() {
-    tz.initializeTimeZones();
-    // TODO: implement initState
-    super.initState();
-  }
-
   @override
   void dispose() {
     ReviewsScreen.handymanModels.clear();

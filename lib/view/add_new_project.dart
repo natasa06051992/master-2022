@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_master/config/constants.dart';
 import 'package:flutter_master/locator.dart';
-import 'package:flutter_master/view/notification_service.dart';
 import 'package:flutter_master/view_controller/user_controller.dart';
 
 class AddNewProjectScreen extends StatefulWidget {

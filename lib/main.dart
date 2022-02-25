@@ -9,7 +9,6 @@ import 'package:flutter_master/config/theme.dart';
 import 'package:flutter_master/cubit/auth_cubit.dart';
 import 'package:flutter_master/locator.dart';
 import 'package:flutter_master/model/user.dart';
-import 'package:flutter_master/view/notification_service.dart';
 import 'package:flutter_master/view/screens.dart';
 import 'package:flutter_master/view_controller/user_controller.dart';
 import 'package:provider/provider.dart';
