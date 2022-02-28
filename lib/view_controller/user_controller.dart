@@ -23,7 +23,7 @@ class UserController {
 
   UserModel? get currentUser => _currentUser;
 
-  uploadProfilePicture(File image) async {
+  Future<void> uploadProfilePicture(File image) async {
     if (image != null) {
       await _storageRepo.uploadProfileImage(image, _currentUser!).then((value) {
         _currentUser!.avatarUrl = value;
@@ -117,7 +117,14 @@ class UserController {
         selectedService, description, title, currentUser);
   }
 
-  Future<DocumentSnapshot<Map<String, dynamic>>> getUser(String uid) async {
+  Future<DocumentSnapshot<Map<String, dynamic>>?> getUser(String uid) async {
     return await _firebaseFirestoreRepo.getUser(uid);
+  }
+
+  Future<void> deleteProject(String id) async {
+    (currentUser as CustomerModel)
+        .projects!
+        .removeWhere((element) => element == id);
+    await _firebaseFirestoreRepo.deleteProject(id, currentUser);
   }
 }

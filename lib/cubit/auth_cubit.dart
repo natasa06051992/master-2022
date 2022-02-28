@@ -46,6 +46,8 @@ class AuthCubit extends Cubit<AuthState> {
     String? selectedService;
     double? averageReviews;
     int? numOfReviews;
+    List<String> projects = [];
+    List<String> urlToGallery = [];
     if (selectedRole.contains('Handyman')) {
       selectedService =
           await locator.get<FirebaseFirestoreRepo>().getService(user);
@@ -53,10 +55,14 @@ class AuthCubit extends Cubit<AuthState> {
           await locator.get<FirebaseFirestoreRepo>().getAverageReviews(user);
       numOfReviews =
           await locator.get<FirebaseFirestoreRepo>().getNumOfReviews(user);
+      urlToGallery =
+          await locator.get<FirebaseFirestoreRepo>().getUrlsToGallery(user);
+    } else {
+      projects = await locator.get<FirebaseFirestoreRepo>().getProjects(user);
     }
     await locator.get<FirebaseFirestoreRepo>().getLocation(user).then((value) =>
         createUser(value, selectedRole, selectedService, averageReviews,
-            numOfReviews));
+            numOfReviews, urlToGallery, projects));
   }
 
   Future<String?> getDownloadUrl(String uid) async {
@@ -88,8 +94,8 @@ class AuthCubit extends Cubit<AuthState> {
       if (user != null) {
         user
             .updateDisplayName(name)
-            .then((value) => createUser(
-                selectedLocation, selectedRole, selectedService, null, 0))
+            .then((value) => createUser(selectedLocation, selectedRole,
+                selectedService, null, 0, [], []))
             .then((value) =>
                 locator.get<FirebaseFirestoreRepo>().addUserToFirebase(value))
             .then((value) => emit(const AuthSignUpSuccess()));
@@ -207,7 +213,9 @@ class AuthCubit extends Cubit<AuthState> {
       String selectedRole,
       String? selectedService,
       double? averageReviews,
-      int? numOfReviewa) async {
+      int? numOfReviewa,
+      List<String> urlToGallery,
+      List<String> projects) async {
     var firebaseUser = firebaseAuth.currentUser!;
     if (userModel == null && firebaseAuth.currentUser != null) {
       String? url = await getDownloadUrl(firebaseUser.uid);
@@ -223,7 +231,8 @@ class AuthCubit extends Cubit<AuthState> {
             url,
             averageReviews,
             numOfReviewa,
-            token);
+            token,
+            urlToGallery);
       } else {
         userModel = CustomerModel(
             firebaseUser.uid,
@@ -232,7 +241,8 @@ class AuthCubit extends Cubit<AuthState> {
             firebaseUser.phoneNumber,
             selectedLocation,
             url,
-            token);
+            token,
+            projects);
       }
     }
     locator.get<UserController>().initUser(userModel);

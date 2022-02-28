@@ -4,6 +4,8 @@ import 'package:flutter_master/config/app_router.dart';
 import 'package:flutter_master/cubit/auth_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_master/locator.dart';
+import 'package:flutter_master/model/user.dart';
+import 'package:flutter_master/view/customers_projects_screen.dart';
 import 'package:flutter_master/view_controller/user_controller.dart';
 import 'package:flutter_master/widgets/customButton.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
@@ -47,8 +49,15 @@ class _LoginScreenState extends State<LoginScreen> {
               state is AuthGoogleSuccess ||
               state is AuthFBSuccess) {
             formKey.currentState!.reset();
-            Navigator.pushNamedAndRemoveUntil(context,
-                HomeCustomerScreen.routeName, (Route<dynamic> route) => false);
+            if (locator.get<UserController>().currentUser is CustomerModel) {
+              Navigator.pushNamedAndRemoveUntil(
+                  context,
+                  HomeCustomerScreen.routeName,
+                  (Route<dynamic> route) => false);
+            } else {
+              Navigator.pushNamedAndRemoveUntil(context,
+                  CustomersProjects.routeName, (Route<dynamic> route) => false);
+            }
           }
         },
         builder: (context, state) {

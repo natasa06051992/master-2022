@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_master/model/reviewModel.dart';
 import 'package:flutter_master/model/user.dart';
 import 'package:intl/intl.dart';
+import 'package:uuid/uuid.dart';
 
 class FirebaseFirestoreRepo {
   String collection = 'users';
@@ -15,7 +16,8 @@ class FirebaseFirestoreRepo {
       'avatarUrl': user.avatarUrl,
       'phoneNumber': user.phoneNumber,
       'location': user.location,
-      'role': role
+      'role': role,
+      'token': user.token
     };
 
     addHandymanDetails(user, data);
@@ -33,13 +35,21 @@ class FirebaseFirestoreRepo {
     }
   }
 
-  void updatePhoneNumber(UserModel user, String text) {
+  void updatePhoneNumber(UserModel user, String text) async {
     final Map<String, dynamic> data = {'phoneNumber': text};
     FirebaseFirestore.instance
         .collection(collection)
         .doc(user.uid)
-        .update(data)
-        .then((value) => print('updateovan br'));
+        .update(data);
+
+    QuerySnapshot firebaseReviews = await FirebaseFirestore.instance
+        .collection("projects")
+        .where('uid', isEqualTo: user.uid)
+        .get();
+
+    firebaseReviews.docs.forEach((doc) {
+      doc.reference.update(data);
+    });
   }
 
   void updateLocation(UserModel user, String text) {
@@ -66,10 +76,10 @@ class FirebaseFirestoreRepo {
     return snap['location'];
   }
 
-  Future<DocumentSnapshot<Map<String, dynamic>>> getUser(String uid) async {
+  Future<DocumentSnapshot<Map<String, dynamic>>?> getUser(String uid) async {
     var snap =
         await FirebaseFirestore.instance.collection(collection).doc(uid).get();
-    return snap;
+    return snap.exists ? snap : null;
   }
 
   Future<String> getRole(User user) async {
@@ -198,14 +208,23 @@ class FirebaseFirestoreRepo {
       'description': description,
       'service': selectedService,
       'date': formatter.format(DateTime.now()),
-      'image': currentUser!.avatarUrl,
+      'imageOfCustomer': currentUser!.avatarUrl,
       'name': currentUser!.displayName,
       'location': currentUser!.location,
       'phoneNumber': currentUser!.phoneNumber,
       'title': title
     };
-
-    FirebaseFirestore.instance.collection("projects").doc().set(data);
+    var uuid = Uuid();
+    String id = uuid.v4();
+    (currentUser as CustomerModel).addProject(id);
+    FirebaseFirestore.instance.collection("projects").doc(id).set(data);
+    final Map<String, dynamic> dataProjects = {
+      'projects': (currentUser as CustomerModel).projects
+    };
+    FirebaseFirestore.instance
+        .collection("users")
+        .doc(currentUser.uid)
+        .update(dataProjects);
   }
 
   void updateAverageReviews(String uid, double averageReview) {
@@ -227,11 +246,42 @@ class FirebaseFirestoreRepo {
     List<ReviewModel> result = [];
     firebaseReviews.docs.forEach((doc) {
       var data = doc.data();
-      // result.add(ReviewModel.fromDocumentSnapshot(data ));
     });
     return result;
-    List<ReviewModel>? reviews = [];
+  }
 
-    //ReviewModel.fromDocumentSnapshot(reviews[0]);
+  Future<List<String>> getProjects(User user) async {
+    QuerySnapshot firebaseReviews = await FirebaseFirestore.instance
+        .collection("projects")
+        .where('uid', isEqualTo: user.uid)
+        .get();
+    List<String> result = [];
+    firebaseReviews.docs.forEach((doc) {
+      var data = doc.data();
+    });
+    return result;
+  }
+
+  Future<List<String>> getUrlsToGallery(User user) async {
+    QuerySnapshot firebaseReviews = await FirebaseFirestore.instance
+        .collection("users")
+        .where('uid', isEqualTo: user.uid)
+        .get();
+    List<String> result = [];
+    firebaseReviews.docs.forEach((doc) {
+      var data = doc.data();
+    });
+    return result;
+  }
+
+  Future<void> deleteProject(String id, UserModel? currentUser) async {
+    final Map<String, dynamic> dataProjects = {
+      'projects': (currentUser as CustomerModel).projects
+    };
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(currentUser!.uid)
+        .update(dataProjects);
+    return FirebaseFirestore.instance.collection('projects').doc(id).delete();
   }
 }

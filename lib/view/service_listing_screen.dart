@@ -81,7 +81,8 @@ class ListOfHandyman extends StatelessWidget {
             );
           }
           if (snapshot.connectionState == ConnectionState.done) {
-            if (snapshot.hasData) {
+            if (snapshot.hasData &&
+                (snapshot.data as QuerySnapshot).docs.length > 0) {
               return ListView.builder(
                   itemCount: (snapshot.data as QuerySnapshot).docs.length,
                   shrinkWrap: true,
@@ -133,7 +134,9 @@ class ListOfHandyman extends StatelessWidget {
                     );
                   });
             } else {
-              return Container();
+              return Container(
+                child: Text('Trenutno nemamo majstora iz te kategorije!'),
+              );
             }
           } else {
             return Container();

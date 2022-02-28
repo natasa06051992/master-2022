@@ -13,6 +13,7 @@ import 'package:flutter_master/view/screens.dart';
 import 'package:flutter_master/view_controller/user_controller.dart';
 import 'package:flutter_master/widgets/avatar.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
+import 'package:photo_view/photo_view.dart';
 
 class InformationsAboutUserWidget extends StatefulWidget {
   final UserModel currentUser;
@@ -41,8 +42,7 @@ class _InformationsAboutUserWidgetState
       _descriptionController.text =
           (widget.currentUser as HandymanModel).description ?? "";
       _startingCostController.text =
-          (widget.currentUser as HandymanModel).startingPrice?.toString() ??
-              "Contact for starting price";
+          (widget.currentUser as HandymanModel).startingPrice?.toString() ?? "";
       _yearsInBusinessController.text =
           (widget.currentUser as HandymanModel).yearsInBusiness?.toString() ??
               "";
@@ -74,7 +74,7 @@ class _InformationsAboutUserWidgetState
                       borderRadius: BorderRadius.all(Radius.circular(5.0)),
                       child: Stack(
                         children: <Widget>[
-                          Image.network(item, fit: BoxFit.cover, width: 1000.0),
+                          PhotoView(imageProvider: NetworkImage(item)),
                           Positioned(
                             bottom: 0.0,
                             left: 0.0,

@@ -35,8 +35,6 @@ class UserModel {
     email = snapshot['email'];
     phoneNumber = snapshot['phoneNumber'];
     location = snapshot['location'];
-    email = snapshot['email'];
-    phoneNumber = snapshot['phoneNumber'];
     avatarUrl = snapshot['avatarUrl'];
     role = snapshot['role'];
     token = snapshot['token'];
@@ -50,21 +48,22 @@ class HandymanModel extends UserModel {
   String? description;
   int? yearsInBusiness;
   double? averageReviews;
-  List<String>? urlToGallery;
+  List<String>? urlToGallery = [];
   List<ReviewModel>? reviews;
   int? numberOfReviews = 0;
   HandymanModel(
-    String uid,
-    displayName,
-    email,
-    phoneNumber,
-    service,
-    String selectedLocation,
-    String? url,
-    double? averageReviews,
-    int? numberOfReviews,
-    String? token,
-  ) : super(uid,
+      String uid,
+      displayName,
+      email,
+      phoneNumber,
+      service,
+      String selectedLocation,
+      String? url,
+      double? averageReviews,
+      int? numberOfReviews,
+      String? token,
+      List<String> urlToGallery)
+      : super(uid,
             displayName: displayName,
             email: email,
             phoneNumber: phoneNumber,
@@ -75,19 +74,19 @@ class HandymanModel extends UserModel {
     averageReviews = averageReviews;
     this.numberOfReviews = numberOfReviews;
     service = service;
-    urlToGallery = <String>[];
-    reviews = <ReviewModel>[];
+    urlToGallery = urlToGallery;
+    reviews = [];
   }
 
   HandymanModel.fromDocumentSnapshot(DocumentSnapshot snapshot)
       : super.fromDocumentSnapshot(snapshot) {
     service = snapshot['service'];
     averageReviews = snapshot['averageReviews'];
-    role = snapshot['role'];
     numberOfReviews = snapshot['numberOfReviews'];
-    token = snapshot['token'];
-    service = service;
-    urlToGallery = <String>[];
+    urlToGallery = List.from(snapshot['urlToGallery']);
+    yearsInBusiness = snapshot['yearsInBusiness'];
+    startingPrice = snapshot['startingPrice'];
+    description = snapshot['description'];
     reviews = <ReviewModel>[];
   }
 
@@ -131,8 +130,16 @@ class HandymanModel extends UserModel {
 }
 
 class CustomerModel extends UserModel {
-  CustomerModel(String uid, displayName, email, phoneNumber,
-      String selectedLocation, String? url, String? token)
+  List<String> projects = [];
+  CustomerModel(
+      String uid,
+      displayName,
+      email,
+      phoneNumber,
+      String selectedLocation,
+      String? url,
+      String? token,
+      List<String> projects)
       : super(uid,
             displayName: displayName,
             email: email,
@@ -141,4 +148,11 @@ class CustomerModel extends UserModel {
             avatarUrl: url,
             role: "Customer",
             token: token);
+  CustomerModel.fromDocumentSnapshot(DocumentSnapshot snapshot)
+      : super.fromDocumentSnapshot(snapshot) {
+    projects = List.from(snapshot['projects']);
+  }
+  addProject(String project) {
+    projects?.add(project);
+  }
 }

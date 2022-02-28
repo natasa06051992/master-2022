@@ -39,7 +39,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 content: Text("Reset link has been sent to your email!"),
                 backgroundColor: Colors.white,
               ));
-            Navigator.pushNamed(context, '/home');
+            Navigator.pushNamed(context, '/login');
           }
         }, builder: (context, state) {
           if (state is AuthForgotPasswordLoading) {

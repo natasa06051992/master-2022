@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_master/config/constants.dart';
 import 'package:flutter_master/locator.dart';
+import 'package:flutter_master/view/customers_projects_screen.dart';
 import 'package:flutter_master/view_controller/user_controller.dart';
+
+import 'home_customer_screen.dart';
 
 class AddNewProjectScreen extends StatefulWidget {
   static const String routeName = '/add_project';
@@ -49,15 +52,20 @@ class _AddNewProjectScreenState extends State<AddNewProjectScreen> {
           child: SingleChildScrollView(
             child: Column(
               children: [
-                TextFormField(
-                  decoration: InputDecoration(hintText: "title"),
-                  controller: _titleController,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter title';
-                    }
-                    return null;
-                  },
+                Center(
+                  child: SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.9,
+                    child: TextFormField(
+                      decoration: InputDecoration(hintText: "title"),
+                      controller: _titleController,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter title';
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
                 ),
                 DropdownButton(
                   hint: const Text(
@@ -75,16 +83,21 @@ class _AddNewProjectScreenState extends State<AddNewProjectScreen> {
                     );
                   }).toList(),
                 ),
-                TextFormField(
-                  maxLines: 4,
-                  decoration: InputDecoration(hintText: "description"),
-                  controller: _descriptionController,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter description';
-                    }
-                    return null;
-                  },
+                Center(
+                  child: SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.9,
+                    child: TextFormField(
+                      maxLines: 4,
+                      decoration: InputDecoration(hintText: "description"),
+                      controller: _descriptionController,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter description';
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
                 ),
                 SizedBox(
                   height: 30,
@@ -96,7 +109,10 @@ class _AddNewProjectScreenState extends State<AddNewProjectScreen> {
                       locator.get<UserController>().addNewProject(
                           _selectedService, _descriptionController.text, title);
 
-                      Navigator.pop(context);
+                      Navigator.pushNamedAndRemoveUntil(
+                          context,
+                          HomeCustomerScreen.routeName,
+                          (Route<dynamic> route) => false);
                     }
                   },
                   child: Text('Submit'),

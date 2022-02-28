@@ -43,9 +43,19 @@ class _HandymanDetailScreenState extends State<HandymanDetailScreen> {
           child: Column(children: [
             Row(
               children: [
-                Avatar(
-                  avatarUrl: handymanModel.avatarUrl ?? null,
-                  onTap: () {},
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(30),
+                  child: handymanModel.avatarUrl != null
+                      ? Image.network(
+                          handymanModel.avatarUrl!,
+                          height: 110,
+                          width: 110,
+                        )
+                      : const Image(
+                          image: AssetImage('assets/logo/LogoMakr-4NVCFS.png'),
+                          height: 110,
+                          width: 110,
+                        ),
                 ),
                 Text(
                   handymanModel.displayName ?? "anonyms",
@@ -57,7 +67,7 @@ class _HandymanDetailScreenState extends State<HandymanDetailScreen> {
                   children: [
                     Text(
                       handymanModel.averageReviews != null
-                          ? handymanModel.averageReviews.toString()
+                          ? handymanModel.averageReviews!.toStringAsFixed(2)
                           : "",
                     ),
                     IconButton(

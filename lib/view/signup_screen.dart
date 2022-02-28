@@ -4,6 +4,8 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_master/cubit/auth_cubit.dart';
 import 'package:flutter_master/cubit/firebase_firestore_repo.dart';
 import 'package:flutter_master/locator.dart';
+import 'package:flutter_master/model/user.dart';
+import 'package:flutter_master/view/customers_projects_screen.dart';
 import 'package:flutter_master/view/screens.dart';
 import 'package:flutter_master/view_controller/user_controller.dart';
 import 'package:flutter_master/widgets/customButton.dart';
@@ -59,10 +61,17 @@ class _SignupScreenState extends State<SignupScreen> {
                   content: Text("Account successfully created!"),
                 ));
               formKey.currentState!.reset();
-              Navigator.pushNamedAndRemoveUntil(
-                  context,
-                  HomeCustomerScreen.routeName,
-                  (Route<dynamic> route) => false);
+              if (locator.get<UserController>().currentUser is CustomerModel) {
+                Navigator.pushNamedAndRemoveUntil(
+                    context,
+                    HomeCustomerScreen.routeName,
+                    (Route<dynamic> route) => false);
+              } else {
+                Navigator.pushNamedAndRemoveUntil(
+                    context,
+                    CustomersProjects.routeName,
+                    (Route<dynamic> route) => false);
+              }
             } else if (state is AuthGoogleError || state is AuthFBError) {
               isAlreadyCreatedAcount = true;
             }

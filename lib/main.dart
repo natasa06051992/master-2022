@@ -9,6 +9,7 @@ import 'package:flutter_master/config/theme.dart';
 import 'package:flutter_master/cubit/auth_cubit.dart';
 import 'package:flutter_master/locator.dart';
 import 'package:flutter_master/model/user.dart';
+import 'package:flutter_master/view/customers_projects_screen.dart';
 import 'package:flutter_master/view/screens.dart';
 import 'package:flutter_master/view_controller/user_controller.dart';
 import 'package:provider/provider.dart';
@@ -57,11 +58,22 @@ class MyApp extends StatelessWidget {
                         );
                       }
                       if (snapshot.connectionState == ConnectionState.done) {
-                        var userModel = UserModel.fromDocumentSnapshot(
-                            snapshot.data as DocumentSnapshot);
+                        if (snapshot.data != null) {
+                          var userModel = snapshot.data['role'] == 'Customer'
+                              ? CustomerModel.fromDocumentSnapshot(
+                                  snapshot.data as DocumentSnapshot)
+                              : HandymanModel.fromDocumentSnapshot(
+                                  snapshot.data as DocumentSnapshot);
+                          locator.get<UserController>().initUser(userModel);
 
-                        locator.get<UserController>().initUser(userModel);
-                        return HomeCustomerScreen();
+                          if (userModel is CustomerModel) {
+                            return HomeCustomerScreen();
+                          } else {
+                            return CustomersProjects();
+                          }
+                        } else {
+                          return OnBoardingScreen();
+                        }
                       } else {
                         return OnBoardingScreen();
                       }

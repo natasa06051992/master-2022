@@ -58,6 +58,9 @@ dependencies:
   timezone: ^0.8.0
   firebase_messaging: ^11.2.6
   firebase_analytics: ^9.1.0
+  url_launcher: ^6.0.20
+  uuid: 3.0.6
+  photo_view: ^0.13.0
 
 dev_dependencies:
   flutter_test:
