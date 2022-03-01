@@ -93,7 +93,7 @@ class ListOfHandyman extends StatelessWidget {
                       onTap: () {
                         Navigator.pushNamed(
                             context, HandymanDetailScreen.routeName,
-                            arguments: ds);
+                            arguments: ds.data());
                       },
                       child: Container(
                         margin: EdgeInsets.symmetric(vertical: 8),

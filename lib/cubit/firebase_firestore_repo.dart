@@ -11,6 +11,7 @@ class FirebaseFirestoreRepo {
   addUserToFirebase(UserModel user) {
     String role = user is HandymanModel ? 'Handyman' : 'Customer';
     final Map<String, dynamic> data = {
+      'uid': user.uid,
       'username': user.displayName,
       'email': user.email,
       'avatarUrl': user.avatarUrl,
@@ -76,10 +77,10 @@ class FirebaseFirestoreRepo {
     return snap['location'];
   }
 
-  Future<DocumentSnapshot<Map<String, dynamic>>?> getUser(String uid) async {
+  Future<Map<String, dynamic>?> getUser(String uid) async {
     var snap =
         await FirebaseFirestore.instance.collection(collection).doc(uid).get();
-    return snap.exists ? snap : null;
+    return snap.exists ? snap.data() : null;
   }
 
   Future<String> getRole(User user) async {
@@ -114,6 +115,14 @@ class FirebaseFirestoreRepo {
     return snap['numberOfReviews'];
   }
 
+  Future<String> getPhoneNumber(User user) async {
+    var snap = await FirebaseFirestore.instance
+        .collection(collection)
+        .doc(user.uid)
+        .get();
+    return snap['phoneNumber'];
+  }
+
   checkIfUserIsSignedUp(String uid) async {
     var usersRef = FirebaseFirestore.instance.collection(collection).doc(uid);
     bool isSignedUp = false;
@@ -133,12 +142,22 @@ class FirebaseFirestoreRepo {
     return handymans;
   }
 
-  void updateAvatarUrl(UserModel userModel) {
+  Future<void> updateAvatarUrl(UserModel userModel) async {
     final Map<String, dynamic> data = {'avatarUrl': userModel.avatarUrl};
     FirebaseFirestore.instance
         .collection(collection)
         .doc(userModel.uid)
         .update(data);
+    final Map<String, dynamic> dataProjects = {
+      'imageOfCustomer': userModel.avatarUrl
+    };
+    List<String> projects = await getProjects(userModel.uid);
+    projects.forEach((element) {
+      FirebaseFirestore.instance
+          .collection('projects')
+          .doc(element)
+          .update(dataProjects);
+    });
   }
 
   void updateDescription(UserModel userModel) {
@@ -250,26 +269,26 @@ class FirebaseFirestoreRepo {
     return result;
   }
 
-  Future<List<String>> getProjects(User user) async {
-    QuerySnapshot firebaseReviews = await FirebaseFirestore.instance
+  Future<List<String>> getProjects(String uid) async {
+    QuerySnapshot firebaseProjects = await FirebaseFirestore.instance
         .collection("projects")
-        .where('uid', isEqualTo: user.uid)
+        .where('uid', isEqualTo: uid)
         .get();
     List<String> result = [];
-    firebaseReviews.docs.forEach((doc) {
-      var data = doc.data();
+    firebaseProjects.docs.forEach((doc) {
+      result.add(doc.reference.id);
     });
     return result;
   }
 
   Future<List<String>> getUrlsToGallery(User user) async {
-    QuerySnapshot firebaseReviews = await FirebaseFirestore.instance
+    QuerySnapshot firebaseUrl = await FirebaseFirestore.instance
         .collection("users")
         .where('uid', isEqualTo: user.uid)
         .get();
     List<String> result = [];
-    firebaseReviews.docs.forEach((doc) {
-      var data = doc.data();
+    firebaseUrl.docs.forEach((doc) {
+      result.add(doc.reference.id);
     });
     return result;
   }

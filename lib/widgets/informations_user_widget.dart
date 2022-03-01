@@ -11,7 +11,6 @@ import 'package:flutter_master/view/add_pictures_featured_projects.dart';
 import 'package:flutter_master/view/customers_projects_screen.dart';
 import 'package:flutter_master/view/screens.dart';
 import 'package:flutter_master/view_controller/user_controller.dart';
-import 'package:flutter_master/widgets/avatar.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:photo_view/photo_view.dart';
 
@@ -25,6 +24,12 @@ class InformationsAboutUserWidget extends StatefulWidget {
   State<InformationsAboutUserWidget> createState() =>
       _InformationsAboutUserWidgetState();
 }
+
+String _selectedLocation = locator.get<UserController>().currentUser!.location;
+String? _selectedServices =
+    locator.get<UserController>().currentUser! is HandymanModel
+        ? (locator.get<UserController>().currentUser! as HandymanModel).service
+        : '';
 
 class _InformationsAboutUserWidgetState
     extends State<InformationsAboutUserWidget> {
@@ -102,10 +107,7 @@ class _InformationsAboutUserWidgetState
     }
 
     final formKey = GlobalKey<FormBuilderState>();
-    String _selectedLocation = widget.currentUser.location;
-    String? _selectedServices = widget.currentUser is HandymanModel
-        ? (widget.currentUser as HandymanModel).service
-        : null;
+
     return FormBuilder(
       autovalidateMode: AutovalidateMode.disabled,
       key: formKey,
@@ -166,10 +168,10 @@ class _InformationsAboutUserWidgetState
                   _selectedServices = newValue.toString();
                 });
               },
-              items: Constants.services.map((_selectedService) {
+              items: Constants.services.map((service) {
                 return DropdownMenuItem(
-                  child: Text(_selectedService),
-                  value: _selectedService,
+                  child: Text(service),
+                  value: service,
                 );
               }).toList(),
             ),
@@ -255,13 +257,13 @@ class _InformationsAboutUserWidgetState
           .updateDescription(_descriptionController.text);
     }
     if (widget.currentUser is HandymanModel &&
-        _startingCostController.text != "contact for price" &&
+        _startingCostController.text != "" &&
         formKey.currentState!.validate() &&
         _startingCostController.text !=
             (widget.currentUser as HandymanModel).startingPrice.toString()) {
       locator
           .get<UserController>()
-          .updateStartingCost(_startingCostController.text as int);
+          .updateStartingCost(int.parse(_startingCostController.text));
     }
     if (widget.currentUser is HandymanModel &&
         _yearsInBusinessController.text != "" &&
@@ -270,7 +272,7 @@ class _InformationsAboutUserWidgetState
             (widget.currentUser as HandymanModel).yearsInBusiness.toString()) {
       locator
           .get<UserController>()
-          .updateYearsInBusiness(_yearsInBusinessController.text as int);
+          .updateYearsInBusiness(int.parse(_yearsInBusinessController.text));
     }
     Navigator.pop(context);
   }

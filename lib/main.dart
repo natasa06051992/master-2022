@@ -61,9 +61,9 @@ class MyApp extends StatelessWidget {
                         if (snapshot.data != null) {
                           var userModel = snapshot.data['role'] == 'Customer'
                               ? CustomerModel.fromDocumentSnapshot(
-                                  snapshot.data as DocumentSnapshot)
+                                  snapshot.data)
                               : HandymanModel.fromDocumentSnapshot(
-                                  snapshot.data as DocumentSnapshot);
+                                  snapshot.data);
                           locator.get<UserController>().initUser(userModel);
 
                           if (userModel is CustomerModel) {
@@ -71,12 +71,9 @@ class MyApp extends StatelessWidget {
                           } else {
                             return CustomersProjects();
                           }
-                        } else {
-                          return OnBoardingScreen();
                         }
-                      } else {
-                        return OnBoardingScreen();
                       }
+                      return OnBoardingScreen();
                     });
               } else {
                 return OnBoardingScreen();

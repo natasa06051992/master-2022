@@ -8,8 +8,8 @@ import 'package:flutter_master/widgets/avatar.dart';
 class HandymanDetailScreen extends StatefulWidget {
   static const String routeName = '/handyman_detail';
 
-  static List<DocumentSnapshot> documentSnapshots = [];
-  static Route route(DocumentSnapshot snapshot) {
+  static List<Map<String, dynamic>> documentSnapshots = [];
+  static Route route(Map<String, dynamic> snapshot) {
     documentSnapshots.add(snapshot);
     return MaterialPageRoute(
         builder: (_) => HandymanDetailScreen(),

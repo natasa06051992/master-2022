@@ -117,7 +117,7 @@ class UserController {
         selectedService, description, title, currentUser);
   }
 
-  Future<DocumentSnapshot<Map<String, dynamic>>?> getUser(String uid) async {
+  Future<Map<String, dynamic>?> getUser(String uid) async {
     return await _firebaseFirestoreRepo.getUser(uid);
   }
 

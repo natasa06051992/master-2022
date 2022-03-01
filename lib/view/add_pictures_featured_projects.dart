@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_master/locator.dart';
+import 'package:flutter_master/view/customers_projects_screen.dart';
 import 'package:flutter_master/view_controller/user_controller.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -42,8 +43,12 @@ class _AddPicturesFeaturedProjectsState
                   locator
                       .get<UserController>()
                       .uploadFiles(_image)
-                      .whenComplete(() => Navigator.pushNamed(
-                          context, HomeCustomerScreen.routeName));
+                      .whenComplete(() {
+                    Navigator.pushNamedAndRemoveUntil(
+                        context,
+                        CustomersProjects.routeName,
+                        (Route<dynamic> route) => false);
+                  });
                   setState(() {});
                 },
                 child: Text(

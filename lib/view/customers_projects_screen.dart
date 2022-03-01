@@ -36,7 +36,11 @@ class _CustomersProjectsState extends State<CustomersProjects> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: buildAppBar(context, 'Projects'),
+        appBar: locator.get<UserController>().currentUser is HandymanModel
+            ? buildAppBar(context, 'Projects')
+            : AppBar(
+                title: const Text('Projects'),
+              ),
         body: FutureBuilder(
             future: getProjects(),
             builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
@@ -53,123 +57,57 @@ class _CustomersProjectsState extends State<CustomersProjects> {
                       shrinkWrap: true,
                       itemBuilder: (context, index) {
                         DocumentSnapshot ds = list[index];
-                        return Dismissible(
-                          background: Container(
-                            alignment: Alignment.centerRight,
-                            color: Colors.red,
-                            child: const Icon(
-                              Icons.delete,
-                              size: 40.0,
-                              color: Colors.white,
-                            ),
-                          ),
-                          onDismissed: (_) async {
-                            await locator
-                                .get<UserController>()
-                                .deleteProject(list[index].id);
-                            setState(() {
-                              list.removeAt(index);
-                            });
-                          },
-                          confirmDismiss: (direction) {
-                            return showDialog(
-                                context: context,
-                                builder: (context) {
-                                  return AlertDialog(
-                                    title: const Text('Potvrda'),
-                                    content: const Text(
-                                        'Da li zelite da obrisete projekat?'),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () {
-                                          Navigator.of(context).pop(true);
-                                        },
-                                        child: const Text('Da'),
-                                      ),
-                                      TextButton(
-                                        onPressed: () {
-                                          Navigator.of(context).pop(false);
-                                        },
-                                        child: const Text('Ne'),
-                                      )
-                                    ],
-                                  );
-                                });
-                          },
-                          direction: DismissDirection.endToStart,
-                          key: Key(index.toString()),
-                          child: Center(
-                              child: Card(
-                            child: Container(
-                              width: MediaQuery.of(context).size.width * 0.9,
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
-                                children: [
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(30),
-                                    child: ds['imageOfCustomer'] != null
-                                        ? Image.network(
-                                            ds['imageOfCustomer'],
-                                            height: 90,
-                                            width: 90,
-                                          )
-                                        : const Image(
-                                            image: AssetImage(
-                                                'assets/logo/LogoMakr-4NVCFS.png'),
-                                            height: 90,
-                                            width: 90,
-                                          ),
+                        return locator.get<UserController>().currentUser
+                                is HandymanModel
+                            ? projectWidget(context, ds)
+                            : Dismissible(
+                                background: Container(
+                                  alignment: Alignment.centerRight,
+                                  color: Colors.red,
+                                  child: const Icon(
+                                    Icons.delete,
+                                    size: 40.0,
+                                    color: Colors.white,
                                   ),
-                                  Column(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    children: [
-                                      Text(
-                                        ds['title'],
-                                        style: TextStyle(fontSize: 24),
-                                      ),
-                                      SizedBox(
-                                        height: 20,
-                                      ),
-                                      Text(
-                                        ds['description'],
-                                        style: TextStyle(fontSize: 18),
-                                      ),
-                                    ],
-                                  ),
-                                  Column(
-                                    children: [
-                                      Text(
-                                        ds['date'],
-                                        style: TextStyle(fontSize: 12),
-                                      ),
-                                      SizedBox(height: 30),
-                                      if (locator
-                                          .get<UserController>()
-                                          .currentUser is HandymanModel)
-                                        ElevatedButton(
-                                            onPressed: () {
-                                              ds['phoneNumber'] != null
-                                                  ? _makePhoneCall(
-                                                      ds['phoneNumber'])
-                                                  : null;
-                                            },
-                                            child: ds['phoneNumber'] == null
-                                                ? null
-                                                : Row(
-                                                    children: [
-                                                      Icon(Icons.mic),
-                                                      Text('Call')
-                                                    ],
-                                                  ))
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          )),
-                        );
+                                ),
+                                onDismissed: (_) async {
+                                  await locator
+                                      .get<UserController>()
+                                      .deleteProject(list[index].id);
+                                  setState(() {
+                                    list.removeAt(index);
+                                  });
+                                },
+                                confirmDismiss: (direction) {
+                                  return showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return AlertDialog(
+                                          title: const Text('Potvrda'),
+                                          content: const Text(
+                                              'Da li zelite da obrisete projekat?'),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () {
+                                                Navigator.of(context).pop(true);
+                                              },
+                                              child: const Text('Da'),
+                                            ),
+                                            TextButton(
+                                              onPressed: () {
+                                                Navigator.of(context)
+                                                    .pop(false);
+                                              },
+                                              child: const Text('Ne'),
+                                            )
+                                          ],
+                                        );
+                                      });
+                                },
+                                direction: DismissDirection.endToStart,
+                                key: Key(index.toString()),
+                                child: projectWidget(context, ds),
+                              );
                       });
                 } else {
                   return Container();
@@ -188,6 +126,71 @@ class _CustomersProjectsState extends State<CustomersProjects> {
                 child: const Icon(Icons.add),
               )
             : null);
+  }
+
+  Center projectWidget(BuildContext context, DocumentSnapshot<Object?> ds) {
+    return Center(
+        child: Card(
+      child: Container(
+        width: MediaQuery.of(context).size.width * 0.9,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(30),
+              child: ds['imageOfCustomer'] != null
+                  ? Image.network(
+                      ds['imageOfCustomer'],
+                      height: 90,
+                      width: 90,
+                    )
+                  : const Image(
+                      image: AssetImage('assets/logo/LogoMakr-4NVCFS.png'),
+                      height: 90,
+                      width: 90,
+                    ),
+            ),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Text(
+                  ds['title'],
+                  style: TextStyle(fontSize: 24),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                Text(
+                  ds['description'],
+                  style: TextStyle(fontSize: 18),
+                ),
+              ],
+            ),
+            Column(
+              children: [
+                Text(
+                  ds['date'],
+                  style: TextStyle(fontSize: 12),
+                ),
+                SizedBox(height: 30),
+                if (locator.get<UserController>().currentUser is HandymanModel)
+                  ElevatedButton(
+                      onPressed: () {
+                        ds['phoneNumber'] != null
+                            ? _makePhoneCall(ds['phoneNumber'])
+                            : null;
+                      },
+                      child: ds['phoneNumber'] == null
+                          ? null
+                          : Row(
+                              children: [Icon(Icons.mic), Text('Call')],
+                            ))
+              ],
+            ),
+          ],
+        ),
+      ),
+    ));
   }
 
   getProjects() {

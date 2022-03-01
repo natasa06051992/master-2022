@@ -18,7 +18,7 @@ class AppRouter {
       case FilterScreen.routeName:
         return FilterScreen.route();
       case HandymanDetailScreen.routeName:
-        final args = settings.arguments as DocumentSnapshot;
+        final args = settings.arguments as Map<String, dynamic>;
         return HandymanDetailScreen.route(args);
       case ServiceListingScreen.routeName:
         final args = settings.arguments as String;

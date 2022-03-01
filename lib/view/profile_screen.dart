@@ -62,7 +62,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           },
                         ),
                         Text(
-                            "Hi ${_currentUser!.displayName ?? 'nice to see you here.'}"),
+                          "Hi ${_currentUser!.displayName ?? 'nice to see you here.'}",
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.w500),
+                        ),
                       ],
                     ),
                   ),

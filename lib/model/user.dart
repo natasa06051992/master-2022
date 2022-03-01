@@ -29,8 +29,8 @@ class UserModel {
     this.token = token;
   }
 
-  UserModel.fromDocumentSnapshot(DocumentSnapshot snapshot) {
-    uid = snapshot.id;
+  UserModel.fromDocumentSnapshot(Map<String, dynamic> snapshot) {
+    uid = snapshot['uid'];
     displayName = snapshot['username'];
     email = snapshot['email'];
     phoneNumber = snapshot['phoneNumber'];
@@ -71,14 +71,14 @@ class HandymanModel extends UserModel {
             avatarUrl: url,
             role: "Handyman",
             token: token) {
-    averageReviews = averageReviews;
+    this.averageReviews = averageReviews;
     this.numberOfReviews = numberOfReviews;
-    service = service;
-    urlToGallery = urlToGallery;
+    this.service = service;
+    this.urlToGallery = urlToGallery;
     reviews = [];
   }
 
-  HandymanModel.fromDocumentSnapshot(DocumentSnapshot snapshot)
+  HandymanModel.fromDocumentSnapshot(Map<String, dynamic> snapshot)
       : super.fromDocumentSnapshot(snapshot) {
     service = snapshot['service'];
     averageReviews = snapshot['averageReviews'];
@@ -148,7 +148,7 @@ class CustomerModel extends UserModel {
             avatarUrl: url,
             role: "Customer",
             token: token);
-  CustomerModel.fromDocumentSnapshot(DocumentSnapshot snapshot)
+  CustomerModel.fromDocumentSnapshot(Map<String, dynamic> snapshot)
       : super.fromDocumentSnapshot(snapshot) {
     projects = List.from(snapshot['projects']);
   }

@@ -101,9 +101,18 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
               if (snapshot.connectionState == ConnectionState.done) {
                 if (snapshot.hasData) {
                   ReviewsScreen.handymanModels[0].clearReviews();
+                  ReviewsScreen.handymanModels[0].averageReviews = 0;
+                  ratings.clear();
                   ReviewsScreen.handymanModels[0]
                       .addReviews((snapshot.data as QuerySnapshot).docs);
+
                   if (ReviewsScreen.handymanModels[0].reviews!.length > 0) {
+                    ReviewsScreen.handymanModels[0].averageReviews =
+                        ReviewsScreen.handymanModels[0].reviews!
+                                .map((e) => e.rating)
+                                .reduce((a, b) => a + b) /
+                            ReviewsScreen.handymanModels[0].reviews!.length;
+
                     var one = 1 / (snapshot.data as QuerySnapshot).docs.length;
 
                     for (int i = 0; i < 5; i++) {
