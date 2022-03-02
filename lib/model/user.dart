@@ -10,7 +10,6 @@ class UserModel {
   late String location;
   late String role;
   late String? token;
-  bool isHandyman = false;
 
   UserModel(this.uid,
       {this.displayName,
@@ -56,13 +55,13 @@ class HandymanModel extends UserModel {
       displayName,
       email,
       phoneNumber,
-      service,
+      this.service,
       String selectedLocation,
       String? url,
-      double? averageReviews,
-      int? numberOfReviews,
+      this.averageReviews,
+      this.numberOfReviews,
       String? token,
-      List<String> urlToGallery)
+      this.urlToGallery)
       : super(uid,
             displayName: displayName,
             email: email,
@@ -71,10 +70,6 @@ class HandymanModel extends UserModel {
             avatarUrl: url,
             role: "Handyman",
             token: token) {
-    this.averageReviews = averageReviews;
-    this.numberOfReviews = numberOfReviews;
-    this.service = service;
-    this.urlToGallery = urlToGallery;
     reviews = [];
   }
 
@@ -125,7 +120,7 @@ class HandymanModel extends UserModel {
   }
 
   clearReviews() {
-    this.reviews!.clear();
+    reviews!.clear();
   }
 }
 
@@ -153,6 +148,6 @@ class CustomerModel extends UserModel {
     projects = List.from(snapshot['projects']);
   }
   addProject(String project) {
-    projects?.add(project);
+    projects.add(project);
   }
 }

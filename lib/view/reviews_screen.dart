@@ -13,9 +13,9 @@ import 'package:smooth_star_rating/smooth_star_rating.dart';
 class ReviewsScreen extends StatefulWidget {
   static const String routeName = '/reviews';
 
-  static List<HandymanModel> handymanModels = [];
+  static HandymanModel? handymanModel;
   static Route route(HandymanModel handyman) {
-    handymanModels.add(handyman);
+    handymanModel = handyman;
     return MaterialPageRoute(
         builder: (_) => ReviewsScreen(),
         settings: RouteSettings(name: routeName));
@@ -28,7 +28,7 @@ class ReviewsScreen extends StatefulWidget {
 class _ReviewsScreenState extends State<ReviewsScreen> {
   @override
   void dispose() {
-    ReviewsScreen.handymanModels.clear();
+    ReviewsScreen.handymanModel = null;
     // TODO: implement dispose
     super.dispose();
   }
@@ -46,20 +46,20 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
           submitText: 'SUBMIT',
           onSubmitCallback: (feedback) {
             if (feedback["rating"] != null &&
-                !ReviewsScreen.handymanModels[0].reviews!.any((element) =>
+                !ReviewsScreen.handymanModel!.reviews!.any((element) =>
                     element.idReviewer ==
                     locator.get<UserController>().currentUser!.uid)) {
               var user = locator.get<UserController>().currentUser;
               locator.get<UserController>().addReview(feedback["rating"],
-                  feedback["feedback"], ReviewsScreen.handymanModels[0]);
-              if (user!.uid == ReviewsScreen.handymanModels[0].uid) {
+                  feedback["feedback"], ReviewsScreen.handymanModel!);
+              if (user!.uid == ReviewsScreen.handymanModel!.uid) {
                 setState(() {});
                 locator
-                    .get<FCMNotificationService>()
+                    .get<NotificationService>()
                     .sendNotificationToSpecificUser(
                         "Dobio si ocenu!",
                         "Korisnik ${user!.displayName} te ocenio!",
-                        ReviewsScreen.handymanModels[0].token!);
+                        ReviewsScreen.handymanModel!.token!);
               }
             } else {
               ScaffoldMessenger.of(context)
@@ -89,7 +89,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
         body: FutureBuilder(
             future: FirebaseFirestore.instance
                 .collection("reviews")
-                .doc(ReviewsScreen.handymanModels[0].uid)
+                .doc(ReviewsScreen.handymanModel!.uid)
                 .collection("review")
                 .get(),
             builder: (context, snapshot) {
@@ -100,24 +100,24 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
               }
               if (snapshot.connectionState == ConnectionState.done) {
                 if (snapshot.hasData) {
-                  ReviewsScreen.handymanModels[0].clearReviews();
-                  ReviewsScreen.handymanModels[0].averageReviews = 0;
+                  ReviewsScreen.handymanModel!.clearReviews();
+                  ReviewsScreen.handymanModel!.averageReviews = 0;
                   ratings.clear();
-                  ReviewsScreen.handymanModels[0]
+                  ReviewsScreen.handymanModel!
                       .addReviews((snapshot.data as QuerySnapshot).docs);
 
-                  if (ReviewsScreen.handymanModels[0].reviews!.length > 0) {
-                    ReviewsScreen.handymanModels[0].averageReviews =
-                        ReviewsScreen.handymanModels[0].reviews!
-                                .map((e) => e.rating)
-                                .reduce((a, b) => a + b) /
-                            ReviewsScreen.handymanModels[0].reviews!.length;
+                  if (ReviewsScreen.handymanModel!.reviews!.length > 0) {
+                    ReviewsScreen.handymanModel!.averageReviews = ReviewsScreen
+                            .handymanModel!.reviews!
+                            .map((e) => e.rating)
+                            .reduce((a, b) => a + b) /
+                        ReviewsScreen.handymanModel!.reviews!.length;
 
                     var one = 1 / (snapshot.data as QuerySnapshot).docs.length;
 
                     for (int i = 0; i < 5; i++) {
                       var rating = one *
-                          ReviewsScreen.handymanModels[0].reviews!
+                          ReviewsScreen.handymanModel!.reviews!
                               .where((x) => x.rating == (i + 1))
                               .length;
                       ratings.add(rating);
@@ -146,7 +146,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                                   children: [
                                     TextSpan(
                                       text: ReviewsScreen
-                                              .handymanModels[0].averageReviews
+                                              .handymanModel!.averageReviews
                                               ?.toStringAsFixed(2) ??
                                           "0.0",
                                       style: TextStyle(fontSize: 48.0),
@@ -164,7 +164,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                                 isReadOnly: true,
                                 starCount: 5,
                                 rating: ReviewsScreen
-                                        .handymanModels[0].averageReviews ??
+                                        .handymanModel!.averageReviews ??
                                     0.0,
                                 size: 28.0,
                                 color: Colors.orange,
@@ -172,7 +172,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                               ),
                               SizedBox(height: 16.0),
                               Text(
-                                "${ReviewsScreen.handymanModels[0].reviews?.length} Reviews",
+                                "${ReviewsScreen.handymanModel!.reviews?.length} Reviews",
                                 style: TextStyle(
                                   fontSize: 20.0,
                                 ),
@@ -230,15 +230,15 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                               (snapshot.data as QuerySnapshot).docs[index];
                           return ReviewUI(
                             image: ReviewsScreen
-                                .handymanModels[0].reviews![index].image,
+                                .handymanModel!.reviews![index].image,
                             name: ReviewsScreen
-                                .handymanModels[0].reviews![index].name,
+                                .handymanModel!.reviews![index].name,
                             date: ReviewsScreen
-                                .handymanModels[0].reviews![index].date,
+                                .handymanModel!.reviews![index].date,
                             comment: ReviewsScreen
-                                .handymanModels[0].reviews![index].comment,
+                                .handymanModel!.reviews![index].comment,
                             rating: ReviewsScreen
-                                .handymanModels[0].reviews![index].rating,
+                                .handymanModel!.reviews![index].rating,
                             onTap: () => setState(() {
                               isMore = !isMore;
                             }),

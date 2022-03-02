@@ -1,6 +1,5 @@
 export 'home_customer_screen.dart';
 
-export 'filter_screen.dart';
 export 'handyman_details_screen.dart';
 export 'service_listing_screen.dart';
 export 'forgotpassword_screen.dart';

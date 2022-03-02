@@ -1,10 +1,7 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_master/config/theme.dart';
 import 'package:flutter_master/cubit/auth_cubit.dart';
 import 'package:flutter_master/locator.dart';
@@ -15,7 +12,6 @@ import 'package:flutter_master/view_controller/user_controller.dart';
 import 'package:provider/provider.dart';
 
 import 'config/app_router.dart';
-import 'cubit/demo.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -54,7 +50,7 @@ class MyApp extends StatelessWidget {
                         AsyncSnapshot<dynamic> snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return const Center(
-                          child: const CircularProgressIndicator(),
+                          child: CircularProgressIndicator(),
                         );
                       }
                       if (snapshot.connectionState == ConnectionState.done) {

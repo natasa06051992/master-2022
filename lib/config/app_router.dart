@@ -1,24 +1,18 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_master/cubit/demo.dart';
 import 'package:flutter_master/model/user.dart';
 import 'package:flutter_master/view/add_new_project.dart';
 import 'package:flutter_master/view/add_pictures_featured_projects.dart';
 import 'package:flutter_master/view/customers_projects_screen.dart';
 import 'package:flutter_master/view/screens.dart';
-import 'package:flutter_master/view/signUp_additional_screen.dart';
 
 class AppRouter {
   static Route onGenerateRoute(RouteSettings settings) {
-    print('Route: ${settings.name}');
     switch (settings.name) {
       case HomeCustomerScreen.routeName:
         return HomeCustomerScreen.route();
 
-      case FilterScreen.routeName:
-        return FilterScreen.route();
       case HandymanDetailScreen.routeName:
-        final args = settings.arguments as Map<String, dynamic>;
+        final args = settings.arguments as UserModel;
         return HandymanDetailScreen.route(args);
       case ServiceListingScreen.routeName:
         final args = settings.arguments as String;

@@ -264,9 +264,10 @@ class FirebaseFirestoreRepo {
         .get();
     List<ReviewModel> result = [];
     firebaseReviews.docs.forEach((doc) {
-      var data = doc.data();
+      //result.add(doc.data());
     });
     return result;
+    //cr
   }
 
   Future<List<String>> getProjects(String uid) async {
@@ -275,9 +276,9 @@ class FirebaseFirestoreRepo {
         .where('uid', isEqualTo: uid)
         .get();
     List<String> result = [];
-    firebaseProjects.docs.forEach((doc) {
+    for (var doc in firebaseProjects.docs) {
       result.add(doc.reference.id);
-    });
+    }
     return result;
   }
 

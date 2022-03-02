@@ -23,7 +23,7 @@ class _HomeCustomerScreenState extends State<HomeCustomerScreen> {
   String query = '';
 
   List<String> categories = Constants.services;
-
+//cv klasa
   List features = [
     {
       "id": 100,
@@ -98,23 +98,6 @@ class _HomeCustomerScreenState extends State<HomeCustomerScreen> {
                             arguments: features[index]["name"]);
                       },
                       data: features[index]))),
-          // Expanded(
-          //   child: ListView.builder(
-          //     itemCount: categories.length,
-          //     itemBuilder: (context, i) {
-          //       return InkWell(
-          //         splashColor: Colors.blue.withAlpha(30),
-          //         onTap: () {
-          //           Navigator.pushNamed(context, ServiceListingScreen.routeName,
-          //               arguments: Constants.services[i]);
-          //         },
-          //         child: ListTile(
-          //           title: Text("${Constants.services[i]}"),
-          //         ),
-          //       );
-          //     },
-          //   ),
-          // ),
         ],
       ),
     );

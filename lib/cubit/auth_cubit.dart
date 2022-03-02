@@ -1,5 +1,4 @@
 import 'package:bloc/bloc.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -15,7 +14,7 @@ part 'auth_state.dart';
 
 class AuthCubit extends Cubit<AuthState> {
   AuthCubit() : super(AuthDefault());
-
+  static UserModel? userModel;
   // initalizing the instance for our facebook
   // google and firebase
   FirebaseAuth get firebaseAuth => FirebaseAuth.instance;
@@ -65,10 +64,7 @@ class AuthCubit extends Cubit<AuthState> {
     //   projects =
     //       await locator.get<FirebaseFirestoreRepo>().getProjects(user.uid);
     // }
-    await locator
-        .get<FirebaseFirestoreRepo>()
-        .getLocation(user)
-        .then((value) => createUser(value, selectedRole));
+    createUser(selectedRole);
   }
 
   Future<String?> getDownloadUrl(String uid) async {
@@ -83,12 +79,12 @@ class AuthCubit extends Cubit<AuthState> {
       String selectedLocation,
       String selectedRole,
       String selectedService,
-      bool isAlreadyCreatedAcount) async {
+      bool isAlreadyCreatedAccount) async {
     emit(const AuthSignUpLoading());
     try {
       User? user;
 
-      if (!isAlreadyCreatedAcount) {
+      if (!isAlreadyCreatedAccount) {
         user = (await firebaseAuth.createUserWithEmailAndPassword(
                 email: email, password: password))
             .user;
@@ -99,9 +95,9 @@ class AuthCubit extends Cubit<AuthState> {
       // if the user is not null
       if (user != null) {
         user
-            .updateDisplayName(name)
+            .updateDisplayName(name) //cr zasto?
             .then((value) => createNewUser(selectedLocation, selectedRole,
-                selectedService, null, 0, [], []))
+                selectedService, null, 0, [], [])) //cr nepotrebno
             .then((value) =>
                 locator.get<FirebaseFirestoreRepo>().addUserToFirebase(value))
             .then((value) => emit(const AuthSignUpSuccess()));
@@ -185,7 +181,7 @@ class AuthCubit extends Cubit<AuthState> {
         await createCurrentUser(user);
         emit(AuthGoogleSuccess(user: user));
       } else {
-        emit(AuthGoogleError(error: "User is not signed up!"));
+        emit(const AuthGoogleError(error: "User is not signed up!"));
       }
     } on FirebaseAuthException catch (e) {
       print(e.message);
@@ -213,7 +209,7 @@ class AuthCubit extends Cubit<AuthState> {
             emit(AuthFBSuccess(user: userCredential));
           }
           return;
-
+//provjeriti da li izbaci gresku
         case LoginStatus.failed:
           return emit(AuthFBError());
         default:
@@ -247,20 +243,11 @@ class AuthCubit extends Cubit<AuthState> {
     emit(const AuthLogout());
   }
 
-  static UserModel? userModel;
-  String? role;
-  getUser() {
-    if (firebaseAuth.currentUser != null && userModel != null) {
-      return userModel;
-    }
-  }
-
   void updateDisplayName(String text) async {
     firebaseAuth.currentUser!.updateDisplayName(text);
   }
 
   createUser(
-    String selectedLocation,
     String selectedRole,
   ) async {
     var firebaseUser = firebaseAuth.currentUser!;
@@ -268,7 +255,7 @@ class AuthCubit extends Cubit<AuthState> {
       // String? url = await getDownloadUrl(firebaseUser.uid);
       //   String? token = await FirebaseMessaging.instance.getToken();
       if (selectedRole.contains('Handyman')) {
-        userModel = await HandymanModel.fromDocumentSnapshot(locator
+        userModel = HandymanModel.fromDocumentSnapshot(locator
             .get<UserController>()
             .getUser(firebaseUser.uid) as Map<String, dynamic>);
       } else {

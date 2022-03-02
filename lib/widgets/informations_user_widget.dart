@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_master/config/constants.dart';
+import 'package:flutter_master/config/theme.dart';
 
 import 'package:flutter_master/cubit/auth_cubit.dart';
 import 'package:flutter_master/locator.dart';
@@ -177,6 +178,8 @@ class _InformationsAboutUserWidgetState
             ),
           if (widget.currentUser is CustomerModel)
             ElevatedButton(
+                style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(purple)),
                 onPressed: () =>
                     Navigator.pushNamed(context, CustomersProjects.routeName),
                 child: Text('My Projects')),

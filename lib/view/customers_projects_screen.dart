@@ -22,10 +22,6 @@ class CustomersProjects extends StatefulWidget {
 
 class _CustomersProjectsState extends State<CustomersProjects> {
   Future<void> _makePhoneCall(String phoneNumber) async {
-    // Use `Uri` to ensure that `phoneNumber` is properly URL-encoded.
-    // Just using 'tel:$phoneNumber' would create invalid URLs in some cases,
-    // such as spaces in the input, which would cause `launch` to fail on some
-    // platforms.
     final Uri launchUri = Uri(
       scheme: 'tel',
       path: phoneNumber,
@@ -36,7 +32,7 @@ class _CustomersProjectsState extends State<CustomersProjects> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: locator.get<UserController>().currentUser is HandymanModel
+        appBar: locator.get<UserController>().currentUser is CustomerModel
             ? buildAppBar(context, 'Projects')
             : AppBar(
                 title: const Text('Projects'),

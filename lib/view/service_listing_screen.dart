@@ -2,8 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_master/config/constants.dart';
 import 'package:flutter_master/locator.dart';
+import 'package:flutter_master/model/user.dart';
 import 'package:flutter_master/view/handyman_details_screen.dart';
 import 'package:flutter_master/view_controller/user_controller.dart';
+import 'package:flutter_master/widgets/mini_card.dart';
 
 class ServiceListingScreen extends StatefulWidget {
   static const String routeName = '/service_listing';
@@ -83,56 +85,71 @@ class ListOfHandyman extends StatelessWidget {
           if (snapshot.connectionState == ConnectionState.done) {
             if (snapshot.hasData &&
                 (snapshot.data as QuerySnapshot).docs.length > 0) {
-              return ListView.builder(
-                  itemCount: (snapshot.data as QuerySnapshot).docs.length,
-                  shrinkWrap: true,
-                  itemBuilder: (context, index) {
-                    DocumentSnapshot ds =
-                        (snapshot.data as QuerySnapshot).docs[index];
-                    return GestureDetector(
-                      onTap: () {
-                        Navigator.pushNamed(
-                            context, HandymanDetailScreen.routeName,
-                            arguments: ds.data());
-                      },
-                      child: Container(
-                        margin: EdgeInsets.symmetric(vertical: 8),
-                        child: Row(
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(30),
-                              child: ds['avatarUrl'] != null
-                                  ? Image.network(
-                                      ds['avatarUrl'],
-                                      height: 90,
-                                      width: 90,
-                                    )
-                                  : const Image(
-                                      image: AssetImage(
-                                          'assets/logo/LogoMakr-4NVCFS.png'),
-                                      height: 90,
-                                      width: 90,
-                                    ),
-                            ),
-                            SizedBox(width: 12),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  ds['username'],
-                                  style: TextStyle(fontSize: 20),
-                                ),
-                                SizedBox(height: 3),
-                                if (ds['phoneNumber'] != null)
-                                  Text(ds['phoneNumber']),
-                                Text(ds['email'])
-                              ],
-                            )
-                          ],
-                        ),
-                      ),
-                    );
-                  });
+              return ListView.separated(
+                shrinkWrap: true,
+                itemCount: (snapshot.data as QuerySnapshot).docs.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return MiniCard(
+                      userModel: HandymanModel.fromDocumentSnapshot(
+                          (snapshot.data as QuerySnapshot).docs[index].data()
+                              as Map<String, dynamic>));
+                },
+                separatorBuilder: (BuildContext context, int index) {
+                  return SizedBox(
+                    height: 10.0,
+                  );
+                },
+              );
+              // return ListView.builder(
+              //     itemCount: (snapshot.data as QuerySnapshot).docs.length,
+              //     shrinkWrap: true,
+              //     itemBuilder: (context, index) {
+              //       DocumentSnapshot ds =
+              //           (snapshot.data as QuerySnapshot).docs[index];
+              //       return GestureDetector(
+              //         onTap: () {
+              //           Navigator.pushNamed(
+              //               context, HandymanDetailScreen.routeName,
+              //               arguments: ds.data());
+              //         },
+              //         child: Container(
+              //           margin: EdgeInsets.symmetric(vertical: 8),
+              //           child: Row(
+              //             children: [
+              //               ClipRRect(
+              //                 borderRadius: BorderRadius.circular(30),
+              //                 child: ds['avatarUrl'] != null
+              //                     ? Image.network(
+              //                         ds['avatarUrl'],
+              //                         height: 90,
+              //                         width: 90,
+              //                       )
+              //                     : const Image(
+              //                         image: AssetImage(
+              //                             'assets/logo/LogoMakr-4NVCFS.png'),
+              //                         height: 90,
+              //                         width: 90,
+              //                       ),
+              //               ),
+              //               SizedBox(width: 12),
+              //               Column(
+              //                 crossAxisAlignment: CrossAxisAlignment.start,
+              //                 children: [
+              //                   Text(
+              //                     ds['username'],
+              //                     style: TextStyle(fontSize: 20),
+              //                   ),
+              //                   SizedBox(height: 3),
+              //                   if (ds['phoneNumber'] != null)
+              //                     Text(ds['phoneNumber']),
+              //                   Text(ds['email'])
+              //                 ],
+              //               )
+              //             ],
+              //           ),
+              //         ),
+              //       );
+              //     });
             } else {
               return Container(
                 child: Text('Trenutno nemamo majstora iz te kategorije!'),

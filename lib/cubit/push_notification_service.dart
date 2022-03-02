@@ -7,7 +7,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_master/view/reviews_screen.dart';
 import 'package:http/http.dart' as http;
 
-class FCMNotificationService extends StatefulWidget {
+class NotificationService extends StatefulWidget {
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
@@ -16,7 +16,8 @@ class FCMNotificationService extends StatefulWidget {
   final String _contentType = 'application/json';
   final String _authorization =
       'key=AAAArRJjr4s:APA91bEYbi_NBZudDayuRAYbQmXmT2NJwm1S1nR5MlqOSHGlik9i9Ho0sNiED1pLz_JVoRgF7G7tFOQSlQQ4U4yu0LMj3T9PKXkscbON7Ck-wiumzZiIKx8QS5DBD8EOBqFjeqE_3qdG';
-  FCMNotificationService({Key? key}) : super(key: key);
+  // cr srediti key
+  NotificationService({Key? key}) : super(key: key);
   void sendNotificationToSpecificUser(
       String title, String body, String token) async {
     await sendNotificationToUser(
@@ -71,10 +72,10 @@ class FCMNotificationService extends StatefulWidget {
   }
 
   @override
-  State<FCMNotificationService> createState() => _FCMNotificationServiceState();
+  State<NotificationService> createState() => _NotificationServiceState();
 }
 
-class _FCMNotificationServiceState extends State<FCMNotificationService> {
+class _NotificationServiceState extends State<NotificationService> {
   @override
   void initState() {
     var channel = const AndroidNotificationChannel(
@@ -116,35 +117,4 @@ class _FCMNotificationServiceState extends State<FCMNotificationService> {
   }
 }
 
-// class FCMNotificationServiceee  {
-//   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
-//   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-//       FlutterLocalNotificationsPlugin();
-
-//   final String _endpoint = 'https://fcm.googleapis.com/fcm/send';
-//   final String _contentType = 'application/json';
-//   final String _authorization =
-//       'key=AAAArRJjr4s:APA91bEYbi_NBZudDayuRAYbQmXmT2NJwm1S1nR5MlqOSHGlik9i9Ho0sNiED1pLz_JVoRgF7G7tFOQSlQQ4U4yu0LMj3T9PKXkscbON7Ck-wiumzZiIKx8QS5DBD8EOBqFjeqE_3qdG';
-//   FCMNotificationService() {
-  
-//   }
-
-//   @override
-//   Future<void> unsubscribeFromTopic({required String topic}) {
-//     return _firebaseMessaging.unsubscribeFromTopic(topic);
-//   }
-
-//   @override
-//   Future<void> subscribeToTopic({required String topic}) {
-//     return _firebaseMessaging.subscribeToTopic(topic);
-//   }
-
-//   @override
- 
-
-//   @override
-//   Future<void> sendNotificationToGroup(
-//       {required String group, required String title, required String body}) {
-//     return _sendNotification('/topics/' + group, title, body);
-//   }
-// }
+// cr staviti samo klasu, ne widget
