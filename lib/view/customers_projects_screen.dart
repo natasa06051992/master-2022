@@ -32,7 +32,7 @@ class _CustomersProjectsState extends State<CustomersProjects> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: locator.get<UserController>().currentUser is CustomerModel
+        appBar: locator.get<UserController>().currentUser is HandymanModel
             ? buildAppBar(context, 'Projects')
             : AppBar(
                 title: const Text('Projects'),
@@ -179,7 +179,7 @@ class _CustomersProjectsState extends State<CustomersProjects> {
                       child: ds['phoneNumber'] == null
                           ? null
                           : Row(
-                              children: [Icon(Icons.mic), Text('Call')],
+                              children: [Icon(Icons.phone), Text('Call')],
                             ))
               ],
             ),

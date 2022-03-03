@@ -256,7 +256,7 @@ class _HandymanDetailScreenState extends State<HandymanDetailScreen> {
                                     ? null
                                     : Row(
                                         children: [
-                                          Icon(Icons.mic),
+                                          Icon(Icons.phone),
                                           Text('Call')
                                         ],
                                       ))
