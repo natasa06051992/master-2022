@@ -45,17 +45,19 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
           textBoxHint: 'Share your feedback',
           submitText: 'SUBMIT',
           onSubmitCallback: (feedback) {
-            if (feedback["rating"] != null &&
-                !ReviewsScreen.handymanModel!.reviews!.any((element) =>
-                    element.idReviewer ==
-                    locator.get<UserController>().currentUser!.uid)) {
+            if (feedback["rating"] != null
+                // &&
+                //     !ReviewsScreen.handymanModel!.reviews!.any((element) =>
+                //         element.idReviewer ==
+                //         locator.get<UserController>().currentUser!.uid)
+                ) {
               var user = locator.get<UserController>().currentUser;
               locator.get<UserController>().addReview(feedback["rating"],
                   feedback["feedback"], ReviewsScreen.handymanModel!);
-              if (user!.uid == ReviewsScreen.handymanModel!.uid) {
+              if (user!.uid != ReviewsScreen.handymanModel!.uid) {
                 setState(() {});
                 locator
-                    .get<NotificationService>()
+                    .get<FCMNotificationService>()
                     .sendNotificationToSpecificUser(
                         "Dobio si ocenu!",
                         "Korisnik ${user!.displayName} te ocenio!",
