@@ -5,6 +5,7 @@ import 'package:flutter_master/cubit/auth_cubit.dart';
 import 'package:flutter_master/cubit/firebase_firestore_repo.dart';
 import 'package:flutter_master/cubit/storage_repo.dart';
 import 'package:flutter_master/locator.dart';
+import 'package:flutter_master/model/category.dart';
 import 'package:flutter_master/model/reviewModel.dart';
 import 'package:flutter_master/model/user.dart';
 import 'package:intl/intl.dart';
@@ -117,13 +118,17 @@ class UserController {
         selectedService, description, title, currentUser);
   }
 
+  Future<List<Category>?> getCategories() async {
+    return await _firebaseFirestoreRepo.getCategories();
+  }
+
   Future<Map<String, dynamic>?> getUser(String uid) async {
     return await _firebaseFirestoreRepo.getUser(uid);
   }
 
   Future<void> deleteProject(String id) async {
     (currentUser as CustomerModel)
-        .projects!
+        .projects
         .removeWhere((element) => element == id);
     await _firebaseFirestoreRepo.deleteProject(id, currentUser);
   }

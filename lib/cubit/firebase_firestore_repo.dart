@@ -1,12 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_master/model/category.dart';
 import 'package:flutter_master/model/reviewModel.dart';
 import 'package:flutter_master/model/user.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 
 class FirebaseFirestoreRepo {
-  String collection = 'users';
+  String usersCollection = 'users';
 
   addUserToFirebase(UserModel user) {
     String role = user is HandymanModel ? 'Handyman' : 'Customer';
@@ -22,7 +23,10 @@ class FirebaseFirestoreRepo {
     };
 
     addHandymanDetails(user, data);
-    FirebaseFirestore.instance.collection(collection).doc(user.uid).set(data);
+    FirebaseFirestore.instance
+        .collection(usersCollection)
+        .doc(user.uid)
+        .set(data);
   }
 
   void addHandymanDetails(UserModel user, Map<String, dynamic> data) {
@@ -39,7 +43,7 @@ class FirebaseFirestoreRepo {
   void updatePhoneNumber(UserModel user, String text) async {
     final Map<String, dynamic> data = {'phoneNumber': text};
     FirebaseFirestore.instance
-        .collection(collection)
+        .collection(usersCollection)
         .doc(user.uid)
         .update(data);
 
@@ -56,7 +60,7 @@ class FirebaseFirestoreRepo {
   void updateLocation(UserModel user, String text) {
     final Map<String, dynamic> data = {'location': text};
     FirebaseFirestore.instance
-        .collection(collection)
+        .collection(usersCollection)
         .doc(user.uid)
         .update(data);
   }
@@ -64,28 +68,30 @@ class FirebaseFirestoreRepo {
   void updateService(UserModel user, String text) {
     final Map<String, dynamic> data = {'service': text};
     FirebaseFirestore.instance
-        .collection(collection)
+        .collection(usersCollection)
         .doc(user.uid)
         .update(data);
   }
 
   Future<String> getLocation(User user) async {
     var snap = await FirebaseFirestore.instance
-        .collection(collection)
+        .collection(usersCollection)
         .doc(user.uid)
         .get();
     return snap['location'];
   }
 
   Future<Map<String, dynamic>?> getUser(String uid) async {
-    var snap =
-        await FirebaseFirestore.instance.collection(collection).doc(uid).get();
+    var snap = await FirebaseFirestore.instance
+        .collection(usersCollection)
+        .doc(uid)
+        .get();
     return snap.exists ? snap.data() : null;
   }
 
   Future<String> getRole(User user) async {
     var snap = await FirebaseFirestore.instance
-        .collection(collection)
+        .collection(usersCollection)
         .doc(user.uid)
         .get();
     return snap['role'];
@@ -93,7 +99,7 @@ class FirebaseFirestoreRepo {
 
   Future<String> getService(User user) async {
     var snap = await FirebaseFirestore.instance
-        .collection(collection)
+        .collection(usersCollection)
         .doc(user.uid)
         .get();
     return snap['service'];
@@ -101,7 +107,7 @@ class FirebaseFirestoreRepo {
 
   Future<double> getAverageReviews(User user) async {
     var snap = await FirebaseFirestore.instance
-        .collection(collection)
+        .collection(usersCollection)
         .doc(user.uid)
         .get();
     return snap['averageReviews'];
@@ -109,7 +115,7 @@ class FirebaseFirestoreRepo {
 
   Future<int> getNumOfReviews(User user) async {
     var snap = await FirebaseFirestore.instance
-        .collection(collection)
+        .collection(usersCollection)
         .doc(user.uid)
         .get();
     return snap['numberOfReviews'];
@@ -117,14 +123,15 @@ class FirebaseFirestoreRepo {
 
   Future<String> getPhoneNumber(User user) async {
     var snap = await FirebaseFirestore.instance
-        .collection(collection)
+        .collection(usersCollection)
         .doc(user.uid)
         .get();
     return snap['phoneNumber'];
   }
 
   checkIfUserIsSignedUp(String uid) async {
-    var usersRef = FirebaseFirestore.instance.collection(collection).doc(uid);
+    var usersRef =
+        FirebaseFirestore.instance.collection(usersCollection).doc(uid);
     bool isSignedUp = false;
     await usersRef.get().then((docSnapshot) => {
           if (docSnapshot.exists) {isSignedUp = true} else {isSignedUp = false}
@@ -135,7 +142,7 @@ class FirebaseFirestoreRepo {
   Future<QuerySnapshot<Map<String, dynamic>>>? getHandymanByService(
       String choosenService) async {
     var handymans = await FirebaseFirestore.instance
-        .collection(collection)
+        .collection(usersCollection)
         .where("role", isEqualTo: "Handyman")
         .where("service", isEqualTo: choosenService)
         .get();
@@ -145,7 +152,7 @@ class FirebaseFirestoreRepo {
   Future<void> updateAvatarUrl(UserModel userModel) async {
     final Map<String, dynamic> data = {'avatarUrl': userModel.avatarUrl};
     FirebaseFirestore.instance
-        .collection(collection)
+        .collection(usersCollection)
         .doc(userModel.uid)
         .update(data);
     final Map<String, dynamic> dataProjects = {
@@ -165,7 +172,7 @@ class FirebaseFirestoreRepo {
       'description': (userModel as HandymanModel).description
     };
     FirebaseFirestore.instance
-        .collection(collection)
+        .collection(usersCollection)
         .doc(userModel.uid)
         .update(data);
   }
@@ -175,7 +182,7 @@ class FirebaseFirestoreRepo {
       'startingPrice': (userModel as HandymanModel).startingPrice
     };
     FirebaseFirestore.instance
-        .collection(collection)
+        .collection(usersCollection)
         .doc(userModel.uid)
         .update(data);
   }
@@ -185,7 +192,7 @@ class FirebaseFirestoreRepo {
       'yearsInBusiness': (userModel as HandymanModel).yearsInBusiness
     };
     FirebaseFirestore.instance
-        .collection(collection)
+        .collection(usersCollection)
         .doc(userModel.uid)
         .update(data);
   }
@@ -195,7 +202,7 @@ class FirebaseFirestoreRepo {
       'urlToGallery': (userModel as HandymanModel).urlToGallery
     };
     FirebaseFirestore.instance
-        .collection(collection)
+        .collection(usersCollection)
         .doc(userModel.uid)
         .update(data);
   }
@@ -248,12 +255,18 @@ class FirebaseFirestoreRepo {
 
   void updateAverageReviews(String uid, double averageReview) {
     final Map<String, dynamic> data = {'averageReviews': averageReview};
-    FirebaseFirestore.instance.collection(collection).doc(uid).update(data);
+    FirebaseFirestore.instance
+        .collection(usersCollection)
+        .doc(uid)
+        .update(data);
   }
 
   void updateNumberOfReviews(String uid, int length) {
     final Map<String, dynamic> data = {'numberOfReviews': length};
-    FirebaseFirestore.instance.collection(collection).doc(uid).update(data);
+    FirebaseFirestore.instance
+        .collection(usersCollection)
+        .doc(uid)
+        .update(data);
   }
 
   Future<List<ReviewModel>?> getReviews(HandymanModel handymanModel) async {
@@ -263,11 +276,21 @@ class FirebaseFirestoreRepo {
         .collection("review")
         .get();
     List<ReviewModel> result = [];
-    firebaseReviews.docs.forEach((doc) {
-      //result.add(doc.data());
-    });
+    for (var doc in firebaseReviews.docs) {
+      result.add(ReviewModel.fromDocumentSnapshot(doc));
+    }
     return result;
     //cr
+  }
+
+  Future<List<Category>?> getCategories() async {
+    QuerySnapshot firebaseCategories =
+        await FirebaseFirestore.instance.collection("category").get();
+    List<Category> result = [];
+    for (var doc in firebaseCategories.docs) {
+      result.add(Category.fromDocumentSnapshot(doc));
+    }
+    return result;
   }
 
   Future<List<String>> getProjects(String uid) async {
@@ -294,13 +317,29 @@ class FirebaseFirestoreRepo {
     return result;
   }
 
+  void updateToken(String? token, String uid) {
+    final Map<String, dynamic> data = {'token': token};
+    FirebaseFirestore.instance
+        .collection(usersCollection)
+        .doc(uid)
+        .update(data);
+
+    void updateToken(String? token, String uid) {
+      final Map<String, dynamic> data = {'token': token};
+      FirebaseFirestore.instance
+          .collection(usersCollection)
+          .doc(uid)
+          .update(data);
+    }
+  }
+
   Future<void> deleteProject(String id, UserModel? currentUser) async {
     final Map<String, dynamic> dataProjects = {
       'projects': (currentUser as CustomerModel).projects
     };
     FirebaseFirestore.instance
         .collection('users')
-        .doc(currentUser!.uid)
+        .doc(currentUser.uid)
         .update(dataProjects);
     return FirebaseFirestore.instance.collection('projects').doc(id).delete();
   }

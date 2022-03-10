@@ -14,5 +14,5 @@ void setupServices() {
 
   locator.registerSingleton<FirebaseFirestoreRepo>(FirebaseFirestoreRepo());
   locator.registerSingleton<UserController>(UserController());
-  locator.registerSingleton<FCMNotificationService>(FCMNotificationService());
+  locator.registerSingleton<NotificationService>(NotificationService());
 }

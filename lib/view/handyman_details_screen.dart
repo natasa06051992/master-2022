@@ -1,3 +1,4 @@
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_master/config/theme.dart';
@@ -8,6 +9,7 @@ import 'package:flutter_master/widgets/avatar.dart';
 import 'package:flutter_master/widgets/photo_album.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
+import 'package:photo_view/photo_view.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class HandymanDetailScreen extends StatefulWidget {
@@ -27,16 +29,16 @@ class HandymanDetailScreen extends StatefulWidget {
 
 class _HandymanDetailScreenState extends State<HandymanDetailScreen> {
   late HandymanModel handymanModel;
+  late NavigatorState _navigator;
   @override
-  void dispose() {
-    HandymanDetailScreen.userModel = null;
-
-    // TODO: implement dispose
-    super.dispose();
+  void didChangeDependencies() {
+    _navigator = Navigator.of(context);
+    super.didChangeDependencies();
   }
 
   @override
   Widget build(BuildContext context) {
+    List<Widget> imageSliders = [];
     Future<void> _makePhoneCall(String phoneNumber) async {
       final Uri launchUri = Uri(
         scheme: 'tel',
@@ -45,6 +47,44 @@ class _HandymanDetailScreenState extends State<HandymanDetailScreen> {
       await launch(launchUri.toString());
     }
 
+    if (HandymanDetailScreen.userModel is HandymanModel &&
+        (HandymanDetailScreen.userModel as HandymanModel).urlToGallery !=
+            null) {
+      imageSliders = (HandymanDetailScreen.userModel as HandymanModel)
+          .urlToGallery!
+          .map((item) => Container(
+                child: Container(
+                  margin: EdgeInsets.all(5.0),
+                  child: ClipRRect(
+                      borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                      child: Stack(
+                        children: <Widget>[
+                          PhotoView(imageProvider: NetworkImage(item)),
+                          Positioned(
+                            bottom: 0.0,
+                            left: 0.0,
+                            right: 0.0,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [
+                                    Color.fromARGB(200, 0, 0, 0),
+                                    Color.fromARGB(0, 0, 0, 0)
+                                  ],
+                                  begin: Alignment.bottomCenter,
+                                  end: Alignment.topCenter,
+                                ),
+                              ),
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 10.0, horizontal: 20.0),
+                            ),
+                          ),
+                        ],
+                      )),
+                ),
+              ))
+          .toList();
+    }
     handymanModel = HandymanDetailScreen.userModel as HandymanModel;
     return Scaffold(
         appBar: AppBar(
@@ -189,7 +229,18 @@ class _HandymanDetailScreenState extends State<HandymanDetailScreen> {
                             textAlign: TextAlign.center,
                             style: TextStyle(color: textColor)),
                       ),
-                      PhotoAlbum(imgArray: handymanModel.urlToGallery!),
+                      if (imageSliders.length > 0)
+                        Container(
+                            child: CarouselSlider(
+                          options: CarouselOptions(
+                            aspectRatio: 2.0,
+                            enlargeCenterPage: true,
+                            enableInfiniteScroll: false,
+                            initialPage: 2,
+                            autoPlay: true,
+                          ),
+                          items: imageSliders,
+                        )),
                     ]),
                   ))),
                 ),
@@ -211,8 +262,15 @@ class _HandymanDetailScreenState extends State<HandymanDetailScreen> {
                         //color: labelColor,
                         onPressed: () {
                           // Respond to button press
-                          Navigator.pushNamed(context, ReviewsScreen.routeName,
-                              arguments: handymanModel);
+                          WidgetsBinding.instance?.addPostFrameCallback((_) {
+                            _navigator
+                                .push(
+                                  ReviewsScreen.route(handymanModel),
+                                )
+                                .then((value) => setState(() {
+                                      // refresh state of Page1
+                                    }));
+                          });
                         },
                         child: Row(
                           children: [
@@ -235,9 +293,11 @@ class _HandymanDetailScreenState extends State<HandymanDetailScreen> {
                                 : Text(""),
                             IconButton(
                               onPressed: () {
-                                Navigator.pushNamed(
-                                    context, ReviewsScreen.routeName,
-                                    arguments: handymanModel);
+                                WidgetsBinding.instance
+                                    ?.addPostFrameCallback((_) {
+                                  _navigator.pushNamed(ReviewsScreen.routeName,
+                                      arguments: handymanModel);
+                                });
                               },
                               icon: Icon(
                                 Icons.star,
@@ -269,53 +329,6 @@ class _HandymanDetailScreenState extends State<HandymanDetailScreen> {
               ),
             )
           ],
-        )
-        //  Padding(
-        //   padding: const EdgeInsets.all(8.0),
-        //   child: Column(children: [
-        //     Row(
-        //       children: [
-        //         ClipRRect(
-        //           borderRadius: BorderRadius.circular(30),
-        //           child: handymanModel.avatarUrl != null
-        //               ? Image.network(
-        //                   handymanModel.avatarUrl!,
-        //                   height: 110,
-        //                   width: 110,
-        //                 )
-        //               : const Image(
-        //                   image: AssetImage('assets/logo/LogoMakr-4NVCFS.png'),
-        //                   height: 110,
-        //                   width: 110,
-        //                 ),
-        //         ),
-        //         Text(
-        //           handymanModel.displayName ?? "anonyms",
-        //         ),
-        //         SizedBox(
-        //           width: 20,
-        //         ),
-        //         Row(
-        //           children: [
-        //             Text(
-        //               handymanModel.averageReviews != null
-        //                   ? handymanModel.averageReviews!.toStringAsFixed(2)
-        //                   : "",
-        //             ),
-        //             IconButton(
-        //               onPressed: () {
-        //                 Navigator.pushNamed(context, ReviewsScreen.routeName,
-        //                     arguments: handymanModel);
-        //               },
-        //               icon: Icon(Icons.star, size: 17),
-        //             ),
-        //           ],
-        //         ),
-        //       ],
-        //     ),
-        //   ]),
-        // )
-
-        );
+        ));
   }
 }

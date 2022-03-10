@@ -78,7 +78,9 @@ class HandymanModel extends UserModel {
     service = snapshot['service'];
     averageReviews = snapshot['averageReviews'];
     numberOfReviews = snapshot['numberOfReviews'];
-    urlToGallery = List.from(snapshot['urlToGallery']);
+    urlToGallery = snapshot['urlToGallery'] != null
+        ? List.from(snapshot['urlToGallery'])
+        : [];
     yearsInBusiness = snapshot['yearsInBusiness'];
     startingPrice = snapshot['startingPrice'];
     description = snapshot['description'];
@@ -115,7 +117,7 @@ class HandymanModel extends UserModel {
 
   void addReviews(List<QueryDocumentSnapshot<Object?>> docs) {
     for (var review in docs) {
-      this.reviews?.add(ReviewModel.fromDocumentSnapshot(review));
+      reviews?.add(ReviewModel.fromDocumentSnapshot(review));
     }
   }
 
@@ -145,7 +147,8 @@ class CustomerModel extends UserModel {
             token: token);
   CustomerModel.fromDocumentSnapshot(Map<String, dynamic> snapshot)
       : super.fromDocumentSnapshot(snapshot) {
-    projects = List.from(snapshot['projects']);
+    projects =
+        snapshot['projects'] != null ? List.from(snapshot['projects']) : [];
   }
   addProject(String project) {
     projects.add(project);

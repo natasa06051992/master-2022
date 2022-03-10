@@ -100,56 +100,6 @@ class ListOfHandyman extends StatelessWidget {
                   );
                 },
               );
-              // return ListView.builder(
-              //     itemCount: (snapshot.data as QuerySnapshot).docs.length,
-              //     shrinkWrap: true,
-              //     itemBuilder: (context, index) {
-              //       DocumentSnapshot ds =
-              //           (snapshot.data as QuerySnapshot).docs[index];
-              //       return GestureDetector(
-              //         onTap: () {
-              //           Navigator.pushNamed(
-              //               context, HandymanDetailScreen.routeName,
-              //               arguments: ds.data());
-              //         },
-              //         child: Container(
-              //           margin: EdgeInsets.symmetric(vertical: 8),
-              //           child: Row(
-              //             children: [
-              //               ClipRRect(
-              //                 borderRadius: BorderRadius.circular(30),
-              //                 child: ds['avatarUrl'] != null
-              //                     ? Image.network(
-              //                         ds['avatarUrl'],
-              //                         height: 90,
-              //                         width: 90,
-              //                       )
-              //                     : const Image(
-              //                         image: AssetImage(
-              //                             'assets/logo/LogoMakr-4NVCFS.png'),
-              //                         height: 90,
-              //                         width: 90,
-              //                       ),
-              //               ),
-              //               SizedBox(width: 12),
-              //               Column(
-              //                 crossAxisAlignment: CrossAxisAlignment.start,
-              //                 children: [
-              //                   Text(
-              //                     ds['username'],
-              //                     style: TextStyle(fontSize: 20),
-              //                   ),
-              //                   SizedBox(height: 3),
-              //                   if (ds['phoneNumber'] != null)
-              //                     Text(ds['phoneNumber']),
-              //                   Text(ds['email'])
-              //                 ],
-              //               )
-              //             ],
-              //           ),
-              //         ),
-              //       );
-              //     });
             } else {
               return Container(
                 child: Text('Trenutno nemamo majstora iz te kategorije!'),

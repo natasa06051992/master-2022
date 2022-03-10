@@ -211,6 +211,15 @@ class _InformationsAboutUserWidgetState
             },
             child: Text("Save Profile"),
           ),
+          SizedBox(height: 10,),
+          if (widget.currentUser is HandymanModel)
+            RaisedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, ReviewsScreen.routeName,
+                    arguments: locator.get<UserController>().currentUser);
+              },
+              child: Text("My Reviews"),
+            ),
           BlocConsumer<AuthCubit, AuthState>(listener: (context, state) {
             if (state is AuthLoginError || state is AuthGoogleError) {
               ScaffoldMessenger.of(context)

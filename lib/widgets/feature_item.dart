@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_master/config/theme.dart';
+import 'package:flutter_master/model/category.dart';
 import 'package:flutter_master/widgets/custom_image.dart';
 
 class FeatureItem extends StatelessWidget {
@@ -10,7 +11,7 @@ class FeatureItem extends StatelessWidget {
       this.height = 290,
       this.onTap})
       : super(key: key);
-  final data;
+  final Category data;
   final double width;
   final double height;
   final GestureTapCallback? onTap;
@@ -39,7 +40,7 @@ class FeatureItem extends StatelessWidget {
         child: Stack(
           children: [
             CustomImage(
-              data["image"],
+              data.image,
               width: double.infinity,
               height: 190,
               radius: 15,
@@ -61,10 +62,15 @@ class FeatureItem extends StatelessWidget {
                     ),
                   ],
                 ),
-                child: Text(
-                  data["price"],
-                  style: TextStyle(
-                      color: Colors.white, fontWeight: FontWeight.w500),
+                child: Row(
+                  children: [
+                    Text("Prosecna cena: "),
+                    Text(
+                      data.price ?? "",
+                      style: TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.w500),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -77,7 +83,7 @@ class FeatureItem extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      data["name"],
+                      data.name,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(

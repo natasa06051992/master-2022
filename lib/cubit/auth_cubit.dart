@@ -25,15 +25,15 @@ class AuthCubit extends Cubit<AuthState> {
   Future login(String email, String password) async {
     emit(const AuthLoginLoading());
     try {
-      User? user = (await firebaseAuth.signInWithEmailAndPassword(
-              email: email, password: password))
-          .user;
+      var firebaseUser = await firebaseAuth.signInWithEmailAndPassword(
+          email: email, password: password);
+      User? user = firebaseUser.user;
 
       // login success state
       if (user != null) {
-        await createCurrentUser(user);
-
-        emit(AuthLoginSuccess(user: user));
+        await createCurrentUser(user)
+            .then((value) => emit(AuthLoginSuccess(user: user)));
+        linkEmailGoogle();
       }
     } on FirebaseAuthException catch (e) {
       print(e.message);
@@ -41,30 +41,62 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
+  linkEmailGoogle() async {
+    List<String> providers = await firebaseAuth
+        .fetchSignInMethodsForEmail(firebaseAuth.currentUser!.email!);
+    //get currently logged in user
+    User? existingUser = firebaseAuth.currentUser;
+    if (existingUser == null || providers.contains("google.com")) return;
+    //get the credentials of the new linking account
+    final GoogleSignIn _googleSignIn = GoogleSignIn();
+
+    final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+    final GoogleSignInAuthentication googleAuth =
+        await googleUser!.authentication;
+
+    final AuthCredential gcredential = GoogleAuthProvider.credential(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
+    );
+
+    //now link these credentials with the existing user
+    var linkauthresult = await existingUser.linkWithCredential(gcredential);
+  }
+
+  Future googleAuth() async {
+    emit(const AuthGoogleLoading());
+    try {
+      final GoogleSignInAccount? _googleUser = await googleSignIn.signIn();
+
+      final GoogleSignInAuthentication googleAuth =
+          await _googleUser!.authentication;
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        idToken: googleAuth.idToken,
+        accessToken: googleAuth.accessToken,
+      );
+      User? user = (await firebaseAuth.signInWithCredential(credential)).user;
+      bool isSigndUpUser = await locator
+          .get<FirebaseFirestoreRepo>()
+          .checkIfUserIsSignedUp(user!.uid);
+      if (user != null && isSigndUpUser) {
+        await createCurrentUser(user)
+            .then((value) => emit(AuthGoogleSuccess(user: user)));
+        //linkEmailGoogle();
+
+      } else {
+        emit(const AuthGoogleError(error: "User is not signed up!"));
+      }
+    } on FirebaseAuthException catch (e) {
+      print(e.message);
+      emit(AuthGoogleError(error: e.toString()));
+    }
+  }
+
   Future<void> createCurrentUser(User user) async {
     String selectedRole =
         await locator.get<FirebaseFirestoreRepo>().getRole(user);
-    // String phoneNumber =
-    //     await locator.get<FirebaseFirestoreRepo>().getPhoneNumber(user);
-    // String? selectedService;
-    // double? averageReviews;
-    // int? numOfReviews;
-    // List<String> projects = [];
-    // List<String> urlToGallery = [];
-    // if (selectedRole.contains('Handyman')) {
-    //   selectedService =
-    //       await locator.get<FirebaseFirestoreRepo>().getService(user);
-    //   averageReviews =
-    //       await locator.get<FirebaseFirestoreRepo>().getAverageReviews(user);
-    //   numOfReviews =
-    //       await locator.get<FirebaseFirestoreRepo>().getNumOfReviews(user);
-    //   urlToGallery =
-    //       await locator.get<FirebaseFirestoreRepo>().getUrlsToGallery(user);
-    // } else {
-    //   projects =
-    //       await locator.get<FirebaseFirestoreRepo>().getProjects(user.uid);
-    // }
-    createUser(selectedRole);
+
+    await createUser(selectedRole);
   }
 
   Future<String?> getDownloadUrl(String uid) async {
@@ -97,10 +129,11 @@ class AuthCubit extends Cubit<AuthState> {
         user
             .updateDisplayName(name) //cr zasto?
             .then((value) => createNewUser(selectedLocation, selectedRole,
-                selectedService, null, 0, [], [])) //cr nepotrebno
+                selectedService, 0, 0, [], [])) //cr nepotrebno
             .then((value) =>
                 locator.get<FirebaseFirestoreRepo>().addUserToFirebase(value))
             .then((value) => emit(const AuthSignUpSuccess()));
+        linkEmailGoogle();
       }
     } on FirebaseAuthException catch (e) {
       firebaseAuth.currentUser?.delete();
@@ -161,33 +194,6 @@ class AuthCubit extends Cubit<AuthState> {
   }
 
   // google auth
-
-  Future googleAuth() async {
-    emit(const AuthGoogleLoading());
-    try {
-      final GoogleSignInAccount? _googleUser = await googleSignIn.signIn();
-
-      final GoogleSignInAuthentication googleAuth =
-          await _googleUser!.authentication;
-      final AuthCredential credential = GoogleAuthProvider.credential(
-        idToken: googleAuth.idToken,
-        accessToken: googleAuth.accessToken,
-      );
-      User? user = (await firebaseAuth.signInWithCredential(credential)).user;
-      bool isSigndUpUser = await locator
-          .get<FirebaseFirestoreRepo>()
-          .checkIfUserIsSignedUp(user!.uid);
-      if (user != null && isSigndUpUser) {
-        await createCurrentUser(user);
-        emit(AuthGoogleSuccess(user: user));
-      } else {
-        emit(const AuthGoogleError(error: "User is not signed up!"));
-      }
-    } on FirebaseAuthException catch (e) {
-      print(e.message);
-      emit(AuthGoogleError(error: e.toString()));
-    }
-  }
 
   Future facebookAuth() async {
     try {
@@ -252,19 +258,23 @@ class AuthCubit extends Cubit<AuthState> {
   ) async {
     var firebaseUser = firebaseAuth.currentUser!;
     if (userModel == null && firebaseAuth.currentUser != null) {
-      // String? url = await getDownloadUrl(firebaseUser.uid);
-      //   String? token = await FirebaseMessaging.instance.getToken();
+      var userFromFirestore =
+          await locator.get<UserController>().getUser(firebaseUser.uid);
       if (selectedRole.contains('Handyman')) {
-        userModel = HandymanModel.fromDocumentSnapshot(locator
-            .get<UserController>()
-            .getUser(firebaseUser.uid) as Map<String, dynamic>);
+        userModel = HandymanModel.fromDocumentSnapshot(
+            userFromFirestore as Map<String, dynamic>);
       } else {
-        var g = await locator.get<UserController>().getUser(firebaseUser.uid);
-        userModel =
-            CustomerModel.fromDocumentSnapshot(g as Map<String, dynamic>);
+        userModel = CustomerModel.fromDocumentSnapshot(
+            userFromFirestore as Map<String, dynamic>);
       }
+      String? token = await FirebaseMessaging.instance.getToken();
+      if (token != null && userModel!.token != token) {
+        locator.get<FirebaseFirestoreRepo>().updateToken(token, userModel!.uid);
+        userModel?.setToken(token);
+        print(" token:$token");
+      }
+      locator.get<UserController>().initUser(userModel);
+      return userModel;
     }
-    locator.get<UserController>().initUser(userModel);
-    return userModel;
   }
 }

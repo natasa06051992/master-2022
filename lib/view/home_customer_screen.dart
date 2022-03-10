@@ -1,10 +1,15 @@
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_master/config/constants.dart';
+import 'package:flutter_master/locator.dart';
 import 'package:flutter_master/view/screens.dart';
+import 'package:flutter_master/view_controller/user_controller.dart';
 import 'package:flutter_master/widgets/app_bar.dart';
 import 'package:flutter_master/widgets/feature_item.dart';
 import 'package:flutter_master/widgets/search_widget.dart';
+
+import '../model/category.dart';
 
 class HomeCustomerScreen extends StatefulWidget {
   static const String routeName = '/home';
@@ -23,43 +28,15 @@ class _HomeCustomerScreenState extends State<HomeCustomerScreen> {
   String query = '';
 
   List<String> categories = Constants.services;
-//cv klasa
-  List features = [
-    {
-      "id": 100,
-      "name": "House cleaning",
-      "image":
-          "https://bookdirtbusters.com/wp-content/uploads/2020/10/Cleaning-supplies.png",
-      "price": "\$110.00",
-    },
-    {
-      "id": 101,
-      "name": "Handyman",
-      "image":
-          "https://i2.wp.com/movingtips.wpengine.com/wp-content/uploads/2020/06/handyman.jpg?w=336&ssl=1",
-      "price": "\$155.00",
-    },
-    {
-      "id": 102,
-      "name": "Plumber",
-      "image":
-          "https://lp-seotool.s3.us-west-2.amazonaws.com/task_attachments/NJYIZcSAE5ODTImqJirgg7kunj18e3wK1598976088.jpg",
-      "price": "\$65.00",
-    },
-    {
-      "id": 103,
-      "name": "Other",
-      "image":
-          "https://5.imimg.com/data5/GD/SP/GLADMIN-6143571/building-maintenance-500x500.jpg",
-      "price": "\$80.00",
-    },
-  ];
+  late List<Category> searchedFeatures = [];
+  late List<Category> features = [];
 
   void searchCategory(String query) {
-    features = features
-        .where((element) =>
-            element['name'].toString().toLowerCase().contains(query))
-        .toList();
+    searchedFeatures = query != ""
+        ? searchedFeatures
+            .where((element) => element.name.toLowerCase().contains(query))
+            .toList()
+        : features;
 
     setState(() {
       this.query = query;
@@ -75,31 +52,55 @@ class _HomeCustomerScreenState extends State<HomeCustomerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: buildAppBar(context, 'Home'),
-      body: Column(
-        children: [
-          buildSearch(),
-          CarouselSlider(
-              options: CarouselOptions(
-                scrollDirection: Axis.vertical,
-                height: MediaQuery.of(context).viewInsets.bottom != 0
-                    ? MediaQuery.of(context).size.height * 0.4
-                    : MediaQuery.of(context).size.height * 0.78,
-                enlargeCenterPage: true,
-                disableCenter: true,
-                viewportFraction:
-                    MediaQuery.of(context).viewInsets.bottom != 0 ? 1 : 0.5,
-              ),
-              items: List.generate(
-                  features.length,
-                  (index) => FeatureItem(
-                      onTap: () {
-                        Navigator.pushNamed(
-                            context, ServiceListingScreen.routeName,
-                            arguments: features[index]["name"]);
-                      },
-                      data: features[index]))),
-        ],
-      ),
+      body: FutureBuilder(
+          future: locator.get<UserController>().getCategories(),
+          builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                child: const CircularProgressIndicator(),
+              );
+            }
+            if (snapshot.connectionState == ConnectionState.done) {
+              if (snapshot.hasData) {
+                var list = snapshot.data;
+                for (var snapshot in list) {
+                  features.add(snapshot);
+                }
+                searchedFeatures = List<Category>.from(features);
+                return Column(
+                  children: [
+                    buildSearch(),
+                    CarouselSlider(
+                        options: CarouselOptions(
+                          scrollDirection: Axis.vertical,
+                          height: MediaQuery.of(context).viewInsets.bottom != 0
+                              ? MediaQuery.of(context).size.height * 0.4
+                              : MediaQuery.of(context).size.height * 0.78,
+                          enlargeCenterPage: true,
+                          disableCenter: true,
+                          viewportFraction:
+                              MediaQuery.of(context).viewInsets.bottom != 0
+                                  ? 1
+                                  : 0.5,
+                        ),
+                        items: List.generate(
+                            searchedFeatures.length,
+                            (index) => FeatureItem(
+                                onTap: () {
+                                  Navigator.pushNamed(
+                                      context, ServiceListingScreen.routeName,
+                                      arguments: searchedFeatures[index].name);
+                                },
+                                data: searchedFeatures[index]))),
+                  ],
+                );
+              } else {
+                return Container();
+              }
+            } else {
+              return Container();
+            }
+          }),
     );
   }
 }

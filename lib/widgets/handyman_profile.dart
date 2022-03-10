@@ -72,13 +72,13 @@ class _HandymanProfileState extends State<HandymanProfile> {
     super.initState();
   }
 
-  @override
-  void dispose() {
-    _descriptionController.dispose();
-    _startingCostController.dispose();
-    _yearsInBusinessController.dispose();
-    super.dispose();
-  }
+  // @override
+  // void dispose() {
+  //   _descriptionController.dispose();
+  //   _startingCostController.dispose();
+  //   _yearsInBusinessController.dispose();
+  //   super.dispose();
+  // }
 
   @override
   Widget build(BuildContext context) {

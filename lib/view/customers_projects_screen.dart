@@ -2,10 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_master/locator.dart';
+import 'package:flutter_master/model/project.dart';
 import 'package:flutter_master/model/user.dart';
 import 'package:flutter_master/view/add_new_project.dart';
 import 'package:flutter_master/view_controller/user_controller.dart';
 import 'package:flutter_master/widgets/app_bar.dart';
+import 'package:flutter_master/widgets/mini_card_project.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class CustomersProjects extends StatefulWidget {
@@ -32,11 +34,10 @@ class _CustomersProjectsState extends State<CustomersProjects> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: locator.get<UserController>().currentUser is HandymanModel
-            ? buildAppBar(context, 'Projects')
-            : AppBar(
-                title: const Text('Projects'),
-              ),
+        appBar: locator.get<UserController>().currentUser != null &&
+                locator.get<UserController>().currentUser is CustomerModel
+            ? AppBar(title: const Text('Projects'))
+            : buildAppBar(context, 'Projects'),
         body: FutureBuilder(
             future: getProjects(),
             builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
@@ -53,9 +54,14 @@ class _CustomersProjectsState extends State<CustomersProjects> {
                       shrinkWrap: true,
                       itemBuilder: (context, index) {
                         DocumentSnapshot ds = list[index];
+
+                        var project = Project.fromDocumentSnapshot(
+                            ds.data() as Map<String, dynamic>);
                         return locator.get<UserController>().currentUser
                                 is HandymanModel
-                            ? projectWidget(context, ds)
+                            ? MiniCardProject(
+                                project: project,
+                              )
                             : Dismissible(
                                 background: Container(
                                   alignment: Alignment.centerRight,
@@ -102,7 +108,10 @@ class _CustomersProjectsState extends State<CustomersProjects> {
                                 },
                                 direction: DismissDirection.endToStart,
                                 key: Key(index.toString()),
-                                child: projectWidget(context, ds),
+                                child: MiniCardProject(
+                                  project: project,
+                                ),
+                                //child: projectWidget(context, ds),
                               );
                       });
                 } else {
@@ -125,6 +134,7 @@ class _CustomersProjectsState extends State<CustomersProjects> {
   }
 
   Center projectWidget(BuildContext context, DocumentSnapshot<Object?> ds) {
+    var project = Project.fromDocumentSnapshot(ds as Map<String, dynamic>);
     return Center(
         child: Card(
       child: Container(
@@ -134,9 +144,9 @@ class _CustomersProjectsState extends State<CustomersProjects> {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(30),
-              child: ds['imageOfCustomer'] != null
+              child: project.imageOfCustomer != null
                   ? Image.network(
-                      ds['imageOfCustomer'],
+                      project.imageOfCustomer!,
                       height: 90,
                       width: 90,
                     )
@@ -150,14 +160,14 @@ class _CustomersProjectsState extends State<CustomersProjects> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Text(
-                  ds['title'],
+                  project.title,
                   style: TextStyle(fontSize: 24),
                 ),
                 SizedBox(
                   height: 20,
                 ),
                 Text(
-                  ds['description'],
+                  project.description,
                   style: TextStyle(fontSize: 18),
                 ),
               ],
@@ -165,18 +175,18 @@ class _CustomersProjectsState extends State<CustomersProjects> {
             Column(
               children: [
                 Text(
-                  ds['date'],
+                  project.date,
                   style: TextStyle(fontSize: 12),
                 ),
                 SizedBox(height: 30),
                 if (locator.get<UserController>().currentUser is HandymanModel)
                   ElevatedButton(
                       onPressed: () {
-                        ds['phoneNumber'] != null
-                            ? _makePhoneCall(ds['phoneNumber'])
+                        project.phoneNumber != null
+                            ? _makePhoneCall(project.phoneNumber!)
                             : null;
                       },
-                      child: ds['phoneNumber'] == null
+                      child: project.phoneNumber == null
                           ? null
                           : Row(
                               children: [Icon(Icons.phone), Text('Call')],
