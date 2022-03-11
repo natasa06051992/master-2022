@@ -15,6 +15,8 @@ import 'package:flutter_master/view_controller/user_controller.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:photo_view/photo_view.dart';
 
+import '../cubit/push_notification_service.dart';
+
 class InformationsAboutUserWidget extends StatefulWidget {
   final UserModel currentUser;
   const InformationsAboutUserWidget(
@@ -31,6 +33,7 @@ String? _selectedServices =
     locator.get<UserController>().currentUser! is HandymanModel
         ? (locator.get<UserController>().currentUser! as HandymanModel).service
         : '';
+late bool allowNotifications;
 
 class _InformationsAboutUserWidgetState
     extends State<InformationsAboutUserWidget> {
@@ -53,6 +56,7 @@ class _InformationsAboutUserWidgetState
           (widget.currentUser as HandymanModel).yearsInBusiness?.toString() ??
               "";
     }
+    allowNotifications = widget.currentUser.allowNotifications;
     super.initState();
   }
 
@@ -143,6 +147,21 @@ class _InformationsAboutUserWidgetState
                   FormBuilderValidators.integer(context,
                       errorText: "Enter a number (whole-valued)")
                 ])),
+          Row(
+            children: [
+              Text("Allow notifications"),
+              Switch(
+                onChanged: (value) {
+                  allowNotifications = value;
+                  if (!value) {
+                    locator.get<NotificationService>().cancelAllNotifications();
+                  }
+                  locator.get<UserController>().updateAllowNotifications(value);
+                },
+                value: allowNotifications,
+              ),
+            ],
+          ),
           DropdownButton(
             hint: const Text(
                 'Please choose a location'), // Not necessary for Option 1
@@ -211,7 +230,9 @@ class _InformationsAboutUserWidgetState
             },
             child: Text("Save Profile"),
           ),
-          SizedBox(height: 10,),
+          SizedBox(
+            height: 10,
+          ),
           if (widget.currentUser is HandymanModel)
             RaisedButton(
               onPressed: () {

@@ -1,16 +1,12 @@
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_master/config/theme.dart';
 import 'package:flutter_master/model/user.dart';
 import 'package:flutter_master/view/reviews_screen.dart';
 
 import 'package:flutter_master/widgets/avatar.dart';
-import 'package:flutter_master/widgets/photo_album.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:percent_indicator/circular_percent_indicator.dart';
-import 'package:photo_view/photo_view.dart';
 import 'package:url_launcher/url_launcher.dart';
+//import 'package:url_launcher/url_launcher.dart';
 
 class HandymanDetailScreen extends StatefulWidget {
   static const String routeName = '/handyman_detail';
@@ -59,7 +55,7 @@ class _HandymanDetailScreenState extends State<HandymanDetailScreen> {
                       borderRadius: BorderRadius.all(Radius.circular(5.0)),
                       child: Stack(
                         children: <Widget>[
-                          PhotoView(imageProvider: NetworkImage(item)),
+                          // PhotoView(imageProvider: NetworkImage(item)),
                           Positioned(
                             bottom: 0.0,
                             left: 0.0,

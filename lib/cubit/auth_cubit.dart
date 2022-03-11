@@ -33,7 +33,7 @@ class AuthCubit extends Cubit<AuthState> {
       if (user != null) {
         await createCurrentUser(user)
             .then((value) => emit(AuthLoginSuccess(user: user)));
-        linkEmailGoogle();
+        // linkEmailGoogle();
       }
     } on FirebaseAuthException catch (e) {
       print(e.message);
@@ -51,8 +51,9 @@ class AuthCubit extends Cubit<AuthState> {
     final GoogleSignIn _googleSignIn = GoogleSignIn();
 
     final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+    if (googleUser == null) return;
     final GoogleSignInAuthentication googleAuth =
-        await googleUser!.authentication;
+        await googleUser.authentication;
 
     final AuthCredential gcredential = GoogleAuthProvider.credential(
       accessToken: googleAuth.accessToken,
@@ -66,8 +67,17 @@ class AuthCubit extends Cubit<AuthState> {
   Future googleAuth() async {
     emit(const AuthGoogleLoading());
     try {
-      final GoogleSignInAccount? _googleUser = await googleSignIn.signIn();
-
+      late GoogleSignInAccount? _googleUser;
+      try {
+        _googleUser = await googleSignIn.signIn();
+      } on FirebaseAuthException catch (e) {
+        print(e.message);
+        emit(AuthGoogleError(error: e.toString()));
+      }
+      if (_googleUser == null) {
+        emit(AuthGoogleError());
+        return;
+      }
       final GoogleSignInAuthentication googleAuth =
           await _googleUser!.authentication;
       final AuthCredential credential = GoogleAuthProvider.credential(
@@ -81,8 +91,6 @@ class AuthCubit extends Cubit<AuthState> {
       if (user != null && isSigndUpUser) {
         await createCurrentUser(user)
             .then((value) => emit(AuthGoogleSuccess(user: user)));
-        //linkEmailGoogle();
-
       } else {
         emit(const AuthGoogleError(error: "User is not signed up!"));
       }
@@ -165,7 +173,8 @@ class AuthCubit extends Cubit<AuthState> {
             averageReviews,
             numOfReviewa,
             token,
-            urlToGallery);
+            urlToGallery,
+            true);
       } else {
         userModel = CustomerModel(
             firebaseUser.uid,
@@ -175,7 +184,8 @@ class AuthCubit extends Cubit<AuthState> {
             selectedLocation,
             url,
             token,
-            projects);
+            projects,
+            true);
       }
     }
     locator.get<UserController>().initUser(userModel);

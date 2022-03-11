@@ -60,7 +60,7 @@ class CustomImage extends StatelessWidget {
                 ),
               )
             : Image(
-                image: AssetImage('assets/logo/LogoMakr-4NVCFS.png'),
+                image: AssetImage(image),
                 fit: fit,
               ));
   }

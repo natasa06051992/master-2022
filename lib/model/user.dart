@@ -10,6 +10,7 @@ class UserModel {
   late String location;
   late String role;
   late String? token;
+  late bool allowNotifications = true;
 
   UserModel(this.uid,
       {this.displayName,
@@ -18,7 +19,8 @@ class UserModel {
       this.phoneNumber,
       required this.location,
       required this.role,
-      this.token});
+      this.token,
+      required this.allowNotifications});
 
   void setAvatarUrl(String url) {
     avatarUrl = avatarUrl;
@@ -26,6 +28,10 @@ class UserModel {
 
   void setToken(String token) {
     this.token = token;
+  }
+
+  void setAllowNotification(bool allow) {
+    allowNotifications = allow;
   }
 
   UserModel.fromDocumentSnapshot(Map<String, dynamic> snapshot) {
@@ -37,6 +43,7 @@ class UserModel {
     avatarUrl = snapshot['avatarUrl'];
     role = snapshot['role'];
     token = snapshot['token'];
+    allowNotifications = snapshot['allowNotifications'];
   }
 }
 
@@ -61,7 +68,8 @@ class HandymanModel extends UserModel {
       this.averageReviews,
       this.numberOfReviews,
       String? token,
-      this.urlToGallery)
+      this.urlToGallery,
+      allowNotifications)
       : super(uid,
             displayName: displayName,
             email: email,
@@ -69,7 +77,8 @@ class HandymanModel extends UserModel {
             location: selectedLocation,
             avatarUrl: url,
             role: "Handyman",
-            token: token) {
+            token: token,
+            allowNotifications: allowNotifications) {
     reviews = [];
   }
 
@@ -136,7 +145,8 @@ class CustomerModel extends UserModel {
       String selectedLocation,
       String? url,
       String? token,
-      List<String> projects)
+      List<String> projects,
+      allowNotifications)
       : super(uid,
             displayName: displayName,
             email: email,
@@ -144,7 +154,8 @@ class CustomerModel extends UserModel {
             location: selectedLocation,
             avatarUrl: url,
             role: "Customer",
-            token: token);
+            token: token,
+            allowNotifications: allowNotifications);
   CustomerModel.fromDocumentSnapshot(Map<String, dynamic> snapshot)
       : super.fromDocumentSnapshot(snapshot) {
     projects =

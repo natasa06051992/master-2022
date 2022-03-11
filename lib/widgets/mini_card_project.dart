@@ -4,6 +4,7 @@ import 'package:flutter_master/model/project.dart';
 import 'package:flutter_master/model/user.dart';
 import 'package:flutter_master/view_controller/user_controller.dart';
 import 'package:url_launcher/url_launcher.dart';
+//import 'package:url_launcher/url_launcher.dart';
 
 class MiniCardProject extends StatelessWidget {
   final Project project;
@@ -19,6 +20,7 @@ class MiniCardProject extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      width: MediaQuery.of(context).size.width * 0.82,
       padding: EdgeInsets.all(12.0),
       decoration: BoxDecoration(
         border: Border.all(
@@ -54,7 +56,7 @@ class MiniCardProject extends StatelessWidget {
                   ),
                 ),
           SizedBox(
-            width: 30.0,
+            width: 15.0,
           ),
           Expanded(
             child: Column(
@@ -103,21 +105,24 @@ class MiniCardProject extends StatelessWidget {
                         fontSize: 12.0,
                       ),
                     ),
-                    if (locator.get<UserController>().currentUser
-                        is HandymanModel)
-                      ElevatedButton(
-                          onPressed: () {
-                            project.phoneNumber != null
-                                ? _makePhoneCall(project.phoneNumber!)
-                                : null;
-                          },
-                          child: project.phoneNumber == null
-                              ? null
-                              : Row(
-                                  children: [Icon(Icons.phone), Text('Call')],
-                                ))
                   ],
-                )
+                ),
+                if (locator.get<UserController>().currentUser
+                        is HandymanModel &&
+                    project.phoneNumber != null)
+                  Center(
+                    child: ElevatedButton(
+                        onPressed: () {
+                          project.phoneNumber != null
+                              ? _makePhoneCall(project.phoneNumber!)
+                              : null;
+                        },
+                        child: project.phoneNumber == null
+                            ? null
+                            : Row(
+                                children: [Icon(Icons.phone), Text('Call')],
+                              )),
+                  ),
               ],
             ),
           )

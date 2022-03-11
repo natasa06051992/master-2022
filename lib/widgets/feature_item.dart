@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_master/config/theme.dart';
+import 'package:flutter_master/locator.dart';
 import 'package:flutter_master/model/category.dart';
+import 'package:flutter_master/view_controller/user_controller.dart';
 import 'package:flutter_master/widgets/custom_image.dart';
 
 class FeatureItem extends StatelessWidget {
@@ -44,6 +46,7 @@ class FeatureItem extends StatelessWidget {
               width: double.infinity,
               height: 190,
               radius: 15,
+              isNetwork: false,
             ),
             Positioned(
               top: 170,
@@ -66,7 +69,27 @@ class FeatureItem extends StatelessWidget {
                   children: [
                     Text("Prosecna cena: "),
                     Text(
-                      data.price ?? "",
+                      data.price
+                                  .where((element) =>
+                                      element.location ==
+                                      locator
+                                          .get<UserController>()
+                                          .currentUser!
+                                          .location)
+                                  .first
+                                  .price !=
+                              null
+                          ? data.price
+                              .where((element) =>
+                                  element.location ==
+                                  locator
+                                      .get<UserController>()
+                                      .currentUser!
+                                      .location)
+                              .first
+                              .price
+                              .toString()
+                          : "Nemamo podataka",
                       style: TextStyle(
                           color: Colors.white, fontWeight: FontWeight.w500),
                     ),

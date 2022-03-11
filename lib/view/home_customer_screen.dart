@@ -27,7 +27,6 @@ class HomeCustomerScreen extends StatefulWidget {
 class _HomeCustomerScreenState extends State<HomeCustomerScreen> {
   String query = '';
 
-  List<String> categories = Constants.services;
   late List<Category> searchedFeatures = [];
   late List<Category> features = [];
 
@@ -51,6 +50,7 @@ class _HomeCustomerScreenState extends State<HomeCustomerScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: buildAppBar(context, 'Home'),
       body: FutureBuilder(
           future: locator.get<UserController>().getCategories(),
@@ -74,7 +74,7 @@ class _HomeCustomerScreenState extends State<HomeCustomerScreen> {
                         options: CarouselOptions(
                           scrollDirection: Axis.vertical,
                           height: MediaQuery.of(context).viewInsets.bottom != 0
-                              ? MediaQuery.of(context).size.height * 0.4
+                              ? MediaQuery.of(context).size.height * 0.45
                               : MediaQuery.of(context).size.height * 0.78,
                           enlargeCenterPage: true,
                           disableCenter: true,

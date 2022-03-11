@@ -1,18 +1,18 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/foundation.dart';
+
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:flutter_master/cubit/push_notification_service.dart';
-import 'package:flutter_master/locator.dart';
-import 'package:flutter_master/model/user.dart';
-import 'package:flutter_master/view/screens.dart';
-import 'package:flutter_master/view_controller/user_controller.dart';
-import 'package:flutter_master/widgets/app_bar.dart';
-import 'package:flutter_master/widgets/review_widget.dart';
+
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:quick_feedback/quick_feedback.dart';
 import 'package:smooth_star_rating/smooth_star_rating.dart';
+
+import 'package:flutter_master/cubit/push_notification_service.dart';
+import 'package:flutter_master/locator.dart';
+import 'package:flutter_master/model/user.dart';
+
+import 'package:flutter_master/view_controller/user_controller.dart';
+import 'package:flutter_master/widgets/app_bar.dart';
+import 'package:flutter_master/widgets/review_widget.dart';
 
 class ReviewsScreen extends StatefulWidget {
   static const String routeName = '/reviews';
@@ -87,17 +87,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: locator.get<UserController>().currentUser != null &&
-                locator.get<UserController>().currentUser is CustomerModel
-            ? AppBar(
-                title: const Text('Reviews'),
-                leading: BackButton(onPressed: () => Navigator.pop(context)
-                    // ,
-                    // HandymanDetailScreen.route(
-                    //     ReviewsScreen.handymanModel!))
-                    //.then((value) => setState(() {}))
-                    ))
-            : buildAppBar(context, 'Reviews'),
+        appBar: buildAppBar(context, 'Reviews'),
         body: FutureBuilder(
             future: FirebaseFirestore.instance
                 .collection("reviews")
@@ -178,7 +168,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                                 rating: ReviewsScreen
                                         .handymanModel!.averageReviews ??
                                     0.0,
-                                size: 28.0,
+                                size: 22.0,
                                 color: Colors.orange,
                                 borderColor: Colors.orange,
                               ),
@@ -210,8 +200,8 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                                     LinearPercentIndicator(
                                       lineHeight: 6.0,
                                       // linearStrokeCap: LinearStrokeCap.roundAll,
-                                      width: MediaQuery.of(context).size.width /
-                                          2.8,
+                                      width:
+                                          MediaQuery.of(context).size.width / 3,
                                       animation: true,
                                       animationDuration: 2500,
                                       percent: ratings[index],

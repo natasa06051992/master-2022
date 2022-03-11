@@ -91,6 +91,7 @@ class UserController {
   void updateStartingCost(int cost) {
     (_currentUser! as HandymanModel).startingPrice = cost;
     _firebaseFirestoreRepo.updateStartingCost(_currentUser!);
+    calculate(currentUser!.location, (_currentUser! as HandymanModel).service!);
   }
 
   void updateYearsInBusiness(int years) {
@@ -131,5 +132,13 @@ class UserController {
         .projects
         .removeWhere((element) => element == id);
     await _firebaseFirestoreRepo.deleteProject(id, currentUser);
+  }
+
+  calculate(String location, String service) async {
+    return await _firebaseFirestoreRepo.calculate(location, service);
+  }
+
+  void updateAllowNotifications(bool allowNotifications) async {
+    await _firebaseFirestoreRepo.updateAllowNotifications(allowNotifications);
   }
 }

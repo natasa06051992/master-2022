@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_master/locator.dart';
 import 'package:flutter_master/model/category.dart';
 import 'package:flutter_master/model/reviewModel.dart';
 import 'package:flutter_master/model/user.dart';
+import 'package:flutter_master/view_controller/user_controller.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 
@@ -317,20 +319,22 @@ class FirebaseFirestoreRepo {
     return result;
   }
 
+  updateAllowNotifications(bool allowNotifications) {
+    final Map<String, dynamic> data = {
+      'allowNotifications': allowNotifications
+    };
+    FirebaseFirestore.instance
+        .collection(usersCollection)
+        .doc(locator.get<UserController>().currentUser!.uid)
+        .update(data);
+  }
+
   void updateToken(String? token, String uid) {
     final Map<String, dynamic> data = {'token': token};
     FirebaseFirestore.instance
         .collection(usersCollection)
         .doc(uid)
         .update(data);
-
-    void updateToken(String? token, String uid) {
-      final Map<String, dynamic> data = {'token': token};
-      FirebaseFirestore.instance
-          .collection(usersCollection)
-          .doc(uid)
-          .update(data);
-    }
   }
 
   Future<void> deleteProject(String id, UserModel? currentUser) async {
@@ -342,5 +346,44 @@ class FirebaseFirestoreRepo {
         .doc(currentUser.uid)
         .update(dataProjects);
     return FirebaseFirestore.instance.collection('projects').doc(id).delete();
+  }
+
+  calculate(String location, String service) async {
+    QuerySnapshot<Map<String, dynamic>> listOfHandymans =
+        await FirebaseFirestore.instance
+            .collection('users')
+            .where('role', isEqualTo: 'Handyman')
+            .where('service', isEqualTo: service)
+            .where('location', isEqualTo: location)
+            .get();
+
+    List<double> result = [];
+    listOfHandymans.docs.forEach((doc) {
+      var starting = doc['startingPrice'];
+      if (starting != 0) {
+        result.add(starting.toDouble());
+      }
+    });
+    var avrg = result.reduce((a, b) => a + b) / result.length;
+
+    DocumentReference docRef =
+        FirebaseFirestore.instance.collection("category").doc(service);
+
+    DocumentSnapshot docSnapshot = await docRef.get();
+    Map<String, dynamic>? docData = docSnapshot.data() as Map<String, dynamic>?;
+
+    List<Map<String, dynamic>> services =
+        (docData!["pricePerLocation"] as List<dynamic>)
+            .map((price) => Map<String, dynamic>.from(price))
+            .toList();
+
+    for (int index = 0; index < services.length; index++) {
+      Map<String, dynamic> chatroom = services[index];
+      if (chatroom["location"] == location) {
+        chatroom["price"] = avrg.toString();
+      }
+    }
+
+    await docRef.update({"pricePerLocation": services});
   }
 }
