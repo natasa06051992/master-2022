@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_master/config/app_router.dart';
+import 'package:flutter_master/config/theme.dart';
 import 'package:flutter_master/cubit/auth_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_master/locator.dart';
@@ -72,8 +73,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     children: [
                       const Image(
                         image: AssetImage('assets/logo/LogoMakr-4NVCFS.png'),
-                        height: 100,
-                        width: 100,
+                        height: 120,
+                        width: 120,
                       ),
                       const SizedBox(
                         height: 20,
@@ -138,27 +139,59 @@ class _LoginScreenState extends State<LoginScreen> {
                           }
                         },
                       ),
-                      const SizedBox(
-                        height: 20,
-                      ),
                       TextButton(
                           onPressed: () => Navigator.pushNamed(
                               context, ForgotPasswordScreen.routeName),
                           child: const Text("Forgot Password?")),
-                      CustomButton(
-                          child: Text('Google'),
-                          onPressed: () async {
-                            final authCubit =
-                                BlocProvider.of<AuthCubit>(context);
-                            await authCubit.googleAuth();
-                          }),
-                      CustomButton(
-                          child: Text('Facebook'),
-                          onPressed: () async {
-                            final authCubit =
-                                BlocProvider.of<AuthCubit>(context);
-                            await authCubit.facebookAuth();
-                          }),
+                      const SizedBox(
+                        height: 30,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            height: 50.0,
+                            width: 120.0,
+                            child: RaisedButton.icon(
+                              label: Text(
+                                'Google',
+                                style: new TextStyle(
+                                  color: Colors.white,
+                                ),
+                              ),
+                              icon: Image.asset("assets/google_plus.png",
+                                  width: 24.0, height: 24.0),
+                              onPressed: () async {
+                                final authCubit =
+                                    BlocProvider.of<AuthCubit>(context);
+                                await authCubit.googleAuth();
+                              },
+                              color: primary,
+                            ),
+                          ),
+                          SizedBox(width: 10),
+                          Container(
+                            height: 50.0,
+                            width: 130.0,
+                            child: RaisedButton.icon(
+                              label: Text(
+                                'Facebook',
+                                style: new TextStyle(
+                                  color: Colors.white,
+                                ),
+                              ),
+                              icon: Image.asset("assets/facebook.png",
+                                  width: 24.0, height: 24.0),
+                              onPressed: () async {
+                                final authCubit =
+                                    BlocProvider.of<AuthCubit>(context);
+                                await authCubit.googleAuth();
+                              },
+                              color: Colors.indigo,
+                            ),
+                          ),
+                        ],
+                      ),
                     ],
                   ),
                 ),
