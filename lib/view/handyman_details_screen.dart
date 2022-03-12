@@ -6,7 +6,7 @@ import 'package:flutter_master/view/reviews_screen.dart';
 
 import 'package:flutter_master/widgets/avatar.dart';
 import 'package:url_launcher/url_launcher.dart';
-//import 'package:url_launcher/url_launcher.dart';
+import 'package:photo_view/photo_view.dart';
 
 class HandymanDetailScreen extends StatefulWidget {
   static const String routeName = '/handyman_detail';
@@ -55,7 +55,7 @@ class _HandymanDetailScreenState extends State<HandymanDetailScreen> {
                       borderRadius: BorderRadius.all(Radius.circular(5.0)),
                       child: Stack(
                         children: <Widget>[
-                          // PhotoView(imageProvider: NetworkImage(item)),
+                          PhotoView(imageProvider: NetworkImage(item)),
                           Positioned(
                             bottom: 0.0,
                             left: 0.0,
@@ -144,7 +144,7 @@ class _HandymanDetailScreenState extends State<HandymanDetailScreen> {
                                                 .toString(),
                                             style: TextStyle(
                                                 color: textColor,
-                                                fontSize: 16.0,
+                                                fontSize: 18.0,
                                                 fontWeight: FontWeight.bold)),
                                         Text("Years in businees",
                                             style: TextStyle(
@@ -164,7 +164,7 @@ class _HandymanDetailScreenState extends State<HandymanDetailScreen> {
                                                 .toString(),
                                             style: TextStyle(
                                                 color: textColor,
-                                                fontSize: 16.0,
+                                                fontSize: 18.0,
                                                 fontWeight: FontWeight.bold)),
                                         Text("Starting price (RSD)",
                                             style: TextStyle(
@@ -184,7 +184,7 @@ class _HandymanDetailScreenState extends State<HandymanDetailScreen> {
                                                 .toString(),
                                             style: TextStyle(
                                                 color: textColor,
-                                                fontSize: 16.0,
+                                                fontSize: 18.0,
                                                 fontWeight: FontWeight.bold)),
                                         Text("Average review",
                                             style: TextStyle(
@@ -199,7 +199,7 @@ class _HandymanDetailScreenState extends State<HandymanDetailScreen> {
                             ],
                           ),
                         ),
-                      )
+                      ),
                     ],
                   )),
                 ),
@@ -215,7 +215,7 @@ class _HandymanDetailScreenState extends State<HandymanDetailScreen> {
                           style: TextStyle(
                               color: textColor,
                               fontWeight: FontWeight.w600,
-                              fontSize: 17.0)),
+                              fontSize: 19.0)),
                       Padding(
                         padding: const EdgeInsets.only(
                             left: 24.0, right: 24, top: 30, bottom: 24),
@@ -223,7 +223,7 @@ class _HandymanDetailScreenState extends State<HandymanDetailScreen> {
                             //cr provjeriti za null
                             handymanModel.description!,
                             textAlign: TextAlign.center,
-                            style: TextStyle(color: textColor)),
+                            style: TextStyle(color: textColor, fontSize: 15)),
                       ),
                       if (imageSliders.length > 0)
                         Container(
@@ -251,11 +251,12 @@ class _HandymanDetailScreenState extends State<HandymanDetailScreen> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisSize: MainAxisSize.max,
                   children: [
+                    SizedBox(height: 15),
                     Padding(
-                      padding: const EdgeInsets.only(right: 8.0),
+                      padding: const EdgeInsets.only(right: 15.0),
                       child: RaisedButton(
                         textColor: textColor,
-                        //color: labelColor,
+                        color: appBarColor,
                         onPressed: () {
                           // Respond to button press
                           WidgetsBinding.instance?.addPostFrameCallback((_) {
@@ -272,35 +273,47 @@ class _HandymanDetailScreenState extends State<HandymanDetailScreen> {
                           children: [
                             Padding(
                                 padding: EdgeInsets.only(
-                                    left: 12.0,
-                                    right: 12.0,
-                                    top: 10,
-                                    bottom: 10),
-                                child: Text("Reviews:",
-                                    style: TextStyle(fontSize: 13.0))),
-                            Text(
-                              handymanModel.averageReviews != null
-                                  ? handymanModel.averageReviews!
-                                      .toStringAsFixed(2)
-                                  : "0.0",
-                            ),
-                            handymanModel.numberOfReviews != null
-                                ? Text(" (${handymanModel.numberOfReviews})")
-                                : Text(""),
-                            IconButton(
-                              onPressed: () {
-                                WidgetsBinding.instance
-                                    ?.addPostFrameCallback((_) {
-                                  _navigator.pushNamed(ReviewsScreen.routeName,
-                                      arguments: handymanModel);
-                                });
-                              },
-                              icon: Icon(
-                                Icons.star,
-                                size: 17,
-                                color: purple,
-                              ),
-                            ),
+                                    left: 12.0, right: 12.0, top: 2, bottom: 2),
+                                child: Row(
+                                  children: [
+                                    TextButton(
+                                      onPressed: () {
+                                        WidgetsBinding.instance
+                                            ?.addPostFrameCallback((_) {
+                                          _navigator.pushNamed(
+                                              ReviewsScreen.routeName,
+                                              arguments: handymanModel);
+                                        });
+                                      },
+                                      child: Text("Reviews:  ",
+                                          style: TextStyle(fontSize: 15.0)),
+                                    ),
+                                    Text(
+                                        handymanModel.averageReviews != null
+                                            ? handymanModel.averageReviews!
+                                                .toStringAsFixed(2)
+                                            : "0.0",
+                                        style: TextStyle(
+                                            fontSize: 15.0,
+                                            fontWeight: FontWeight.bold)),
+                                    handymanModel.numberOfReviews != null
+                                        ? Text(
+                                            " (${handymanModel.numberOfReviews})",
+                                            style: TextStyle(
+                                                fontSize: 15.0,
+                                                fontWeight: FontWeight.bold))
+                                        : Text(""),
+                                    SizedBox(
+                                      width: 4,
+                                    ),
+                                    Icon(
+                                      Icons.star,
+                                      size: 17,
+                                      color: yellow,
+                                    ),
+                                  ],
+                                )),
+                            SizedBox(width: 30),
                             ElevatedButton(
                                 onPressed: () {
                                   handymanModel.phoneNumber != null
@@ -313,7 +326,8 @@ class _HandymanDetailScreenState extends State<HandymanDetailScreen> {
                                     : Row(
                                         children: [
                                           Icon(Icons.phone),
-                                          Text('Call')
+                                          Text('Call',
+                                              style: TextStyle(fontSize: 15.0))
                                         ],
                                       ))
                           ],

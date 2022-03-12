@@ -54,7 +54,7 @@ class FeatureItem extends StatelessWidget {
               child: Container(
                 padding: EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: primary,
+                  color: orange,
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: [
                     BoxShadow(
@@ -91,7 +91,7 @@ class FeatureItem extends StatelessWidget {
                               .toString()
                           : "Nemamo podataka",
                       style: TextStyle(
-                          color: Colors.white, fontWeight: FontWeight.w500),
+                          color: Colors.black, fontWeight: FontWeight.w800),
                     ),
                   ],
                 ),

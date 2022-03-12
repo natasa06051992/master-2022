@@ -98,6 +98,11 @@ flutter:
     - assets/Other.jpg
     - assets/Hause cleaning.png
     - assets/Handyman.jpg
+    - assets/handymenOnBoarding.png
+    - assets/handymen2.png
+    - assets/onboarding.png
+    - assets/google_plus.png
+    - assets/facebook.png
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_master/cubit/auth_cubit.dart';
-import 'package:flutter_master/cubit/firebase_firestore_repo.dart';
 import 'package:flutter_master/locator.dart';
 import 'package:flutter_master/model/user.dart';
 import 'package:flutter_master/view/customers_projects_screen.dart';
@@ -161,17 +160,23 @@ class _SignupScreenState extends State<SignupScreen> {
                               textInputAction: TextInputAction.done,
                             )),
                         SizedBox(
+                          height: 10,
+                        ),
+                        SizedBox(
                           width: MediaQuery.of(context).size.width * 0.9,
                           child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               SizedBox(
-                                width: 15,
+                                width: 8,
                               ),
-                              Icon(Icons.pin_drop),
+                              Icon(Icons.pin_drop, color: Colors.grey[600]),
                               SizedBox(
-                                width: 15,
+                                width: 20,
                               ),
                               DropdownButton(
+                                style: TextStyle(
+                                    color: Colors.grey[600], fontSize: 16),
                                 hint: const Text(
                                     'Please choose a location'), // Not necessary for Option 1
                                 value: _selectedLocation,
@@ -190,63 +195,77 @@ class _SignupScreenState extends State<SignupScreen> {
                             ],
                           ),
                         ),
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width * 0.9,
-                          child: Row(
-                            children: [
-                              SizedBox(
-                                width: 15,
-                              ),
-                              Icon(Icons.handyman),
-                              SizedBox(
-                                width: 15,
-                              ),
-                              DropdownButton(
-                                value: _selectedRole,
-                                onChanged: (newValue) {
-                                  setState(() {
-                                    _selectedRole = newValue.toString();
-                                  });
-                                },
-                                items: _role.map((role) {
-                                  return DropdownMenuItem(
-                                    child: Text(role),
-                                    value: role,
-                                  );
-                                }).toList(),
-                              ),
-                            ],
-                          ),
-                        ),
-                        if (_selectedRole.contains('Handyman'))
-                          SizedBox(
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: SizedBox(
                             width: MediaQuery.of(context).size.width * 0.9,
                             child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
                               children: [
+                                Row(
+                                  children: [
+                                    SizedBox(
+                                      width: 10,
+                                    ),
+                                    Icon(Icons.handyman,
+                                        color: Colors.grey[600]),
+                                    SizedBox(
+                                      width: 15,
+                                    ),
+                                    DropdownButton(
+                                      style: TextStyle(
+                                          color: Colors.grey[600],
+                                          fontSize: 16),
+                                      value: _selectedRole,
+                                      onChanged: (newValue) {
+                                        setState(() {
+                                          _selectedRole = newValue.toString();
+                                        });
+                                      },
+                                      items: _role.map((role) {
+                                        return DropdownMenuItem(
+                                          child: Text(role),
+                                          value: role,
+                                        );
+                                      }).toList(),
+                                    ),
+                                  ],
+                                ),
                                 SizedBox(
-                                  width: 15,
+                                  width: 25,
                                 ),
-                                Icon(Icons.room_service),
-                                SizedBox(
-                                  width: 15,
-                                ),
-                                DropdownButton(
-                                  value: _selectedService,
-                                  onChanged: (newValue) {
-                                    setState(() {
-                                      _selectedService = newValue.toString();
-                                    });
-                                  },
-                                  items: _services.map((service) {
-                                    return DropdownMenuItem(
-                                      child: Text(service),
-                                      value: service,
-                                    );
-                                  }).toList(),
-                                ),
+                                if (_selectedRole.contains('Handyman'))
+                                  Row(
+                                    children: [
+                                      Icon(Icons.room_service,
+                                          color: Colors.grey[600]),
+                                      SizedBox(
+                                        width: 15,
+                                      ),
+                                      DropdownButton(
+                                        style: TextStyle(
+                                            color: Colors.grey[600],
+                                            fontSize: 16),
+                                        value: _selectedService,
+                                        onChanged: (newValue) {
+                                          setState(() {
+                                            _selectedService =
+                                                newValue.toString();
+                                          });
+                                        },
+                                        items: _services.map((service) {
+                                          return DropdownMenuItem(
+                                            child: Text(service),
+                                            value: service,
+                                          );
+                                        }).toList(),
+                                      ),
+                                    ],
+                                  ),
                               ],
                             ),
                           ),
+                        ),
                         const SizedBox(
                           height: 20,
                         ),

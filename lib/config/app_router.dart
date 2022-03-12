@@ -5,6 +5,8 @@ import 'package:flutter_master/view/add_pictures_featured_projects.dart';
 import 'package:flutter_master/view/customers_projects_screen.dart';
 import 'package:flutter_master/view/screens.dart';
 
+import '../view/welcome_screen.dart';
+
 class AppRouter {
   static Route onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -36,6 +38,8 @@ class AppRouter {
         return CustomersProjects.route();
       case AddPicturesFeaturedProjects.routeName:
         return AddPicturesFeaturedProjects.route();
+      case WelcomeScreen.routeName:
+        return WelcomeScreen.route();
       default:
         return _errorRoute();
     }

@@ -33,7 +33,6 @@ String? _selectedServices =
     locator.get<UserController>().currentUser! is HandymanModel
         ? (locator.get<UserController>().currentUser! as HandymanModel).service
         : '';
-late bool allowNotifications;
 
 class _InformationsAboutUserWidgetState
     extends State<InformationsAboutUserWidget> {
@@ -56,7 +55,6 @@ class _InformationsAboutUserWidgetState
           (widget.currentUser as HandymanModel).yearsInBusiness?.toString() ??
               "";
     }
-    allowNotifications = widget.currentUser.allowNotifications;
     super.initState();
   }
 
@@ -147,21 +145,6 @@ class _InformationsAboutUserWidgetState
                   FormBuilderValidators.integer(context,
                       errorText: "Enter a number (whole-valued)")
                 ])),
-          Row(
-            children: [
-              Text("Allow notifications"),
-              Switch(
-                onChanged: (value) {
-                  allowNotifications = value;
-                  if (!value) {
-                    locator.get<NotificationService>().cancelAllNotifications();
-                  }
-                  locator.get<UserController>().updateAllowNotifications(value);
-                },
-                value: allowNotifications,
-              ),
-            ],
-          ),
           DropdownButton(
             hint: const Text(
                 'Please choose a location'), // Not necessary for Option 1
@@ -203,7 +186,7 @@ class _InformationsAboutUserWidgetState
                     Navigator.pushNamed(context, CustomersProjects.routeName),
                 child: Text('My Projects')),
           SizedBox(height: 20.0),
-          if ((widget.currentUser is HandymanModel) && imageSliders.length > 0)
+          if (imageSliders.length > 0)
             Container(
                 child: CarouselSlider(
               options: CarouselOptions(

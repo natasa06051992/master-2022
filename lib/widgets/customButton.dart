@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_master/config/theme.dart';
 
 class CustomButton extends StatelessWidget {
   const CustomButton({
@@ -19,6 +20,9 @@ class CustomButton extends StatelessWidget {
       width: width,
       height: height,
       child: ElevatedButton(
+          style: ButtonStyle(
+            backgroundColor: MaterialStateProperty.all(purple),
+          ),
           child: child,
           onPressed: () {
             onPressed();

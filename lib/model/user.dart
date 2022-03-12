@@ -10,7 +10,6 @@ class UserModel {
   late String location;
   late String role;
   late String? token;
-  late bool allowNotifications = true;
 
   UserModel(this.uid,
       {this.displayName,
@@ -20,7 +19,7 @@ class UserModel {
       required this.location,
       required this.role,
       this.token,
-      required this.allowNotifications});
+      s});
 
   void setAvatarUrl(String url) {
     avatarUrl = avatarUrl;
@@ -28,10 +27,6 @@ class UserModel {
 
   void setToken(String token) {
     this.token = token;
-  }
-
-  void setAllowNotification(bool allow) {
-    allowNotifications = allow;
   }
 
   UserModel.fromDocumentSnapshot(Map<String, dynamic> snapshot) {
@@ -43,7 +38,6 @@ class UserModel {
     avatarUrl = snapshot['avatarUrl'];
     role = snapshot['role'];
     token = snapshot['token'];
-    allowNotifications = snapshot['allowNotifications'];
   }
 }
 
@@ -77,8 +71,7 @@ class HandymanModel extends UserModel {
             location: selectedLocation,
             avatarUrl: url,
             role: "Handyman",
-            token: token,
-            allowNotifications: allowNotifications) {
+            token: token) {
     reviews = [];
   }
 
@@ -147,15 +140,16 @@ class CustomerModel extends UserModel {
       String? token,
       List<String> projects,
       allowNotifications)
-      : super(uid,
-            displayName: displayName,
-            email: email,
-            phoneNumber: phoneNumber,
-            location: selectedLocation,
-            avatarUrl: url,
-            role: "Customer",
-            token: token,
-            allowNotifications: allowNotifications);
+      : super(
+          uid,
+          displayName: displayName,
+          email: email,
+          phoneNumber: phoneNumber,
+          location: selectedLocation,
+          avatarUrl: url,
+          role: "Customer",
+          token: token,
+        );
   CustomerModel.fromDocumentSnapshot(Map<String, dynamic> snapshot)
       : super.fromDocumentSnapshot(snapshot) {
     projects =

@@ -137,8 +137,4 @@ class UserController {
   calculate(String location, String service) async {
     return await _firebaseFirestoreRepo.calculate(location, service);
   }
-
-  void updateAllowNotifications(bool allowNotifications) async {
-    await _firebaseFirestoreRepo.updateAllowNotifications(allowNotifications);
-  }
 }

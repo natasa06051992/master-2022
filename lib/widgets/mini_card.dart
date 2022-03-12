@@ -4,8 +4,8 @@ import 'package:flutter_master/model/user.dart';
 import 'package:flutter_master/view/handyman_details_screen.dart';
 
 class MiniCard extends StatefulWidget {
-  final UserModel userModel;
-  const MiniCard({required this.userModel});
+  UserModel? userModel;
+  MiniCard({required this.userModel});
 
   @override
   State<MiniCard> createState() => _MiniCardState();
@@ -17,6 +17,13 @@ class _MiniCardState extends State<MiniCard> {
   void didChangeDependencies() {
     _navigator = Navigator.of(context);
     super.didChangeDependencies();
+  }
+
+  @override
+  void dispose() {
+    widget.userModel = null;
+    // TODO: implement dispose
+    super.dispose();
   }
 
   @override
@@ -111,22 +118,19 @@ class _MiniCardState extends State<MiniCard> {
                         user.averageReviews != null
                             ? user.averageReviews.toString()
                             : "",
-                        style: TextStyle(
-                          fontSize: 14.0,
-                          color: Color.fromRGBO(251, 89, 84, 1),
-                        ),
+                        style: TextStyle(fontSize: 14.0, color: orange),
                       ),
                       user.numberOfReviews != null
                           ? Text(" (${user.numberOfReviews})",
                               style: TextStyle(
                                 fontSize: 14.0,
-                                color: Color.fromRGBO(251, 89, 84, 1),
+                                color: orange,
                               ))
                           : Text(""),
                       Icon(
                         Icons.star,
                         size: 17,
-                        color: primary,
+                        color: orange,
                       ),
                     ],
                   )

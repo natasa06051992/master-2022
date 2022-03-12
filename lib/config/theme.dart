@@ -43,7 +43,8 @@ ThemeData theme() {
   return ThemeData(
     appBarTheme: AppBarTheme(color: Color(0xFFcdacf9), centerTitle: true),
     primaryColor: Color(0xFFf5ba92),
-    scaffoldBackgroundColor: Color(0xFFF4E3E3),
+    scaffoldBackgroundColor: Colors.white,
+    //scaffoldBackgroundColor: Color(0xFFF4E3E3),
     accentColor: Colors.purple[200],
     backgroundColor: Color(0xFFF4F4F4),
     fontFamily: 'Futura',

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_master/config/theme.dart';
 import 'package:smooth_star_rating/smooth_star_rating.dart';
 
 class ReviewUI extends StatelessWidget {
@@ -67,8 +68,8 @@ class ReviewUI extends StatelessWidget {
                 starCount: 5,
                 rating: double.parse(rating.toDouble().toStringAsFixed(2)),
                 size: 28.0,
-                color: Colors.orange,
-                borderColor: Colors.orange,
+                color: orange,
+                borderColor: orange,
               ),
               SizedBox(width: 20),
               Text(

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_master/config/theme.dart';
 
 import 'package:flutter_master/locator.dart';
 import 'package:flutter_master/model/project.dart';
@@ -112,7 +113,6 @@ class _CustomersProjectsState extends State<CustomersProjects> {
                                 child: MiniCardProject(
                                   project: project,
                                 ),
-                                //child: projectWidget(context, ds),
                               );
                       });
                 } else {
@@ -128,77 +128,77 @@ class _CustomersProjectsState extends State<CustomersProjects> {
                 onPressed: () {
                   Navigator.pushNamed(context, AddNewProjectScreen.routeName);
                 },
-                backgroundColor: Colors.purple,
+                backgroundColor: orange,
                 child: const Icon(Icons.add),
               )
             : null);
   }
 
-  Center projectWidget(BuildContext context, DocumentSnapshot<Object?> ds) {
-    var project = Project.fromDocumentSnapshot(ds as Map<String, dynamic>);
-    return Center(
-        child: Card(
-      child: Container(
-        width: MediaQuery.of(context).size.width * 0.9,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(30),
-              child: project.imageOfCustomer != null
-                  ? Image.network(
-                      project.imageOfCustomer!,
-                      height: 90,
-                      width: 90,
-                    )
-                  : const Image(
-                      image: AssetImage('assets/logo/LogoMakr-4NVCFS.png'),
-                      height: 90,
-                      width: 90,
-                    ),
-            ),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Text(
-                  project.title,
-                  style: TextStyle(fontSize: 24),
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                Text(
-                  project.description,
-                  style: TextStyle(fontSize: 18),
-                ),
-              ],
-            ),
-            Column(
-              children: [
-                Text(
-                  project.date,
-                  style: TextStyle(fontSize: 12),
-                ),
-                SizedBox(height: 30),
-                if (locator.get<UserController>().currentUser is HandymanModel)
-                  ElevatedButton(
-                      onPressed: () {
-                        project.phoneNumber != null
-                            ? _makePhoneCall(project.phoneNumber!)
-                            : null;
-                      },
-                      child: project.phoneNumber == null
-                          ? null
-                          : Row(
-                              children: [Icon(Icons.phone), Text('Call')],
-                            ))
-              ],
-            ),
-          ],
-        ),
-      ),
-    ));
-  }
+  // Center projectWidget(BuildContext context, DocumentSnapshot<Object?> ds) {
+  //   var project = Project.fromDocumentSnapshot(ds as Map<String, dynamic>);
+  //   return Center(
+  //       child: Card(
+  //     child: Container(
+  //       // width: MediaQuery.of(context).size.width * 0.9,
+  //       child: Row(
+  //         mainAxisAlignment: MainAxisAlignment.spaceAround,
+  //         children: [
+  //           ClipRRect(
+  //             borderRadius: BorderRadius.circular(30),
+  //             child: project.imageOfCustomer != null
+  //                 ? Image.network(
+  //                     project.imageOfCustomer!,
+  //                     height: 80,
+  //                     width: 80,
+  //                   )
+  //                 : const Image(
+  //                     image: AssetImage('assets/logo/LogoMakr-4NVCFS.png'),
+  //                     height: 80,
+  //                     width: 80,
+  //                   ),
+  //           ),
+  //           Column(
+  //             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+  //             children: [
+  //               Text(
+  //                 project.title,
+  //                 style: TextStyle(fontSize: 24),
+  //               ),
+  //               SizedBox(
+  //                 height: 20,
+  //               ),
+  //               Text(
+  //                 project.description,
+  //                 style: TextStyle(fontSize: 18),
+  //               ),
+  //             ],
+  //           ),
+  //           Column(
+  //             children: [
+  //               Text(
+  //                 project.date,
+  //                 style: TextStyle(fontSize: 11),
+  //               ),
+  //               SizedBox(height: 30),
+  //               if (locator.get<UserController>().currentUser is HandymanModel)
+  //                 ElevatedButton(
+  //                     onPressed: () {
+  //                       project.phoneNumber != null
+  //                           ? _makePhoneCall(project.phoneNumber!)
+  //                           : null;
+  //                     },
+  //                     child: project.phoneNumber == null
+  //                         ? null
+  //                         : Row(
+  //                             children: [Icon(Icons.phone), Text('Call')],
+  //                           ))
+  //             ],
+  //           ),
+  //         ],
+  //       ),
+  //     ),
+  //   ));
+  // }
 
   getProjects() {
     if (locator.get<UserController>().currentUser is CustomerModel) {

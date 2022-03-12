@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_master/config/theme.dart';
 
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:quick_feedback/quick_feedback.dart';
@@ -169,8 +170,8 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                                         .handymanModel!.averageReviews ??
                                     0.0,
                                 size: 22.0,
-                                color: Colors.orange,
-                                borderColor: Colors.orange,
+                                color: orange,
+                                borderColor: orange,
                               ),
                               SizedBox(height: 16.0),
                               Text(
@@ -195,7 +196,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                                       style: TextStyle(fontSize: 18.0),
                                     ),
                                     SizedBox(width: 4.0),
-                                    Icon(Icons.star, color: Colors.orange),
+                                    Icon(Icons.star, color: orange),
                                     SizedBox(width: 8.0),
                                     LinearPercentIndicator(
                                       lineHeight: 6.0,
@@ -205,7 +206,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                                       animation: true,
                                       animationDuration: 2500,
                                       percent: ratings[index],
-                                      progressColor: Colors.orange,
+                                      progressColor: orange,
                                     ),
                                   ],
                                 );

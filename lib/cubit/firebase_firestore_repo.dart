@@ -319,16 +319,6 @@ class FirebaseFirestoreRepo {
     return result;
   }
 
-  updateAllowNotifications(bool allowNotifications) {
-    final Map<String, dynamic> data = {
-      'allowNotifications': allowNotifications
-    };
-    FirebaseFirestore.instance
-        .collection(usersCollection)
-        .doc(locator.get<UserController>().currentUser!.uid)
-        .update(data);
-  }
-
   void updateToken(String? token, String uid) {
     final Map<String, dynamic> data = {'token': token};
     FirebaseFirestore.instance
