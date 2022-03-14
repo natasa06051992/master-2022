@@ -35,11 +35,15 @@ class _InformationsAboutUserWidgetState
   final _descriptionController = TextEditingController();
   final _startingCostController = TextEditingController();
   final _yearsInBusinessController = TextEditingController();
+  String? _selectedServices;
   @override
   void initState() {
     _displayNameController.text = widget.currentUser.displayName!;
     _phoneNumberController.text = widget.currentUser.phoneNumber ?? "";
-
+    _selectedServices = locator.get<UserController>().currentUser!
+            is HandymanModel
+        ? (locator.get<UserController>().currentUser! as HandymanModel).service
+        : '';
     if (widget.currentUser is HandymanModel) {
       _descriptionController.text =
           (widget.currentUser as HandymanModel).description ?? "";
@@ -102,10 +106,7 @@ class _InformationsAboutUserWidgetState
     }
 
     final formKey = GlobalKey<FormBuilderState>();
-    String? _selectedServices = locator.get<UserController>().currentUser!
-            is HandymanModel
-        ? (locator.get<UserController>().currentUser! as HandymanModel).service
-        : '';
+
     return FormBuilder(
       autovalidateMode: AutovalidateMode.disabled,
       key: formKey,

@@ -147,8 +147,6 @@ class _HandymanDetailScreenState extends State<HandymanDetailScreen> {
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
                                       children: [
-                                        //cr dodati provjeru da li je null
-
                                         Text(
                                             handymanModel.startingPrice != null
                                                 ? handymanModel.startingPrice
@@ -235,7 +233,6 @@ class _HandymanDetailScreenState extends State<HandymanDetailScreen> {
                         padding: const EdgeInsets.only(
                             left: 24.0, right: 24, top: 30, bottom: 24),
                         child: Text(
-                            //cr provjeriti za null
                             handymanModel.description != null
                                 ? handymanModel.description.toString()
                                 : "",
