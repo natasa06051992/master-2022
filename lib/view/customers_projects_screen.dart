@@ -10,14 +10,21 @@ import 'package:flutter_master/view_controller/user_controller.dart';
 import 'package:flutter_master/widgets/app_bar.dart';
 import 'package:flutter_master/widgets/mini_card_project.dart';
 import 'package:url_launcher/url_launcher.dart';
-//import 'package:url_launcher/url_launcher.dart';
+
+import 'screens.dart';
 
 class CustomersProjects extends StatefulWidget {
   static const String routeName = '/customers_projects';
   static Route route() {
     return MaterialPageRoute(
-        builder: (_) => CustomersProjects(),
-        settings: RouteSettings(name: routeName));
+        builder: (_) {
+          if (locator.get<UserController>().checkForInternetConnection(_)) {
+            return CustomersProjects();
+          } else {
+            return const NoInternetScreen();
+          }
+        },
+        settings: const RouteSettings(name: routeName));
   }
 
   @override
@@ -25,27 +32,19 @@ class CustomersProjects extends StatefulWidget {
 }
 
 class _CustomersProjectsState extends State<CustomersProjects> {
-  Future<void> _makePhoneCall(String phoneNumber) async {
-    final Uri launchUri = Uri(
-      scheme: 'tel',
-      path: phoneNumber,
-    );
-    await launch(launchUri.toString());
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: locator.get<UserController>().currentUser != null &&
                 locator.get<UserController>().currentUser is CustomerModel
-            ? AppBar(title: const Text('Projects'))
-            : buildAppBar(context, 'Projects'),
+            ? AppBar(title: const Text('Oglasi'))
+            : buildAppBar(context, 'Oglasi'),
         body: FutureBuilder(
             future: getProjects(),
             builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(
-                  child: const CircularProgressIndicator(),
+                  child: CircularProgressIndicator(),
                 );
               }
               if (snapshot.connectionState == ConnectionState.done) {
@@ -126,79 +125,23 @@ class _CustomersProjectsState extends State<CustomersProjects> {
                 is CustomerModel
             ? FloatingActionButton(
                 onPressed: () {
-                  Navigator.pushNamed(context, AddNewProjectScreen.routeName);
+                  if (locator.get<UserController>().currentUser!.phoneNumber ==
+                      null) {
+                    ScaffoldMessenger.of(context)
+                      ..hideCurrentSnackBar()
+                      ..showSnackBar(const SnackBar(
+                        content:
+                            Text('Dodaj broj telefona pre dodavanja projekta!'),
+                      ));
+                  } else {
+                    Navigator.pushNamed(context, AddNewProjectScreen.routeName);
+                  }
                 },
-                backgroundColor: orange,
+                backgroundColor: purple,
                 child: const Icon(Icons.add),
               )
             : null);
   }
-
-  // Center projectWidget(BuildContext context, DocumentSnapshot<Object?> ds) {
-  //   var project = Project.fromDocumentSnapshot(ds as Map<String, dynamic>);
-  //   return Center(
-  //       child: Card(
-  //     child: Container(
-  //       // width: MediaQuery.of(context).size.width * 0.9,
-  //       child: Row(
-  //         mainAxisAlignment: MainAxisAlignment.spaceAround,
-  //         children: [
-  //           ClipRRect(
-  //             borderRadius: BorderRadius.circular(30),
-  //             child: project.imageOfCustomer != null
-  //                 ? Image.network(
-  //                     project.imageOfCustomer!,
-  //                     height: 80,
-  //                     width: 80,
-  //                   )
-  //                 : const Image(
-  //                     image: AssetImage('assets/logo/LogoMakr-4NVCFS.png'),
-  //                     height: 80,
-  //                     width: 80,
-  //                   ),
-  //           ),
-  //           Column(
-  //             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-  //             children: [
-  //               Text(
-  //                 project.title,
-  //                 style: TextStyle(fontSize: 24),
-  //               ),
-  //               SizedBox(
-  //                 height: 20,
-  //               ),
-  //               Text(
-  //                 project.description,
-  //                 style: TextStyle(fontSize: 18),
-  //               ),
-  //             ],
-  //           ),
-  //           Column(
-  //             children: [
-  //               Text(
-  //                 project.date,
-  //                 style: TextStyle(fontSize: 11),
-  //               ),
-  //               SizedBox(height: 30),
-  //               if (locator.get<UserController>().currentUser is HandymanModel)
-  //                 ElevatedButton(
-  //                     onPressed: () {
-  //                       project.phoneNumber != null
-  //                           ? _makePhoneCall(project.phoneNumber!)
-  //                           : null;
-  //                     },
-  //                     child: project.phoneNumber == null
-  //                         ? null
-  //                         : Row(
-  //                             children: [Icon(Icons.phone), Text('Call')],
-  //                           ))
-  //             ],
-  //           ),
-  //         ],
-  //       ),
-  //     ),
-  //   ));
-  // }
 
   getProjects() {
     if (locator.get<UserController>().currentUser is CustomerModel) {
@@ -208,7 +151,13 @@ class _CustomersProjectsState extends State<CustomersProjects> {
               isEqualTo: locator.get<UserController>().currentUser!.uid)
           .get();
     } else {
-      return FirebaseFirestore.instance.collection("projects").get();
+      return FirebaseFirestore.instance
+          .collection("projects")
+          .where("service",
+              isEqualTo:
+                  (locator.get<UserController>().currentUser! as HandymanModel)
+                      .service)
+          .get();
     }
   }
 }

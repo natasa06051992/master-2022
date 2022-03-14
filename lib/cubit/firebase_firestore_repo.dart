@@ -8,11 +8,13 @@ import 'package:flutter_master/view_controller/user_controller.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 
+import '../config/constants.dart';
+
 class FirebaseFirestoreRepo {
   String usersCollection = 'users';
 
   addUserToFirebase(UserModel user) {
-    String role = user is HandymanModel ? 'Handyman' : 'Customer';
+    String role = user is HandymanModel ? Constants.role[0] : Constants.role[1];
     final Map<String, dynamic> data = {
       'uid': user.uid,
       'username': user.displayName,
@@ -54,9 +56,9 @@ class FirebaseFirestoreRepo {
         .where('uid', isEqualTo: user.uid)
         .get();
 
-    firebaseReviews.docs.forEach((doc) {
+    for (var doc in firebaseReviews.docs) {
       doc.reference.update(data);
-    });
+    }
   }
 
   void updateLocation(UserModel user, String text) {
@@ -145,7 +147,7 @@ class FirebaseFirestoreRepo {
       String choosenService) async {
     var handymans = await FirebaseFirestore.instance
         .collection(usersCollection)
-        .where("role", isEqualTo: "Handyman")
+        .where("role", isEqualTo: Constants.role[0])
         .where("service", isEqualTo: choosenService)
         .get();
     return handymans;
@@ -161,12 +163,12 @@ class FirebaseFirestoreRepo {
       'imageOfCustomer': userModel.avatarUrl
     };
     List<String> projects = await getProjects(userModel.uid);
-    projects.forEach((element) {
+    for (var element in projects) {
       FirebaseFirestore.instance
           .collection('projects')
           .doc(element)
           .update(dataProjects);
-    });
+    }
   }
 
   void updateDescription(UserModel userModel) {
@@ -230,24 +232,24 @@ class FirebaseFirestoreRepo {
 
   void addNewProject(String selectedService, String description, String title,
       UserModel? currentUser) {
-    final DateFormat formatter = DateFormat('yyyy-MM-dd hh:mm');
+    final DateFormat formatter = DateFormat('dd.MM.yyyy hh:mm');
     final Map<String, dynamic> data = {
       'uid': currentUser!.uid,
       'description': description,
       'service': selectedService,
       'date': formatter.format(DateTime.now()),
-      'imageOfCustomer': currentUser!.avatarUrl,
-      'name': currentUser!.displayName,
-      'location': currentUser!.location,
-      'phoneNumber': currentUser!.phoneNumber,
+      'imageOfCustomer': currentUser.avatarUrl,
+      'name': currentUser.displayName,
+      'location': currentUser.location,
+      'phoneNumber': currentUser.phoneNumber,
       'title': title
     };
-    var uuid = Uuid();
+    var uuid = const Uuid();
     String id = uuid.v4();
     (currentUser as CustomerModel).addProject(id);
     FirebaseFirestore.instance.collection("projects").doc(id).set(data);
     final Map<String, dynamic> dataProjects = {
-      'projects': (currentUser as CustomerModel).projects
+      'projects': (currentUser).projects
     };
     FirebaseFirestore.instance
         .collection("users")
@@ -313,9 +315,9 @@ class FirebaseFirestoreRepo {
         .where('uid', isEqualTo: user.uid)
         .get();
     List<String> result = [];
-    firebaseUrl.docs.forEach((doc) {
+    for (var doc in firebaseUrl.docs) {
       result.add(doc.reference.id);
-    });
+    }
     return result;
   }
 
@@ -324,6 +326,14 @@ class FirebaseFirestoreRepo {
     FirebaseFirestore.instance
         .collection(usersCollection)
         .doc(uid)
+        .update(data);
+  }
+
+  void updateDisplayName(String text) {
+    final Map<String, dynamic> data = {'username': text};
+    FirebaseFirestore.instance
+        .collection(usersCollection)
+        .doc(locator.get<UserController>().currentUser!.uid)
         .update(data);
   }
 
@@ -342,18 +352,18 @@ class FirebaseFirestoreRepo {
     QuerySnapshot<Map<String, dynamic>> listOfHandymans =
         await FirebaseFirestore.instance
             .collection('users')
-            .where('role', isEqualTo: 'Handyman')
+            .where('role', isEqualTo: Constants.role[0])
             .where('service', isEqualTo: service)
             .where('location', isEqualTo: location)
             .get();
 
     List<double> result = [];
-    listOfHandymans.docs.forEach((doc) {
+    for (var doc in listOfHandymans.docs) {
       var starting = doc['startingPrice'];
       if (starting != 0) {
         result.add(starting.toDouble());
       }
-    });
+    }
     var avrg = result.reduce((a, b) => a + b) / result.length;
 
     DocumentReference docRef =

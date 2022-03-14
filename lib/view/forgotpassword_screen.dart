@@ -2,15 +2,25 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_master/cubit/auth_cubit.dart';
+import 'package:flutter_master/locator.dart';
+import 'package:flutter_master/view_controller/user_controller.dart';
 import 'package:flutter_master/widgets/customButton.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
+
+import 'screens.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   static const String routeName = '/forgotpassword';
   static Route route() {
     return MaterialPageRoute(
-        builder: (_) => ForgotPasswordScreen(),
-        settings: RouteSettings(name: routeName));
+        builder: (_) {
+          if (locator.get<UserController>().checkForInternetConnection(_)) {
+            return ForgotPasswordScreen();
+          } else {
+            return const NoInternetScreen();
+          }
+        },
+        settings: const RouteSettings(name: routeName));
   }
 
   @override
@@ -23,7 +33,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Forgot Password?'),
+          title: const Text('Zaboravili ste lozinku?'),
         ),
         body: BlocConsumer<AuthCubit, AuthState>(listener: (context, state) {
           if (state is AuthForgotPasswordError) {
@@ -36,14 +46,14 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             ScaffoldMessenger.of(context)
               ..hideCurrentSnackBar()
               ..showSnackBar(const SnackBar(
-                content: Text("Reset link has been sent to your email!"),
+                content: Text("Link j eposlat na email!"),
                 backgroundColor: Colors.white,
               ));
             Navigator.pushNamed(context, '/login');
           }
         }, builder: (context, state) {
           if (state is AuthForgotPasswordLoading) {
-            return Center(child: const CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else {
             return SafeArea(
                 child: FormBuilder(
@@ -69,12 +79,12 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                                 name: 'email',
                                 validator: FormBuilderValidators.compose([
                                   FormBuilderValidators.email(context,
-                                      errorText: "Enter a valid email adress")
+                                      errorText: "Unesite validni email")
                                 ]),
                                 decoration: InputDecoration(
                                     prefixIcon: const Icon(Icons.email),
                                     contentPadding: const EdgeInsets.all(8),
-                                    hintText: "Enter email",
+                                    hintText: "Email",
                                     fillColor: Colors.grey[200]),
                                 textInputAction: TextInputAction.next,
                               )),
@@ -104,7 +114,7 @@ class SendLinkButton extends StatelessWidget {
     return CustomButton(
         child: BlocConsumer<AuthCubit, AuthState>(
             builder: (context, state) {
-              return Text('Send link');
+              return const Text('Poslati link');
             },
             listener: (context, state) {}),
         onPressed: onPressed);

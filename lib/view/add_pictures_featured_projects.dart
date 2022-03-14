@@ -1,20 +1,25 @@
 import 'dart:io';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_master/locator.dart';
 import 'package:flutter_master/view/customers_projects_screen.dart';
 import 'package:flutter_master/view_controller/user_controller.dart';
 import 'package:image_picker/image_picker.dart';
 
-import 'home_customer_screen.dart';
+import 'screens.dart';
 
 class AddPicturesFeaturedProjects extends StatefulWidget {
   static const String routeName = '/add_pictures_featured_projects';
   static Route route() {
     return MaterialPageRoute(
-        builder: (_) => AddPicturesFeaturedProjects(),
-        settings: RouteSettings(name: routeName));
+        builder: (_) {
+          if (locator.get<UserController>().checkForInternetConnection(_)) {
+            return AddPicturesFeaturedProjects();
+          } else {
+            return const NoInternetScreen();
+          }
+        },
+        settings: const RouteSettings(name: routeName));
   }
 
   @override
@@ -27,13 +32,13 @@ class _AddPicturesFeaturedProjectsState
   bool uploading = false;
   double val = 0;
 
-  List<File> _image = [];
+  final List<File> _image = [];
   final picker = ImagePicker();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('Add Image'),
+          title: const Text('Dodaj sliku'),
           actions: [
             FlatButton(
                 onPressed: () {
@@ -44,15 +49,17 @@ class _AddPicturesFeaturedProjectsState
                       .get<UserController>()
                       .uploadFiles(_image)
                       .whenComplete(() {
-                    Navigator.pushNamedAndRemoveUntil(
-                        context,
-                        CustomersProjects.routeName,
-                        (Route<dynamic> route) => false);
+                    Navigator.pop(context);
+                    //   Navigator.pushNamedAndRemoveUntil(
+                    //       context,
+                    //       CustomersProjects.routeName,
+                    //       (Route<dynamic> route) => false);
+                    //
                   });
                   setState(() {});
                 },
-                child: Text(
-                  'Upload',
+                child: const Text(
+                  'Sačuvati',
                   style: TextStyle(color: Colors.white),
                 ))
           ],
@@ -60,21 +67,21 @@ class _AddPicturesFeaturedProjectsState
         body: Stack(
           children: [
             Container(
-              padding: EdgeInsets.all(4),
+              padding: const EdgeInsets.all(4),
               child: GridView.builder(
                   itemCount: _image.length + 1,
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 3),
                   itemBuilder: (context, index) {
                     return index == 0
                         ? Center(
                             child: IconButton(
-                                icon: Icon(Icons.add),
+                                icon: const Icon(Icons.add),
                                 onPressed: () =>
                                     !uploading ? chooseImage() : null),
                           )
                         : Container(
-                            margin: EdgeInsets.all(3),
+                            margin: const EdgeInsets.all(3),
                             decoration: BoxDecoration(
                                 image: DecorationImage(
                                     image: FileImage(_image[index - 1]),
@@ -87,18 +94,17 @@ class _AddPicturesFeaturedProjectsState
                     child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Container(
-                        child: Text(
-                          'uploading...',
-                          style: TextStyle(fontSize: 20),
-                        ),
+                      const Text(
+                        'čuvanje...',
+                        style: TextStyle(fontSize: 20),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 10,
                       ),
                       CircularProgressIndicator(
                         value: val,
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
+                        valueColor:
+                            const AlwaysStoppedAnimation<Color>(Colors.green),
                       )
                     ],
                   ))

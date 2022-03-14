@@ -1,9 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_master/config/theme.dart';
-import 'package:flutter_master/cubit/auth_cubit.dart';
 import 'package:flutter_master/locator.dart';
 import 'package:flutter_master/model/user.dart';
 import 'package:flutter_master/view_controller/user_controller.dart';
@@ -17,8 +15,14 @@ class ProfileScreen extends StatefulWidget {
   static const String routeName = '/profile';
   static Route route() {
     return MaterialPageRoute(
-        builder: (_) => ProfileScreen(),
-        settings: RouteSettings(name: routeName));
+        builder: (_) {
+          if (locator.get<UserController>().checkForInternetConnection(_)) {
+            return ProfileScreen();
+          } else {
+            return const NoInternetScreen();
+          }
+        },
+        settings: const RouteSettings(name: routeName));
   }
 
   @override
@@ -26,21 +30,21 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  UserModel? _currentUser = locator.get<UserController>().currentUser;
+  final UserModel? _currentUser = locator.get<UserController>().currentUser;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('Profile'),
+          title: const Text('Profil'),
         ),
         body: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
               Expanded(
                 child: Container(
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     color: appBgColor,
-                    borderRadius: BorderRadius.only(
+                    borderRadius: const BorderRadius.only(
                       bottomLeft: Radius.circular(20.0),
                       bottomRight: Radius.circular(20.0),
                     ),
@@ -50,7 +54,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: <Widget>[
                         Avatar(
-                          avatarUrl: _currentUser!.avatarUrl ?? null,
+                          avatarUrl: _currentUser!.avatarUrl,
                           onTap: () async {
                             var image = (await ImagePicker()
                                 .getImage(source: ImageSource.gallery));
@@ -63,16 +67,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           },
                         ),
                         Text(
-                          "Hi ${_currentUser!.displayName ?? 'nice to see you here.'}",
-                          style: TextStyle(
+                          "${_currentUser!.displayName ?? ""}",
+                          style: const TextStyle(
                               fontSize: 18, fontWeight: FontWeight.w500),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 10,
                         ),
                         Text(
                           "${_currentUser!.email}",
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 12,
                           ),
                         ),

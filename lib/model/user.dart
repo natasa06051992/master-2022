@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_master/model/reviewModel.dart';
 
+import '../config/constants.dart';
+
 class UserModel {
   late String uid;
   String? displayName;
@@ -70,7 +72,7 @@ class HandymanModel extends UserModel {
             phoneNumber: phoneNumber,
             location: selectedLocation,
             avatarUrl: url,
-            role: "Handyman",
+            role: Constants.role[0],
             token: token) {
     reviews = [];
   }
@@ -147,7 +149,7 @@ class CustomerModel extends UserModel {
           phoneNumber: phoneNumber,
           location: selectedLocation,
           avatarUrl: url,
-          role: "Customer",
+          role: Constants.role[1],
           token: token,
         );
   CustomerModel.fromDocumentSnapshot(Map<String, dynamic> snapshot)

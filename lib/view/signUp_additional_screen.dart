@@ -1,11 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_master/config/constants.dart';
+import 'package:flutter_master/locator.dart';
+import 'package:flutter_master/view/no_internet.dart';
+
+import '../view_controller/user_controller.dart';
 
 class SignUpAdditionalScreen extends StatefulWidget {
   static const String routeName = '/additional';
   static Route route() {
     return MaterialPageRoute(
-        builder: (_) => SignUpAdditionalScreen(),
-        settings: RouteSettings(name: routeName));
+        builder: (_) {
+          if (locator.get<UserController>().checkForInternetConnection(_)) {
+            return SignUpAdditionalScreen();
+          } else {
+            return const NoInternetScreen();
+          }
+        },
+        settings: const RouteSettings(name: routeName));
   }
 
   @override
@@ -13,25 +24,16 @@ class SignUpAdditionalScreen extends StatefulWidget {
 }
 
 class _SignUpAdditionalScreenState extends State<SignUpAdditionalScreen> {
-  final List<String> _locations = ['Novi Sad', 'Beograd', 'Nis', 'Vrsac'];
-
-  String _selectedLocation = 'Novi Sad';
-
-  final List<String> _role = ['Handyman', 'Customer'];
-
-  String _selectedRole = 'Customer';
-
+  String _selectedLocation = Constants.locations[0];
+  String _selectedRole = Constants.role[0];
   bool isObscurePassword = true;
-
-  final List<String> _services = ['House cleaning', 'Handyman', 'Plumber'];
-
-  String _selectedService = 'House cleaning';
+  String _selectedService = Constants.services[0];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Sign Up'),
+        title: const Text('Napravi nalog'),
       ),
       body: Column(
         children: [
@@ -39,23 +41,23 @@ class _SignUpAdditionalScreenState extends State<SignUpAdditionalScreen> {
             width: MediaQuery.of(context).size.width * 0.9,
             child: Row(
               children: [
-                SizedBox(
+                const SizedBox(
                   width: 15,
                 ),
-                Icon(Icons.pin_drop),
-                SizedBox(
+                const Icon(Icons.pin_drop),
+                const SizedBox(
                   width: 15,
                 ),
                 DropdownButton(
                   hint: const Text(
-                      'Please choose a location'), // Not necessary for Option 1
+                      'Izaberi lokaciju'), // Not necessary for Option 1
                   value: _selectedLocation,
                   onChanged: (newValue) {
                     setState(() {
                       _selectedLocation = newValue.toString();
                     });
                   },
-                  items: _locations.map((location) {
+                  items: Constants.locations.map((location) {
                     return DropdownMenuItem(
                       child: Text(location),
                       value: location,
@@ -69,11 +71,11 @@ class _SignUpAdditionalScreenState extends State<SignUpAdditionalScreen> {
             width: MediaQuery.of(context).size.width * 0.9,
             child: Row(
               children: [
-                SizedBox(
+                const SizedBox(
                   width: 15,
                 ),
-                Icon(Icons.handyman),
-                SizedBox(
+                const Icon(Icons.handyman),
+                const SizedBox(
                   width: 15,
                 ),
                 DropdownButton(
@@ -83,7 +85,7 @@ class _SignUpAdditionalScreenState extends State<SignUpAdditionalScreen> {
                       _selectedRole = newValue.toString();
                     });
                   },
-                  items: _role.map((role) {
+                  items: Constants.role.map((role) {
                     return DropdownMenuItem(
                       child: Text(role),
                       value: role,
@@ -93,16 +95,16 @@ class _SignUpAdditionalScreenState extends State<SignUpAdditionalScreen> {
               ],
             ),
           ),
-          if (_selectedRole.contains('Handyman'))
+          if (_selectedRole.contains(Constants.role[0]))
             SizedBox(
               width: MediaQuery.of(context).size.width * 0.9,
               child: Row(
                 children: [
-                  SizedBox(
+                  const SizedBox(
                     width: 15,
                   ),
-                  Icon(Icons.room_service),
-                  SizedBox(
+                  const Icon(Icons.room_service),
+                  const SizedBox(
                     width: 15,
                   ),
                   DropdownButton(
@@ -112,7 +114,7 @@ class _SignUpAdditionalScreenState extends State<SignUpAdditionalScreen> {
                         _selectedService = newValue.toString();
                       });
                     },
-                    items: _services.map((service) {
+                    items: Constants.services.map((service) {
                       return DropdownMenuItem(
                         child: Text(service),
                         value: service,

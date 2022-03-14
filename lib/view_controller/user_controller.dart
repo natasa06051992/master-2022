@@ -1,7 +1,8 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_master/cubit/auth_cubit.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_master/cubit/connectivity.dart';
 import 'package:flutter_master/cubit/firebase_firestore_repo.dart';
 import 'package:flutter_master/cubit/storage_repo.dart';
 import 'package:flutter_master/locator.dart';
@@ -9,38 +10,40 @@ import 'package:flutter_master/model/category.dart';
 import 'package:flutter_master/model/reviewModel.dart';
 import 'package:flutter_master/model/user.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class UserController {
   UserModel? _currentUser;
-
-  final AuthCubit _authRepo = locator.get<AuthCubit>();
+  List<Category>? _features = [];
   final StorageRepo _storageRepo = locator.get<StorageRepo>();
   final FirebaseFirestoreRepo _firebaseFirestoreRepo =
       locator.get<FirebaseFirestoreRepo>();
 
-  void initUser(UserModel? userModel) {
+  Future<void> initUser(UserModel? userModel) async {
     _currentUser = userModel;
   }
 
-  UserModel? get currentUser => _currentUser;
+  Future<void> initCategories() async {
+    _features = await getCategories();
+  }
 
+  UserModel? get currentUser => _currentUser;
+  List<Category>? get features => _features;
   Future<void> uploadProfilePicture(File image) async {
-    if (image != null) {
-      await _storageRepo.uploadProfileImage(image, _currentUser!).then((value) {
-        _currentUser!.avatarUrl = value;
-        _firebaseFirestoreRepo.updateAvatarUrl(_currentUser!);
-      });
-    }
+    await _storageRepo.uploadProfileImage(image, _currentUser!).then((value) {
+      _currentUser!.avatarUrl = value;
+      _firebaseFirestoreRepo.updateAvatarUrl(_currentUser!);
+    });
   }
 
   void updateDisplayName(String text) {
     _currentUser!.displayName = text;
-    _authRepo.updateDisplayName(text);
+    _firebaseFirestoreRepo.updateDisplayName(text);
   }
 
   void updateService(String text) {
     if (_currentUser is HandymanModel) {
-      (_currentUser as HandymanModel)!.service = text;
+      (_currentUser as HandymanModel).service = text;
       _firebaseFirestoreRepo.updateService(_currentUser!, text);
     }
   }
@@ -51,7 +54,7 @@ class UserController {
   }
 
   void addReview(rating, feedback, HandymanModel user) {
-    final DateFormat formatter = DateFormat('yyyy-MM-dd hh:mm');
+    final DateFormat formatter = DateFormat('dd.MM.yyyy hh:mm');
     var review = ReviewModel(
         image: _currentUser?.avatarUrl,
         name: _currentUser?.displayName,
@@ -100,14 +103,12 @@ class UserController {
   }
 
   uploadFiles(List<File> images) async {
-    if (images != null) {
-      await _storageRepo
-          .uploadImagesFeaturedProjects(images, _currentUser!)
-          .then((value) {
-        (_currentUser! as HandymanModel).urlToGallery?.addAll(value!);
-        _firebaseFirestoreRepo.updateUrlToGallery(_currentUser!);
-      });
-    }
+    await _storageRepo
+        .uploadImagesFeaturedProjects(images, _currentUser!)
+        .then((value) {
+      (_currentUser! as HandymanModel).urlToGallery?.addAll(value!);
+      _firebaseFirestoreRepo.updateUrlToGallery(_currentUser!);
+    });
   }
 
   Future<List<ReviewModel>?> getReviews(HandymanModel handymanModel) async {
@@ -136,5 +137,9 @@ class UserController {
 
   calculate(String location, String service) async {
     return await _firebaseFirestoreRepo.calculate(location, service);
+  }
+
+  bool checkForInternetConnection(BuildContext buildContext) {
+    return Provider.of<ConnectivityProvider>(buildContext).isOnline;
   }
 }

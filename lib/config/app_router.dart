@@ -12,7 +12,6 @@ class AppRouter {
     switch (settings.name) {
       case HomeCustomerScreen.routeName:
         return HomeCustomerScreen.route();
-
       case HandymanDetailScreen.routeName:
         final args = settings.arguments as UserModel;
         return HandymanDetailScreen.route(args);
@@ -50,10 +49,10 @@ class AppRouter {
       settings: const RouteSettings(name: '/error'),
       builder: (_) => Scaffold(
         appBar: AppBar(
-          title: const Text('Error'),
+          title: const Text('Greška'),
         ),
         body: const Center(
-          child: Text('Something went wrong!'),
+          child: Text('Došlo je do greške! Ponovo pokrenite aplikaciju!'),
         ),
       ),
     );

@@ -18,18 +18,11 @@ class StorageRepo {
   }
 
   Future<String?> getUserProfileImageUrl(String uid) async {
-    // return await FirebaseStorage.instance
-    //     .ref()
-    //     .child("user/profile/$uid")
-    //     .getDownloadURL();
-
     var ref = FirebaseStorage.instance.ref().child("user/profile/$uid");
     try {
       return await ref.getDownloadURL();
-      // Do whatever
     } catch (err) {
       return null;
-      // Doesn't exist... or potentially some other error
     }
   }
 

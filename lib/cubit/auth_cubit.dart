@@ -10,6 +10,8 @@ import 'package:flutter_master/model/user.dart';
 import 'package:flutter_master/view_controller/user_controller.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
+import '../config/constants.dart';
+
 part 'auth_state.dart';
 
 class AuthCubit extends Cubit<AuthState> {
@@ -33,10 +35,8 @@ class AuthCubit extends Cubit<AuthState> {
       if (user != null) {
         await createCurrentUser(user)
             .then((value) => emit(AuthLoginSuccess(user: user)));
-        // linkEmailGoogle();
       }
     } on FirebaseAuthException catch (e) {
-      print(e.message);
       emit(AuthLoginError(error: e.message!));
     }
   }
@@ -44,10 +44,10 @@ class AuthCubit extends Cubit<AuthState> {
   linkEmailGoogle() async {
     List<String> providers = await firebaseAuth
         .fetchSignInMethodsForEmail(firebaseAuth.currentUser!.email!);
-    //get currently logged in user
+
     User? existingUser = firebaseAuth.currentUser;
     if (existingUser == null || providers.contains("google.com")) return;
-    //get the credentials of the new linking account
+
     final GoogleSignIn _googleSignIn = GoogleSignIn();
 
     final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
@@ -59,9 +59,11 @@ class AuthCubit extends Cubit<AuthState> {
       accessToken: googleAuth.accessToken,
       idToken: googleAuth.idToken,
     );
-
-    //now link these credentials with the existing user
-    var linkauthresult = await existingUser.linkWithCredential(gcredential);
+    try {
+      await existingUser.linkWithCredential(gcredential);
+    } catch (e) {
+      print(e);
+    }
   }
 
   Future googleAuth() async {
@@ -71,15 +73,14 @@ class AuthCubit extends Cubit<AuthState> {
       try {
         _googleUser = await googleSignIn.signIn();
       } on FirebaseAuthException catch (e) {
-        print(e.message);
         emit(AuthGoogleError(error: e.toString()));
       }
       if (_googleUser == null) {
-        emit(AuthGoogleError());
+        emit(const AuthGoogleError());
         return;
       }
       final GoogleSignInAuthentication googleAuth =
-          await _googleUser!.authentication;
+          await _googleUser.authentication;
       final AuthCredential credential = GoogleAuthProvider.credential(
         idToken: googleAuth.idToken,
         accessToken: googleAuth.accessToken,
@@ -88,14 +89,13 @@ class AuthCubit extends Cubit<AuthState> {
       bool isSigndUpUser = await locator
           .get<FirebaseFirestoreRepo>()
           .checkIfUserIsSignedUp(user!.uid);
-      if (user != null && isSigndUpUser) {
+      if (isSigndUpUser) {
         await createCurrentUser(user)
             .then((value) => emit(AuthGoogleSuccess(user: user)));
       } else {
-        emit(const AuthGoogleError(error: "User is not signed up!"));
+        emit(const AuthGoogleError(error: "Korisnik nije napravio nalog!"));
       }
     } on FirebaseAuthException catch (e) {
-      print(e.message);
       emit(AuthGoogleError(error: e.toString()));
     }
   }
@@ -135,7 +135,7 @@ class AuthCubit extends Cubit<AuthState> {
       // if the user is not null
       if (user != null) {
         user
-            .updateDisplayName(name) //cr zasto?
+            .updateDisplayName(name)
             .then((value) => createNewUser(selectedLocation, selectedRole,
                 selectedService, 0, 0, [], [])) //cr nepotrebno
             .then((value) =>
@@ -161,7 +161,7 @@ class AuthCubit extends Cubit<AuthState> {
     if (userModel == null && firebaseAuth.currentUser != null) {
       String? url = await getDownloadUrl(firebaseUser.uid);
       String? token = await FirebaseMessaging.instance.getToken();
-      if (selectedRole.contains('Handyman')) {
+      if (selectedRole.contains(Constants.role[0])) {
         userModel = HandymanModel(
             firebaseUser.uid,
             firebaseUser.displayName!,
@@ -207,7 +207,7 @@ class AuthCubit extends Cubit<AuthState> {
 
   Future facebookAuth() async {
     try {
-      emit(AuthFBLoading());
+      emit(const AuthFBLoading());
       final LoginResult result = await facebookSignIn.login();
 
       switch (result.status) {
@@ -220,47 +220,28 @@ class AuthCubit extends Cubit<AuthState> {
           bool isSigndUpUser = await locator
               .get<FirebaseFirestoreRepo>()
               .checkIfUserIsSignedUp(userCredential!.uid);
-          if (userCredential != null && isSigndUpUser) {
+          if (isSigndUpUser) {
             await createCurrentUser(userCredential);
             emit(AuthFBSuccess(user: userCredential));
           }
           return;
-//provjeriti da li izbaci gresku
+
         case LoginStatus.failed:
-          return emit(AuthFBError());
+          return emit(const AuthFBError());
         default:
-          return emit(AuthFBError());
+          return emit(const AuthFBError());
       }
-    } on FirebaseAuthException catch (e) {
+    } on FirebaseAuthException {
       emit(const AuthFBError());
       //throw e;
     }
   }
 
-  Future googleLogout() async {
-    userModel = null;
-    locator.get<UserController>().initUser(null);
-    await googleSignIn.signOut();
-    emit(const AuthLogout());
-  }
-
-  Future fbLogout() async {
-    userModel = null;
-    locator.get<UserController>().initUser(null);
-    await facebookSignIn.logOut();
-    emit(const AuthLogout());
-  }
-
-  // auth logou
   Future logout() async {
     userModel = null;
     locator.get<UserController>().initUser(null);
     await firebaseAuth.signOut();
     emit(const AuthLogout());
-  }
-
-  void updateDisplayName(String text) async {
-    firebaseAuth.currentUser!.updateDisplayName(text);
   }
 
   createUser(
@@ -270,7 +251,7 @@ class AuthCubit extends Cubit<AuthState> {
     if (userModel == null && firebaseAuth.currentUser != null) {
       var userFromFirestore =
           await locator.get<UserController>().getUser(firebaseUser.uid);
-      if (selectedRole.contains('Handyman')) {
+      if (selectedRole.contains(Constants.role[0])) {
         userModel = HandymanModel.fromDocumentSnapshot(
             userFromFirestore as Map<String, dynamic>);
       } else {
@@ -281,7 +262,6 @@ class AuthCubit extends Cubit<AuthState> {
       if (token != null && userModel!.token != token) {
         locator.get<FirebaseFirestoreRepo>().updateToken(token, userModel!.uid);
         userModel?.setToken(token);
-        print(" token:$token");
       }
       locator.get<UserController>().initUser(userModel);
       return userModel;

@@ -10,12 +10,20 @@ import 'package:flutter_master/view_controller/user_controller.dart';
 import 'package:flutter_master/widgets/customButton.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 
+import '../config/constants.dart';
+
 class SignupScreen extends StatefulWidget {
   static const String routeName = '/signup';
 
   static Route route() {
     return MaterialPageRoute(
-        builder: (_) => SignupScreen(),
+        builder: (_) {
+          if (locator.get<UserController>().checkForInternetConnection(_)) {
+            return SignupScreen();
+          } else {
+            return const NoInternetScreen();
+          }
+        },
         settings: const RouteSettings(name: routeName));
   }
 
@@ -23,14 +31,11 @@ class SignupScreen extends StatefulWidget {
   State<SignupScreen> createState() => _SignupScreenState();
 }
 
-final List<String> _locations = ['Novi Sad', 'Beograd', 'Nis', 'Vrsac'];
-String _selectedLocation = 'Novi Sad';
-final List<String> _role = ['Handyman', 'Customer'];
-String _selectedRole = 'Customer';
-bool isObscurePassword = true;
-final List<String> _services = ['House cleaning', 'Handyman', 'Plumber'];
+String _selectedLocation = Constants.locations[0];
 
-String _selectedService = 'House cleaning';
+String _selectedRole = Constants.role[0];
+bool isObscurePassword = true;
+String _selectedService = Constants.services[0];
 bool isAlreadyCreatedAcount = false;
 
 class _SignupScreenState extends State<SignupScreen> {
@@ -57,7 +62,7 @@ class _SignupScreenState extends State<SignupScreen> {
               ScaffoldMessenger.of(context)
                 ..hideCurrentSnackBar()
                 ..showSnackBar(const SnackBar(
-                  content: Text("Account successfully created!"),
+                  content: Text("Uspešno napravljen nalog!"),
                 ));
               formKey.currentState!.reset();
               if (locator.get<UserController>().currentUser is CustomerModel) {
@@ -99,14 +104,14 @@ class _SignupScreenState extends State<SignupScreen> {
                               name: 'name',
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return 'Please enter name';
+                                  return 'Unesite ime';
                                 }
                                 return null;
                               },
                               decoration: InputDecoration(
                                   prefixIcon: const Icon(Icons.person),
                                   contentPadding: const EdgeInsets.all(8),
-                                  hintText: "Enter name",
+                                  hintText: "Ime",
                                   fillColor: Colors.grey[200]),
                               textInputAction: TextInputAction.next,
                             )),
@@ -119,12 +124,12 @@ class _SignupScreenState extends State<SignupScreen> {
                               name: 'email',
                               validator: FormBuilderValidators.compose([
                                 FormBuilderValidators.email(context,
-                                    errorText: "Enter a valid email adress")
+                                    errorText: "Unesite validan email")
                               ]),
                               decoration: InputDecoration(
                                   prefixIcon: const Icon(Icons.email),
                                   contentPadding: const EdgeInsets.all(8),
-                                  hintText: "Enter email",
+                                  hintText: "email",
                                   fillColor: Colors.grey[200]),
                               textInputAction: TextInputAction.next,
                             )),
@@ -137,7 +142,7 @@ class _SignupScreenState extends State<SignupScreen> {
                               name: 'password',
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return 'Please enter password';
+                                  return 'Unesite lozinka';
                                 }
                                 return null;
                               },
@@ -145,7 +150,7 @@ class _SignupScreenState extends State<SignupScreen> {
                               decoration: InputDecoration(
                                   prefixIcon: const Icon(Icons.lock),
                                   contentPadding: const EdgeInsets.all(8),
-                                  hintText: "Enter password",
+                                  hintText: "lozinka",
                                   fillColor: Colors.grey[200],
                                   suffixIcon: InkWell(
                                     child: Icon(isObscurePassword
@@ -159,7 +164,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                   )),
                               textInputAction: TextInputAction.done,
                             )),
-                        SizedBox(
+                        const SizedBox(
                           height: 10,
                         ),
                         SizedBox(
@@ -167,25 +172,25 @@ class _SignupScreenState extends State<SignupScreen> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
-                              SizedBox(
+                              const SizedBox(
                                 width: 8,
                               ),
                               Icon(Icons.pin_drop, color: Colors.grey[600]),
-                              SizedBox(
+                              const SizedBox(
                                 width: 20,
                               ),
                               DropdownButton(
                                 style: TextStyle(
                                     color: Colors.grey[600], fontSize: 16),
                                 hint: const Text(
-                                    'Please choose a location'), // Not necessary for Option 1
+                                    'Unesite lokaciju'), // Not necessary for Option 1
                                 value: _selectedLocation,
                                 onChanged: (newValue) {
                                   setState(() {
                                     _selectedLocation = newValue.toString();
                                   });
                                 },
-                                items: _locations.map((location) {
+                                items: Constants.locations.map((location) {
                                   return DropdownMenuItem(
                                     child: Text(location),
                                     value: location,
@@ -202,70 +207,65 @@ class _SignupScreenState extends State<SignupScreen> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
-                                Row(
-                                  children: [
-                                    SizedBox(
-                                      width: 10,
-                                    ),
-                                    Icon(Icons.handyman,
-                                        color: Colors.grey[600]),
-                                    SizedBox(
-                                      width: 15,
-                                    ),
-                                    DropdownButton(
-                                      style: TextStyle(
-                                          color: Colors.grey[600],
-                                          fontSize: 16),
-                                      value: _selectedRole,
-                                      onChanged: (newValue) {
-                                        setState(() {
-                                          _selectedRole = newValue.toString();
-                                        });
-                                      },
-                                      items: _role.map((role) {
-                                        return DropdownMenuItem(
-                                          child: Text(role),
-                                          value: role,
-                                        );
-                                      }).toList(),
-                                    ),
-                                  ],
+                                const SizedBox(
+                                  width: 10,
                                 ),
-                                SizedBox(
-                                  width: 25,
+                                Icon(Icons.handyman, color: Colors.grey[600]),
+                                const SizedBox(
+                                  width: 15,
                                 ),
-                                if (_selectedRole.contains('Handyman'))
-                                  Row(
-                                    children: [
-                                      Icon(Icons.room_service,
-                                          color: Colors.grey[600]),
-                                      SizedBox(
-                                        width: 15,
-                                      ),
-                                      DropdownButton(
-                                        style: TextStyle(
-                                            color: Colors.grey[600],
-                                            fontSize: 16),
-                                        value: _selectedService,
-                                        onChanged: (newValue) {
-                                          setState(() {
-                                            _selectedService =
-                                                newValue.toString();
-                                          });
-                                        },
-                                        items: _services.map((service) {
-                                          return DropdownMenuItem(
-                                            child: Text(service),
-                                            value: service,
-                                          );
-                                        }).toList(),
-                                      ),
-                                    ],
-                                  ),
+                                DropdownButton(
+                                  style: TextStyle(
+                                      color: Colors.grey[600], fontSize: 16),
+                                  value: _selectedRole,
+                                  onChanged: (newValue) {
+                                    setState(() {
+                                      _selectedRole = newValue.toString();
+                                    });
+                                  },
+                                  items: Constants.role.map((role) {
+                                    String child = role;
+                                    if (role == "Mušterija") {
+                                      child = "Tražim majstora";
+                                    }
+                                    return DropdownMenuItem(
+                                      child: Text(child),
+                                      value: role,
+                                    );
+                                  }).toList(),
+                                ),
                               ],
                             ),
                           ),
                         ),
+                        if (_selectedRole.contains(Constants.role[0]))
+                          Row(
+                            children: [
+                              const SizedBox(
+                                width: 30,
+                              ),
+                              Icon(Icons.room_service, color: Colors.grey[600]),
+                              const SizedBox(
+                                width: 15,
+                              ),
+                              DropdownButton(
+                                style: TextStyle(
+                                    color: Colors.grey[600], fontSize: 16),
+                                value: _selectedService,
+                                onChanged: (newValue) {
+                                  setState(() {
+                                    _selectedService = newValue.toString();
+                                  });
+                                },
+                                items: Constants.services.map((service) {
+                                  return DropdownMenuItem(
+                                    child: Text(service),
+                                    value: service,
+                                  );
+                                }).toList(),
+                              ),
+                            ],
+                          ),
                         const SizedBox(
                           height: 20,
                         ),
@@ -315,7 +315,7 @@ class SignUpButton extends StatelessWidget {
                       valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                     ));
               } else {
-                return const Text('Create acount');
+                return const Text('Kreiranje naloga');
               }
             },
             listener: (context, state) {}),

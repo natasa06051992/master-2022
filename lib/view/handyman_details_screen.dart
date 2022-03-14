@@ -1,22 +1,33 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_master/config/theme.dart';
+import 'package:flutter_master/locator.dart';
 import 'package:flutter_master/model/user.dart';
-import 'package:flutter_master/view/reviews_screen.dart';
+import 'package:flutter_master/view_controller/user_controller.dart';
 
 import 'package:flutter_master/widgets/avatar.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:photo_view/photo_view.dart';
 
+import 'screens.dart';
+
 class HandymanDetailScreen extends StatefulWidget {
   static const String routeName = '/handyman_detail';
 
   static late UserModel? userModel;
+
+  const HandymanDetailScreen({Key? key}) : super(key: key);
   static Route route(UserModel user) {
     userModel = user;
     return MaterialPageRoute(
-        builder: (_) => HandymanDetailScreen(),
-        settings: RouteSettings(name: routeName));
+        builder: (_) {
+          if (locator.get<UserController>().checkForInternetConnection(_)) {
+            return const HandymanDetailScreen();
+          } else {
+            return const NoInternetScreen();
+          }
+        },
+        settings: const RouteSettings(name: routeName));
   }
 
   @override
@@ -49,42 +60,40 @@ class _HandymanDetailScreenState extends State<HandymanDetailScreen> {
       imageSliders = (HandymanDetailScreen.userModel as HandymanModel)
           .urlToGallery!
           .map((item) => Container(
-                child: Container(
-                  margin: EdgeInsets.all(5.0),
-                  child: ClipRRect(
-                      borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                      child: Stack(
-                        children: <Widget>[
-                          PhotoView(imageProvider: NetworkImage(item)),
-                          Positioned(
-                            bottom: 0.0,
-                            left: 0.0,
-                            right: 0.0,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  colors: [
-                                    Color.fromARGB(200, 0, 0, 0),
-                                    Color.fromARGB(0, 0, 0, 0)
-                                  ],
-                                  begin: Alignment.bottomCenter,
-                                  end: Alignment.topCenter,
-                                ),
+                margin: const EdgeInsets.all(5.0),
+                child: ClipRRect(
+                    borderRadius: const BorderRadius.all(Radius.circular(5.0)),
+                    child: Stack(
+                      children: <Widget>[
+                        PhotoView(imageProvider: NetworkImage(item)),
+                        Positioned(
+                          bottom: 0.0,
+                          left: 0.0,
+                          right: 0.0,
+                          child: Container(
+                            decoration: const BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  Color.fromARGB(200, 0, 0, 0),
+                                  Color.fromARGB(0, 0, 0, 0)
+                                ],
+                                begin: Alignment.bottomCenter,
+                                end: Alignment.topCenter,
                               ),
-                              padding: EdgeInsets.symmetric(
-                                  vertical: 10.0, horizontal: 20.0),
                             ),
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 10.0, horizontal: 20.0),
                           ),
-                        ],
-                      )),
-                ),
+                        ),
+                      ],
+                    )),
               ))
           .toList();
     }
     handymanModel = HandymanDetailScreen.userModel as HandymanModel;
     return Scaffold(
         appBar: AppBar(
-          title: Text('Details'),
+          title: const Text('Profil'),
         ),
         body: Stack(
           children: <Widget>[
@@ -92,8 +101,7 @@ class _HandymanDetailScreenState extends State<HandymanDetailScreen> {
               children: [
                 Flexible(
                   flex: 1,
-                  child: Container(
-                      child: Stack(
+                  child: Stack(
                     children: <Widget>[
                       SafeArea(
                         bottom: false,
@@ -104,20 +112,20 @@ class _HandymanDetailScreenState extends State<HandymanDetailScreen> {
                           child: Column(
                             children: [
                               Avatar(
-                                avatarUrl: handymanModel!.avatarUrl ?? null,
+                                avatarUrl: handymanModel.avatarUrl,
                                 onTap: () {},
                               ),
                               Padding(
-                                padding: const EdgeInsets.only(top: 24.0),
-                                child: Text(handymanModel!.displayName!,
-                                    style: TextStyle(
+                                padding: const EdgeInsets.only(top: 22.0),
+                                child: Text(handymanModel.displayName!,
+                                    style: const TextStyle(
                                         color: textColor,
                                         fontWeight: FontWeight.w600,
-                                        fontSize: 22)),
+                                        fontSize: 20)),
                               ),
                               Padding(
                                 padding: const EdgeInsets.only(top: 8.0),
-                                child: Text(handymanModel!.service!,
+                                child: Text(handymanModel.service!,
                                     style: TextStyle(
                                         color: textColor.withOpacity(0.85),
                                         fontSize: 15,
@@ -142,11 +150,11 @@ class _HandymanDetailScreenState extends State<HandymanDetailScreen> {
                                         Text(
                                             handymanModel.yearsInBusiness!
                                                 .toString(),
-                                            style: TextStyle(
+                                            style: const TextStyle(
                                                 color: textColor,
                                                 fontSize: 18.0,
                                                 fontWeight: FontWeight.bold)),
-                                        Text("Years in businees",
+                                        Text("Godine iskustva",
                                             style: TextStyle(
                                                 color:
                                                     textColor.withOpacity(0.8),
@@ -162,11 +170,11 @@ class _HandymanDetailScreenState extends State<HandymanDetailScreen> {
                                         Text(
                                             handymanModel.startingPrice
                                                 .toString(),
-                                            style: TextStyle(
+                                            style: const TextStyle(
                                                 color: textColor,
                                                 fontSize: 18.0,
                                                 fontWeight: FontWeight.bold)),
-                                        Text("Starting price (RSD)",
+                                        Text("Početna cena (RSD)",
                                             style: TextStyle(
                                                 color:
                                                     textColor.withOpacity(0.8),
@@ -182,11 +190,11 @@ class _HandymanDetailScreenState extends State<HandymanDetailScreen> {
                                         Text(
                                             handymanModel.averageReviews
                                                 .toString(),
-                                            style: TextStyle(
+                                            style: const TextStyle(
                                                 color: textColor,
                                                 fontSize: 18.0,
                                                 fontWeight: FontWeight.bold)),
-                                        Text("Average review",
+                                        Text("Srednja ocena",
                                             style: TextStyle(
                                                 color:
                                                     textColor.withOpacity(0.8),
@@ -201,17 +209,16 @@ class _HandymanDetailScreenState extends State<HandymanDetailScreen> {
                         ),
                       ),
                     ],
-                  )),
+                  ),
                 ),
                 Flexible(
                   flex: 1,
-                  child: Container(
-                      child: SingleChildScrollView(
-                          child: Padding(
+                  child: SingleChildScrollView(
+                      child: Padding(
                     padding: const EdgeInsets.only(
                         left: 32.0, right: 32.0, top: 42.0),
                     child: Column(children: [
-                      Text("About me",
+                      const Text("O meni:",
                           style: TextStyle(
                               color: textColor,
                               fontWeight: FontWeight.w600,
@@ -223,11 +230,11 @@ class _HandymanDetailScreenState extends State<HandymanDetailScreen> {
                             //cr provjeriti za null
                             handymanModel.description!,
                             textAlign: TextAlign.center,
-                            style: TextStyle(color: textColor, fontSize: 15)),
+                            style: const TextStyle(
+                                color: textColor, fontSize: 15)),
                       ),
-                      if (imageSliders.length > 0)
-                        Container(
-                            child: CarouselSlider(
+                      if (imageSliders.isNotEmpty)
+                        CarouselSlider(
                           options: CarouselOptions(
                             aspectRatio: 2.0,
                             enlargeCenterPage: true,
@@ -236,9 +243,9 @@ class _HandymanDetailScreenState extends State<HandymanDetailScreen> {
                             autoPlay: true,
                           ),
                           items: imageSliders,
-                        )),
+                        ),
                     ]),
-                  ))),
+                  )),
                 ),
               ],
             ),
@@ -251,7 +258,7 @@ class _HandymanDetailScreenState extends State<HandymanDetailScreen> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisSize: MainAxisSize.max,
                   children: [
-                    SizedBox(height: 15),
+                    const SizedBox(height: 15),
                     Padding(
                       padding: const EdgeInsets.only(right: 15.0),
                       child: RaisedButton(
@@ -272,7 +279,7 @@ class _HandymanDetailScreenState extends State<HandymanDetailScreen> {
                         child: Row(
                           children: [
                             Padding(
-                                padding: EdgeInsets.only(
+                                padding: const EdgeInsets.only(
                                     left: 12.0, right: 12.0, top: 2, bottom: 2),
                                 child: Row(
                                   children: [
@@ -285,35 +292,37 @@ class _HandymanDetailScreenState extends State<HandymanDetailScreen> {
                                               arguments: handymanModel);
                                         });
                                       },
-                                      child: Text("Reviews:  ",
-                                          style: TextStyle(fontSize: 15.0)),
+                                      child: const Text("Recenzije:  ",
+                                          style: TextStyle(
+                                              fontSize: 15.0,
+                                              color: Colors.black)),
                                     ),
                                     Text(
                                         handymanModel.averageReviews != null
                                             ? handymanModel.averageReviews!
                                                 .toStringAsFixed(2)
                                             : "0.0",
-                                        style: TextStyle(
+                                        style: const TextStyle(
                                             fontSize: 15.0,
                                             fontWeight: FontWeight.bold)),
                                     handymanModel.numberOfReviews != null
                                         ? Text(
                                             " (${handymanModel.numberOfReviews})",
-                                            style: TextStyle(
+                                            style: const TextStyle(
                                                 fontSize: 15.0,
                                                 fontWeight: FontWeight.bold))
-                                        : Text(""),
-                                    SizedBox(
+                                        : const Text(""),
+                                    const SizedBox(
                                       width: 4,
                                     ),
-                                    Icon(
+                                    const Icon(
                                       Icons.star,
                                       size: 17,
-                                      color: yellow,
+                                      color: orange,
                                     ),
                                   ],
                                 )),
-                            SizedBox(width: 30),
+                            const SizedBox(width: 15),
                             ElevatedButton(
                                 onPressed: () {
                                   handymanModel.phoneNumber != null
@@ -324,9 +333,9 @@ class _HandymanDetailScreenState extends State<HandymanDetailScreen> {
                                 child: handymanModel.phoneNumber == null
                                     ? null
                                     : Row(
-                                        children: [
+                                        children: const [
                                           Icon(Icons.phone),
-                                          Text('Call',
+                                          Text('Nazovi',
                                               style: TextStyle(fontSize: 15.0))
                                         ],
                                       ))

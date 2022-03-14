@@ -19,8 +19,7 @@ class _SearchWidgetState extends State<SearchWidget> {
   final controller = TextEditingController();
   @override
   Widget build(BuildContext context) {
-    return Container(
-        child: TextField(
+    return TextField(
       controller: controller,
       decoration: InputDecoration(
           icon: Icon(Icons.search),
@@ -37,6 +36,6 @@ class _SearchWidgetState extends State<SearchWidget> {
           hintText: widget.hintText,
           border: InputBorder.none),
       onChanged: widget.onChanged,
-    ));
+    );
   }
 }

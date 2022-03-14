@@ -36,10 +36,10 @@ class _MiniCardState extends State<MiniCard> {
             .then((value) => super.setState(() {}));
       },
       child: Container(
-        padding: EdgeInsets.all(12.0),
+        padding: const EdgeInsets.all(12.0),
         decoration: BoxDecoration(
           border: Border.all(
-            color: Color.fromRGBO(233, 233, 233, 1),
+            color: const Color.fromRGBO(233, 233, 233, 1),
           ),
           borderRadius: BorderRadius.circular(20.0),
         ),
@@ -51,7 +51,7 @@ class _MiniCardState extends State<MiniCard> {
                     width: 125.0,
                     decoration: BoxDecoration(
                       border: Border.all(
-                        color: Color.fromRGBO(233, 233, 233, 1),
+                        color: const Color.fromRGBO(233, 233, 233, 1),
                       ),
                       image: DecorationImage(
                         image: NetworkImage(
@@ -64,13 +64,13 @@ class _MiniCardState extends State<MiniCard> {
                 : Container(
                     height: 125.0,
                     width: 125.0,
-                    child: Image(
+                    child: const Image(
                       image: AssetImage('assets/logo/LogoMakr-4NVCFS.png'),
                       height: 125,
                       width: 125,
                     ),
                   ),
-            SizedBox(
+            const SizedBox(
               width: 30.0,
             ),
             Expanded(
@@ -81,34 +81,34 @@ class _MiniCardState extends State<MiniCard> {
                     user.displayName ?? "",
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 16.0,
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 5.0,
                   ),
                   Text(
                     user.email!,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Color.fromRGBO(139, 144, 165, 1),
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 5.0,
                   ),
                   Row(
                     children: [
                       Text(
                         "${user.startingPrice ?? ""} RSD",
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 14.0,
                         ),
                       ),
-                      Text(
+                      const Text(
                         " | ",
                         style: TextStyle(
                           fontSize: 14.0,
@@ -118,16 +118,15 @@ class _MiniCardState extends State<MiniCard> {
                         user.averageReviews != null
                             ? user.averageReviews.toString()
                             : "",
-                        style: TextStyle(fontSize: 14.0, color: orange),
+                        style: const TextStyle(
+                            fontSize: 14.0, fontWeight: FontWeight.bold),
                       ),
                       user.numberOfReviews != null
                           ? Text(" (${user.numberOfReviews})",
-                              style: TextStyle(
-                                fontSize: 14.0,
-                                color: orange,
-                              ))
-                          : Text(""),
-                      Icon(
+                              style: const TextStyle(
+                                  fontSize: 14.0, fontWeight: FontWeight.bold))
+                          : const Text(""),
+                      const Icon(
                         Icons.star,
                         size: 17,
                         color: orange,

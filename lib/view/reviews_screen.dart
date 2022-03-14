@@ -15,6 +15,8 @@ import 'package:flutter_master/view_controller/user_controller.dart';
 import 'package:flutter_master/widgets/app_bar.dart';
 import 'package:flutter_master/widgets/review_widget.dart';
 
+import 'no_internet.dart';
+
 class ReviewsScreen extends StatefulWidget {
   static const String routeName = '/reviews';
 
@@ -22,8 +24,14 @@ class ReviewsScreen extends StatefulWidget {
   static Route route(HandymanModel handyman) {
     handymanModel = handyman;
     return MaterialPageRoute(
-        builder: (_) => ReviewsScreen(),
-        settings: RouteSettings(name: routeName));
+        builder: (_) {
+          if (locator.get<UserController>().checkForInternetConnection(_)) {
+            return ReviewsScreen();
+          } else {
+            return const NoInternetScreen();
+          }
+        },
+        settings: const RouteSettings(name: routeName));
   }
 
   @override
@@ -46,10 +54,10 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
       context: context,
       builder: (context) {
         return QuickFeedback(
-          title: 'Leave a feedback',
+          title: 'Ocenite majstora',
           showTextBox: true,
-          textBoxHint: 'Share your feedback',
-          submitText: 'SUBMIT',
+          textBoxHint: 'Napišite recenziju',
+          submitText: 'Pošalji',
           onSubmitCallback: (feedback) {
             if (feedback["rating"] != null &&
                 !ReviewsScreen.handymanModel!.reviews!.any((element) =>
@@ -69,17 +77,15 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
             } else {
               ScaffoldMessenger.of(context)
                 ..hideCurrentSnackBar()
-                ..showSnackBar(SnackBar(
-                  content: Text("User has already given feedback!"),
+                ..showSnackBar(const SnackBar(
+                  content: Text("Korisnik je već dao ocenu!"),
                 ));
             }
             setState(() {});
             Navigator.of(context).pop();
           },
-          askLaterText: 'ASK LATER',
-          onAskLaterCallback: () {
-            print('Do something on ask later click');
-          },
+          askLaterText: 'Kasnije',
+          onAskLaterCallback: () {},
         );
       },
     );
@@ -88,7 +94,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: buildAppBar(context, 'Reviews'),
+        appBar: buildAppBar(context, 'Recenzije'),
         body: FutureBuilder(
             future: FirebaseFirestore.instance
                 .collection("reviews")
@@ -98,7 +104,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(
-                  child: const CircularProgressIndicator(),
+                  child: CircularProgressIndicator(),
                 );
               }
               if (snapshot.connectionState == ConnectionState.done) {
@@ -109,7 +115,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                   ReviewsScreen.handymanModel!
                       .addReviews((snapshot.data as QuerySnapshot).docs);
 
-                  if (ReviewsScreen.handymanModel!.reviews!.length > 0) {
+                  if (ReviewsScreen.handymanModel!.reviews!.isNotEmpty) {
                     ReviewsScreen.handymanModel!.averageReviews = ReviewsScreen
                             .handymanModel!.reviews!
                             .map((e) => e.rating)
@@ -133,7 +139,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
 
                   return Column(children: [
                     Container(
-                      padding: EdgeInsets.symmetric(
+                      padding: const EdgeInsets.symmetric(
                         horizontal: 16.0,
                         vertical: 16.0,
                       ),
@@ -152,9 +158,9 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                                               .handymanModel!.averageReviews
                                               ?.toStringAsFixed(2) ??
                                           "0.0",
-                                      style: TextStyle(fontSize: 48.0),
+                                      style: const TextStyle(fontSize: 48.0),
                                     ),
-                                    TextSpan(
+                                    const TextSpan(
                                       text: "/5",
                                       style: TextStyle(
                                         fontSize: 24.0,
@@ -173,16 +179,16 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                                 color: orange,
                                 borderColor: orange,
                               ),
-                              SizedBox(height: 16.0),
+                              const SizedBox(height: 16.0),
                               Text(
-                                "${ReviewsScreen.handymanModel!.reviews?.length} Reviews",
-                                style: TextStyle(
+                                "${ReviewsScreen.handymanModel!.reviews?.length} recenzija",
+                                style: const TextStyle(
                                   fontSize: 20.0,
                                 ),
                               ),
                             ],
                           ),
-                          Container(
+                          SizedBox(
                             width: 200.0,
                             child: ListView.builder(
                               shrinkWrap: true,
@@ -193,14 +199,13 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                                   children: [
                                     Text(
                                       "${index + 1}",
-                                      style: TextStyle(fontSize: 18.0),
+                                      style: const TextStyle(fontSize: 18.0),
                                     ),
-                                    SizedBox(width: 4.0),
-                                    Icon(Icons.star, color: orange),
-                                    SizedBox(width: 8.0),
+                                    const SizedBox(width: 4.0),
+                                    const Icon(Icons.star, color: orange),
+                                    const SizedBox(width: 8.0),
                                     LinearPercentIndicator(
                                       lineHeight: 6.0,
-                                      // linearStrokeCap: LinearStrokeCap.roundAll,
                                       width:
                                           MediaQuery.of(context).size.width / 3,
                                       animation: true,
@@ -220,8 +225,8 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                         is CustomerModel)
                       FlatButton(
                         onPressed: () => _showFeedback(context),
-                        child: Text(
-                          'Add feedback',
+                        child: const Text(
+                          'Ostavi recenziju',
                           style: TextStyle(
                               fontWeight: FontWeight.bold, fontSize: 18),
                         ),
@@ -231,8 +236,6 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                         itemCount: (snapshot.data as QuerySnapshot).docs.length,
                         shrinkWrap: true,
                         itemBuilder: (BuildContext context, int index) {
-                          DocumentSnapshot ds =
-                              (snapshot.data as QuerySnapshot).docs[index];
                           return ReviewUI(
                             image: ReviewsScreen
                                 .handymanModel!.reviews![index].image,
@@ -251,7 +254,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                           );
                         },
                         separatorBuilder: (BuildContext context, int index) {
-                          return Divider(
+                          return const Divider(
                             thickness: 2.0,
                           );
                         },

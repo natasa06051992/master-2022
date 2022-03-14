@@ -24,10 +24,10 @@ class MiniCardProject extends StatelessWidget {
         padding: const EdgeInsets.all(8.0),
         child: Container(
           width: MediaQuery.of(context).size.width * 0.95,
-          padding: EdgeInsets.all(12.0),
+          padding: const EdgeInsets.all(12.0),
           decoration: BoxDecoration(
             border: Border.all(
-              color: Color.fromRGBO(233, 233, 233, 1),
+              color: const Color.fromRGBO(233, 233, 233, 1),
             ),
             borderRadius: BorderRadius.circular(20.0),
           ),
@@ -39,7 +39,7 @@ class MiniCardProject extends StatelessWidget {
                       width: 90.0,
                       decoration: BoxDecoration(
                         border: Border.all(
-                          color: Color.fromRGBO(233, 233, 233, 1),
+                          color: const Color.fromRGBO(233, 233, 233, 1),
                         ),
                         image: DecorationImage(
                           image: NetworkImage(
@@ -49,62 +49,62 @@ class MiniCardProject extends StatelessWidget {
                         borderRadius: BorderRadius.circular(20.0),
                       ),
                     )
-                  : Container(
+                  : SizedBox(
                       height: 90.0,
                       width: 90.0,
-                      child: Image(
+                      child: const Image(
                         image: AssetImage('assets/logo/LogoMakr-4NVCFS.png'),
                         height: 125,
                         width: 125,
                       ),
                     ),
-              SizedBox(
+              const SizedBox(
                 width: 15.0,
               ),
               Expanded(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       project.title,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 16.0,
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 5.0,
                     ),
                     Text(
                       project.description,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Color.fromRGBO(139, 144, 165, 1),
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 5.0,
                     ),
                     Row(
                       children: [
                         Text(
-                          "${project.service}",
-                          style: TextStyle(
+                          project.service,
+                          style: const TextStyle(
                             fontSize: 12.0,
                           ),
                         ),
-                        Text(
+                        const Text(
                           " | ",
                           style: TextStyle(
                             fontSize: 12.0,
                           ),
                         ),
                         Text(
-                          "${project.date}",
-                          style: TextStyle(
+                          project.date,
+                          style: const TextStyle(
                             fontSize: 12.0,
                           ),
                         ),
@@ -113,18 +113,24 @@ class MiniCardProject extends StatelessWidget {
                     if (locator.get<UserController>().currentUser
                             is HandymanModel &&
                         project.phoneNumber != null)
-                      Center(
+                      SizedBox(
+                        width: 80,
                         child: ElevatedButton(
-                            onPressed: () {
-                              project.phoneNumber != null
-                                  ? _makePhoneCall(project.phoneNumber!)
-                                  : null;
-                            },
-                            child: project.phoneNumber == null
-                                ? null
-                                : Row(
-                                    children: [Icon(Icons.phone), Text('Call')],
-                                  )),
+                          onPressed: () {
+                            project.phoneNumber != null
+                                ? _makePhoneCall(project.phoneNumber!)
+                                : null;
+                          },
+                          child: project.phoneNumber == null
+                              ? null
+                              : Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    const Icon(Icons.phone),
+                                    const Text('Call')
+                                  ],
+                                ),
+                        ),
                       ),
                   ],
                 ),

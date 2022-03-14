@@ -2,9 +2,11 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:form_builder_validators/form_builder_validators.dart';
+import 'package:photo_view/photo_view.dart';
+
 import 'package:flutter_master/config/constants.dart';
 import 'package:flutter_master/config/theme.dart';
-
 import 'package:flutter_master/cubit/auth_cubit.dart';
 import 'package:flutter_master/locator.dart';
 import 'package:flutter_master/model/user.dart';
@@ -12,10 +14,6 @@ import 'package:flutter_master/view/add_pictures_featured_projects.dart';
 import 'package:flutter_master/view/customers_projects_screen.dart';
 import 'package:flutter_master/view/screens.dart';
 import 'package:flutter_master/view_controller/user_controller.dart';
-import 'package:form_builder_validators/form_builder_validators.dart';
-import 'package:photo_view/photo_view.dart';
-
-import '../cubit/push_notification_service.dart';
 
 class InformationsAboutUserWidget extends StatefulWidget {
   final UserModel currentUser;
@@ -29,18 +27,14 @@ class InformationsAboutUserWidget extends StatefulWidget {
 }
 
 String _selectedLocation = locator.get<UserController>().currentUser!.location;
-String? _selectedServices =
-    locator.get<UserController>().currentUser! is HandymanModel
-        ? (locator.get<UserController>().currentUser! as HandymanModel).service
-        : '';
 
 class _InformationsAboutUserWidgetState
     extends State<InformationsAboutUserWidget> {
-  var _displayNameController = TextEditingController();
-  var _phoneNumberController = TextEditingController();
-  var _descriptionController = TextEditingController();
-  var _startingCostController = TextEditingController();
-  var _yearsInBusinessController = TextEditingController();
+  final _displayNameController = TextEditingController();
+  final _phoneNumberController = TextEditingController();
+  final _descriptionController = TextEditingController();
+  final _startingCostController = TextEditingController();
+  final _yearsInBusinessController = TextEditingController();
   @override
   void initState() {
     _displayNameController.text = widget.currentUser.displayName!;
@@ -76,62 +70,70 @@ class _InformationsAboutUserWidgetState
       imageSliders = (widget.currentUser as HandymanModel)
           .urlToGallery!
           .map((item) => Container(
-                child: Container(
-                  margin: EdgeInsets.all(5.0),
-                  child: ClipRRect(
-                      borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                      child: Stack(
-                        children: <Widget>[
-                          PhotoView(imageProvider: NetworkImage(item)),
-                          Positioned(
-                            bottom: 0.0,
-                            left: 0.0,
-                            right: 0.0,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  colors: [
-                                    Color.fromARGB(200, 0, 0, 0),
-                                    Color.fromARGB(0, 0, 0, 0)
-                                  ],
-                                  begin: Alignment.bottomCenter,
-                                  end: Alignment.topCenter,
-                                ),
+                margin: const EdgeInsets.all(5.0),
+                child: ClipRRect(
+                    borderRadius: const BorderRadius.all(Radius.circular(5.0)),
+                    child: Stack(
+                      children: <Widget>[
+                        PhotoView(imageProvider: NetworkImage(item)),
+                        Positioned(
+                          bottom: 0.0,
+                          left: 0.0,
+                          right: 0.0,
+                          child: Container(
+                            decoration: const BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  Color.fromARGB(200, 0, 0, 0),
+                                  Color.fromARGB(0, 0, 0, 0)
+                                ],
+                                begin: Alignment.bottomCenter,
+                                end: Alignment.topCenter,
                               ),
-                              padding: EdgeInsets.symmetric(
-                                  vertical: 10.0, horizontal: 20.0),
                             ),
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 10.0, horizontal: 20.0),
                           ),
-                        ],
-                      )),
-                ),
+                        ),
+                      ],
+                    )),
               ))
           .toList();
     }
 
     final formKey = GlobalKey<FormBuilderState>();
-
+    String? _selectedServices = locator.get<UserController>().currentUser!
+            is HandymanModel
+        ? (locator.get<UserController>().currentUser! as HandymanModel).service
+        : '';
     return FormBuilder(
       autovalidateMode: AutovalidateMode.disabled,
       key: formKey,
       child: SingleChildScrollView(
         child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
           TextFormField(
-            decoration: InputDecoration(hintText: "Username"),
+            decoration: const InputDecoration(
+                hintText: "Ime",
+                labelText: 'Ime :',
+                labelStyle:
+                    TextStyle(fontSize: 16, fontWeight: FontWeight.normal)),
             controller: _displayNameController,
           ),
           TextFormField(
-            decoration: InputDecoration(hintText: "Phone number"),
+            decoration: const InputDecoration(
+                hintText: "Broj telefona",
+                labelText: 'Broj telefona :',
+                labelStyle:
+                    TextStyle(fontSize: 16, fontWeight: FontWeight.normal)),
             controller: _phoneNumberController,
           ),
           if (widget.currentUser is HandymanModel)
             TextFormField(
-              decoration: InputDecoration(hintText: "Description"),
-              controller: _descriptionController,
-            ),
-          if (widget.currentUser is HandymanModel)
-            TextFormField(
-                decoration: InputDecoration(hintText: "Starting cost"),
+                decoration: const InputDecoration(
+                    hintText: "Početna cena (RSD)",
+                    labelText: 'Početna cena (RSD):',
+                    labelStyle:
+                        TextStyle(fontSize: 16, fontWeight: FontWeight.normal)),
                 controller: _startingCostController,
                 validator: FormBuilderValidators.compose([
                   FormBuilderValidators.integer(context,
@@ -139,13 +141,21 @@ class _InformationsAboutUserWidgetState
                 ])),
           if (widget.currentUser is HandymanModel)
             TextFormField(
-                decoration: InputDecoration(hintText: "Years in Business"),
+                decoration: const InputDecoration(
+                    hintText: "Godine iskustva",
+                    labelText: 'Godine iskustva :',
+                    labelStyle:
+                        TextStyle(fontSize: 16, fontWeight: FontWeight.normal)),
                 controller: _yearsInBusinessController,
                 validator: FormBuilderValidators.compose([
                   FormBuilderValidators.integer(context,
                       errorText: "Enter a number (whole-valued)")
                 ])),
-          DropdownButton(
+          DropdownButtonFormField(
+            decoration: const InputDecoration(
+                labelText: 'Lokacija :',
+                labelStyle:
+                    TextStyle(fontSize: 16, fontWeight: FontWeight.normal)),
             hint: const Text(
                 'Please choose a location'), // Not necessary for Option 1
             value: _selectedLocation,
@@ -162,7 +172,11 @@ class _InformationsAboutUserWidgetState
             }).toList(),
           ),
           if (widget.currentUser is HandymanModel)
-            DropdownButton(
+            DropdownButtonFormField(
+              decoration: const InputDecoration(
+                  labelText: 'Kategorija :',
+                  labelStyle:
+                      TextStyle(fontSize: 16, fontWeight: FontWeight.normal)),
               hint: const Text(
                   'Please choose a service'), // Not necessary for Option 1
               value: _selectedServices,
@@ -178,17 +192,19 @@ class _InformationsAboutUserWidgetState
                 );
               }).toList(),
             ),
-          if (widget.currentUser is CustomerModel)
-            ElevatedButton(
-                style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all(purple)),
-                onPressed: () =>
-                    Navigator.pushNamed(context, CustomersProjects.routeName),
-                child: Text('My Projects')),
-          SizedBox(height: 20.0),
-          if (imageSliders.length > 0)
-            Container(
-                child: CarouselSlider(
+          if (widget.currentUser is HandymanModel)
+            TextFormField(
+              maxLines: 5,
+              decoration: const InputDecoration(
+                  hintText: "Opis",
+                  labelText: 'Opis :',
+                  labelStyle:
+                      TextStyle(fontSize: 16, fontWeight: FontWeight.normal)),
+              controller: _descriptionController,
+            ),
+          const SizedBox(height: 20.0),
+          if (imageSliders.isNotEmpty)
+            CarouselSlider(
               options: CarouselOptions(
                 aspectRatio: 2.0,
                 enlargeCenterPage: true,
@@ -197,32 +213,40 @@ class _InformationsAboutUserWidgetState
                 autoPlay: true,
               ),
               items: imageSliders,
-            )),
+            ),
           if (widget.currentUser is HandymanModel)
-            ElevatedButton(
+            RaisedButton(
                 onPressed: () {
                   Navigator.pushNamed(
                       context, AddPicturesFeaturedProjects.routeName);
                 },
-                child: Text("Add pictures of featured projects")),
-          SizedBox(height: 20.0),
+                child: const Text("Dodati slike projekata")),
+          const SizedBox(height: 20.0),
           RaisedButton(
             onPressed: () {
-              SaveProfile(
+              saveProfile(
                   _selectedLocation, _selectedServices, formKey, context);
             },
-            child: Text("Save Profile"),
+            child: const Text("Sačuvati profil"),
           ),
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
+          if (widget.currentUser is CustomerModel)
+            ElevatedButton(
+                style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(purple)),
+                onPressed: () =>
+                    Navigator.pushNamed(context, CustomersProjects.routeName),
+                child: const Text('Moji oglasi')),
           if (widget.currentUser is HandymanModel)
             RaisedButton(
+              color: purple,
               onPressed: () {
                 Navigator.pushNamed(context, ReviewsScreen.routeName,
                     arguments: locator.get<UserController>().currentUser);
               },
-              child: Text("My Reviews"),
+              child: const Text("Moje recenzije"),
             ),
           BlocConsumer<AuthCubit, AuthState>(listener: (context, state) {
             if (state is AuthLoginError || state is AuthGoogleError) {
@@ -244,7 +268,7 @@ class _InformationsAboutUserWidgetState
     );
   }
 
-  void SaveProfile(String _selectedLocation, String? _selectedServices,
+  void saveProfile(String _selectedLocation, String? _selectedServices,
       GlobalKey<FormBuilderState> formKey, BuildContext context) {
     if (_displayNameController.text != widget.currentUser.displayName) {
       locator
@@ -262,7 +286,7 @@ class _InformationsAboutUserWidgetState
     if (widget.currentUser is HandymanModel &&
         _selectedServices != null &&
         _selectedServices != (widget.currentUser as HandymanModel).service) {
-      locator.get<UserController>().updateService(_selectedServices!);
+      locator.get<UserController>().updateService(_selectedServices);
     }
     if (widget.currentUser is HandymanModel &&
         _descriptionController.text != "" &&
@@ -296,18 +320,18 @@ class _InformationsAboutUserWidgetState
 
 class Logout extends StatelessWidget {
   final AuthState state;
-  Logout(this.state);
+  const Logout(this.state);
 
   @override
   Widget build(BuildContext context) {
     return Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
       TextButton.icon(
-        icon: Icon(Icons.exit_to_app),
-        label: Text('Logout'),
+        icon: const Icon(Icons.exit_to_app),
+        label: const Text('Odjavi se'),
         onPressed: () async {
           if (state is AuthDefault || state is AuthGoogleSuccess) {
             final authCubit = BlocProvider.of<AuthCubit>(context);
-            await authCubit.googleLogout();
+            await authCubit.logout();
             ScaffoldMessenger.of(context)
               ..hideCurrentSnackBar()
               ..showSnackBar(const SnackBar(
@@ -323,7 +347,7 @@ class Logout extends StatelessWidget {
               ));
           } else if (state is AuthFBSuccess) {
             final authCubit = BlocProvider.of<AuthCubit>(context);
-            await authCubit.fbLogout();
+            await authCubit.logout();
             ScaffoldMessenger.of(context)
               ..hideCurrentSnackBar()
               ..showSnackBar(const SnackBar(

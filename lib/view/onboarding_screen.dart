@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_master/locator.dart';
 import 'package:flutter_master/view/welcome_screen.dart';
+import 'package:flutter_master/view_controller/user_controller.dart';
 
 import 'screens.dart';
 
@@ -7,14 +9,20 @@ class OnBoardingScreen extends StatelessWidget {
   static const String routeName = '/';
   static Route route() {
     return MaterialPageRoute(
-        builder: (_) => OnBoardingScreen(),
-        settings: RouteSettings(name: routeName));
+        builder: (_) {
+          if (locator.get<UserController>().checkForInternetConnection(_)) {
+            return OnBoardingScreen();
+          } else {
+            return const NoInternetScreen();
+          }
+        },
+        settings: const RouteSettings(name: routeName));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Hi')),
+      appBar: AppBar(title: const Text('Cao!')),
       body: Center(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -23,22 +31,22 @@ class OnBoardingScreen extends StatelessWidget {
             Container(
               height: MediaQuery.of(context).size.width * 0.6,
               width: MediaQuery.of(context).size.height * 0.4,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                   image: DecorationImage(
                       image: AssetImage('assets/onboarding.png'))),
             ),
-            Text('Find local professionals!',
+            Text('Tražite majstore?',
                 style: Theme.of(context).textTheme.headline3),
-            Text('Have you used VeleMajstor?',
+            Text('Da li ste već koristili VeleMajstor-a?',
                 style: Theme.of(context).textTheme.headline3),
-            SizedBox(
+            const SizedBox(
               height: 50,
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                   primary: Theme.of(context).primaryColor),
               child: Text(
-                'Yes! Log in',
+                'Da!',
                 style: Theme.of(context).textTheme.headline3,
               ),
               onPressed: () {
@@ -49,7 +57,7 @@ class OnBoardingScreen extends StatelessWidget {
               style: ElevatedButton.styleFrom(
                   primary: Theme.of(context).primaryColor),
               child: Text(
-                'No! Sign Up',
+                'Ne! Napraviću nalog',
                 style: Theme.of(context).textTheme.headline3,
               ),
               onPressed: () {

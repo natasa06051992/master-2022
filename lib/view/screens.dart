@@ -7,5 +7,5 @@ export 'login_screen.dart';
 export 'signup_screen.dart';
 export 'onboarding_screen.dart';
 export 'reviews_screen.dart';
-
+export 'no_internet.dart';
 export 'profile_screen.dart';

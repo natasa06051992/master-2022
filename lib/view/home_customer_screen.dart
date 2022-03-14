@@ -1,7 +1,5 @@
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_master/config/constants.dart';
 import 'package:flutter_master/locator.dart';
 import 'package:flutter_master/view/screens.dart';
 import 'package:flutter_master/view_controller/user_controller.dart';
@@ -16,8 +14,14 @@ class HomeCustomerScreen extends StatefulWidget {
 
   static Route route() {
     return MaterialPageRoute(
-        builder: (_) => HomeCustomerScreen(),
-        settings: RouteSettings(name: routeName));
+        builder: (_) {
+          if (locator.get<UserController>().checkForInternetConnection(_)) {
+            return HomeCustomerScreen();
+          } else {
+            return const NoInternetScreen();
+          }
+        },
+        settings: const RouteSettings(name: routeName));
   }
 
   @override
@@ -29,13 +33,24 @@ class _HomeCustomerScreenState extends State<HomeCustomerScreen> {
 
   late List<Category> searchedFeatures = [];
   late List<Category> features = [];
+  late bool isInitCalled = false;
+  late TextEditingController controller;
+  @override
+  void initState() {
+    locator.get<UserController>().initCategories();
+    features = locator.get<UserController>().features ?? [];
+    searchedFeatures = features;
+    controller = TextEditingController();
+    // TODO: implement initState
+    super.initState();
+  }
 
   void searchCategory(String query) {
-    searchedFeatures = query != ""
-        ? searchedFeatures
+    searchedFeatures = query == "" || query == " "
+        ? features
+        : features
             .where((element) => element.name.toLowerCase().contains(query))
-            .toList()
-        : features;
+            .toList();
 
     setState(() {
       this.query = query;
@@ -44,63 +59,38 @@ class _HomeCustomerScreenState extends State<HomeCustomerScreen> {
 
   Widget buildSearch() {
     return SearchWidget(
-        text: query, hintText: 'Search category', onChanged: searchCategory);
+        text: query, hintText: 'Potraži', onChanged: searchCategory);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
-      appBar: buildAppBar(context, 'Home'),
-      body: FutureBuilder(
-          future: locator.get<UserController>().getCategories(),
-          builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(
-                child: const CircularProgressIndicator(),
-              );
-            }
-            if (snapshot.connectionState == ConnectionState.done) {
-              if (snapshot.hasData) {
-                var list = snapshot.data;
-                for (var snapshot in list) {
-                  features.add(snapshot);
-                }
-                searchedFeatures = List<Category>.from(features);
-                return Column(
-                  children: [
-                    buildSearch(),
-                    CarouselSlider(
-                        options: CarouselOptions(
-                          scrollDirection: Axis.vertical,
-                          height: MediaQuery.of(context).viewInsets.bottom != 0
-                              ? MediaQuery.of(context).size.height * 0.45
-                              : MediaQuery.of(context).size.height * 0.78,
-                          enlargeCenterPage: true,
-                          disableCenter: true,
-                          viewportFraction:
-                              MediaQuery.of(context).viewInsets.bottom != 0
-                                  ? 1
-                                  : 0.5,
-                        ),
-                        items: List.generate(
-                            searchedFeatures.length,
-                            (index) => FeatureItem(
-                                onTap: () {
-                                  Navigator.pushNamed(
-                                      context, ServiceListingScreen.routeName,
-                                      arguments: searchedFeatures[index].name);
-                                },
-                                data: searchedFeatures[index]))),
-                  ],
-                );
-              } else {
-                return Container();
-              }
-            } else {
-              return Container();
-            }
-          }),
-    );
+        resizeToAvoidBottomInset: false,
+        appBar: buildAppBar(context, 'Početna'),
+        body: Column(
+          children: [
+            buildSearch(),
+            CarouselSlider(
+                options: CarouselOptions(
+                  scrollDirection: Axis.vertical,
+                  height: MediaQuery.of(context).viewInsets.bottom != 0
+                      ? MediaQuery.of(context).size.height * 0.45
+                      : MediaQuery.of(context).size.height * 0.8,
+                  enlargeCenterPage: true,
+                  disableCenter: true,
+                  viewportFraction:
+                      MediaQuery.of(context).viewInsets.bottom != 0 ? 1 : 0.5,
+                ),
+                items: List.generate(
+                    searchedFeatures.length,
+                    (index) => FeatureItem(
+                        onTap: () {
+                          Navigator.pushNamed(
+                              context, ServiceListingScreen.routeName,
+                              arguments: searchedFeatures[index].name);
+                        },
+                        data: searchedFeatures[index]))),
+          ],
+        ));
   }
 }

@@ -22,7 +22,7 @@ class ReviewUI extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.only(
+      padding: const EdgeInsets.only(
         top: 2.0,
         bottom: 2.0,
         left: 16.0,
@@ -36,7 +36,7 @@ class ReviewUI extends StatelessWidget {
               Container(
                 height: 45.0,
                 width: 45.0,
-                margin: EdgeInsets.only(right: 16.0),
+                margin: const EdgeInsets.only(right: 16.0),
                 child: Center(
                   child: image == null
                       ? const CircleAvatar(
@@ -52,7 +52,7 @@ class ReviewUI extends StatelessWidget {
               Expanded(
                 child: Text(
                   name ?? 'anonyms',
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 20.0,
                     fontWeight: FontWeight.bold,
                   ),
@@ -60,8 +60,9 @@ class ReviewUI extends StatelessWidget {
               ),
             ],
           ),
-          SizedBox(height: 8.0),
+          const SizedBox(height: 8.0),
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               SmoothStarRating(
                 isReadOnly: true,
@@ -71,14 +72,16 @@ class ReviewUI extends StatelessWidget {
                 color: orange,
                 borderColor: orange,
               ),
-              SizedBox(width: 20),
-              Text(
-                date,
-                style: TextStyle(fontSize: 18.0),
+              Padding(
+                padding: const EdgeInsets.all(15.0),
+                child: Text(
+                  date,
+                  style: const TextStyle(fontSize: 14.0),
+                ),
               ),
             ],
           ),
-          SizedBox(height: 8.0),
+          const SizedBox(height: 8.0),
           GestureDetector(
             onTap: () {
               onTap();
@@ -86,7 +89,7 @@ class ReviewUI extends StatelessWidget {
             child: isLess
                 ? Text(
                     comment,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 18.0,
                     ),
                   )
@@ -94,7 +97,7 @@ class ReviewUI extends StatelessWidget {
                     comment,
                     maxLines: 3,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 18.0,
                     ),
                   ),

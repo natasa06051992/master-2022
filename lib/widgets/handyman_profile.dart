@@ -1,29 +1,30 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:form_builder_validators/form_builder_validators.dart';
+
 import 'package:flutter_master/config/constants.dart';
 import 'package:flutter_master/locator.dart';
 import 'package:flutter_master/model/user.dart';
-import 'package:flutter_master/view/add_pictures_featured_projects.dart';
 import 'package:flutter_master/view_controller/user_controller.dart';
-import 'package:form_builder_validators/form_builder_validators.dart';
 
 class HandymanProfile extends StatefulWidget {
   final UserModel currentUser;
   final GlobalKey<FormBuilderState> formKey;
   const HandymanProfile(
+    Key? key,
     this.currentUser,
     this.formKey,
-  );
+  ) : super(key: key);
 
   @override
   State<HandymanProfile> createState() => _HandymanProfileState();
 }
 
 class _HandymanProfileState extends State<HandymanProfile> {
-  var _descriptionController = TextEditingController();
-  var _startingCostController = TextEditingController();
-  var _yearsInBusinessController = TextEditingController();
+  final _descriptionController = TextEditingController();
+  final _startingCostController = TextEditingController();
+  final _yearsInBusinessController = TextEditingController();
 
   void saveProfile() {
     var _selectedServices = (widget.currentUser as HandymanModel).service;
@@ -92,18 +93,19 @@ class _HandymanProfileState extends State<HandymanProfile> {
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             TextFormField(
-              decoration: InputDecoration(hintText: "Description"),
+              decoration: const InputDecoration(hintText: "Description"),
               controller: _descriptionController,
             ),
             TextFormField(
-                decoration: InputDecoration(hintText: "Starting cost"),
+                decoration: const InputDecoration(hintText: "Starting cost"),
                 controller: _startingCostController,
                 validator: FormBuilderValidators.compose([
                   FormBuilderValidators.integer(context,
                       errorText: "Enter a number (whole-valued)")
                 ])),
             TextFormField(
-                decoration: InputDecoration(hintText: "Years in Business"),
+                decoration:
+                    const InputDecoration(hintText: "Years in Business"),
                 controller: _yearsInBusinessController,
                 validator: FormBuilderValidators.compose([
                   FormBuilderValidators.integer(context,
@@ -125,10 +127,9 @@ class _HandymanProfileState extends State<HandymanProfile> {
                 );
               }).toList(),
             ),
-            SizedBox(height: 20.0),
-            if (imageSliders.length > 0)
-              Container(
-                  child: CarouselSlider(
+            const SizedBox(height: 20.0),
+            if (imageSliders.isNotEmpty)
+              CarouselSlider(
                 options: CarouselOptions(
                   aspectRatio: 2.0,
                   enlargeCenterPage: true,
@@ -137,13 +138,7 @@ class _HandymanProfileState extends State<HandymanProfile> {
                   autoPlay: true,
                 ),
                 items: imageSliders,
-              )),
-            ElevatedButton(
-                onPressed: () {
-                  Navigator.pushNamed(
-                      context, AddPicturesFeaturedProjects.routeName);
-                },
-                child: Text("Add pictures of featured projects")),
+              ),
           ],
         ),
       ),
@@ -152,39 +147,37 @@ class _HandymanProfileState extends State<HandymanProfile> {
 
   List<Widget> createWidget() {
     if ((widget.currentUser as HandymanModel).urlToGallery != null &&
-        (widget.currentUser as HandymanModel).urlToGallery!.length > 0) {
+        (widget.currentUser as HandymanModel).urlToGallery!.isNotEmpty) {
       return (widget.currentUser as HandymanModel)
           .urlToGallery!
           .map((item) => Container(
-                child: Container(
-                  margin: EdgeInsets.all(5.0),
-                  child: ClipRRect(
-                      borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                      child: Stack(
-                        children: <Widget>[
-                          Image.network(item, fit: BoxFit.cover, width: 1000.0),
-                          Positioned(
-                            bottom: 0.0,
-                            left: 0.0,
-                            right: 0.0,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  colors: [
-                                    Color.fromARGB(200, 0, 0, 0),
-                                    Color.fromARGB(0, 0, 0, 0)
-                                  ],
-                                  begin: Alignment.bottomCenter,
-                                  end: Alignment.topCenter,
-                                ),
+                margin: const EdgeInsets.all(5.0),
+                child: ClipRRect(
+                    borderRadius: const BorderRadius.all(Radius.circular(5.0)),
+                    child: Stack(
+                      children: <Widget>[
+                        Image.network(item, fit: BoxFit.cover, width: 1000.0),
+                        Positioned(
+                          bottom: 0.0,
+                          left: 0.0,
+                          right: 0.0,
+                          child: Container(
+                            decoration: const BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  Color.fromARGB(200, 0, 0, 0),
+                                  Color.fromARGB(0, 0, 0, 0)
+                                ],
+                                begin: Alignment.bottomCenter,
+                                end: Alignment.topCenter,
                               ),
-                              padding: EdgeInsets.symmetric(
-                                  vertical: 10.0, horizontal: 20.0),
                             ),
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 10.0, horizontal: 20.0),
                           ),
-                        ],
-                      )),
-                ),
+                        ),
+                      ],
+                    )),
               ))
           .toList();
     }

@@ -18,10 +18,12 @@ const labelColor = Color(0xFF8A8989);
 const glassLabelColor = Colors.white;
 const actionColor = Color(0xFFe54140);
 
-const yellow = Color(0xFFffcb66);
+const yellow1 = Color(0xFFF8F1AE);
+//const yellow = Color(0xFFcdacf9);
 const green = Color(0xFFa2e1a6);
 const pink = Color(0xFFf5bde8);
-const purple = Color(0xFFcdacf9);
+//const purple = Color(0xFFcdacf9);
+const purple = Color(0xFFB6CFB6);
 const red = Color(0xFFf77080);
 const orange = Color(0xFFf5ba92);
 const sky = Color(0xFFABDEE6);
@@ -30,25 +32,21 @@ const blue = Color(0xFF509BE4);
 const listColors = [
   green,
   purple,
-  yellow,
   orange,
   sky,
   secondary,
   red,
   blue,
   pink,
-  yellow,
 ];
 ThemeData theme() {
   return ThemeData(
-    appBarTheme: AppBarTheme(color: Color(0xFFcdacf9), centerTitle: true),
-    primaryColor: Color(0xFFf5ba92),
+    appBarTheme: const AppBarTheme(color: purple, centerTitle: true),
+    primaryColor: purple,
     scaffoldBackgroundColor: Colors.white,
-    //scaffoldBackgroundColor: Color(0xFFF4E3E3),
-    accentColor: Colors.purple[200],
-    backgroundColor: Color(0xFFF4F4F4),
+    backgroundColor: const Color(0xFFF4F4F4),
     fontFamily: 'Futura',
-    textTheme: TextTheme(
+    textTheme: const TextTheme(
       headline1: TextStyle(
         color: Color(0xFF2F3542),
         fontWeight: FontWeight.bold,
@@ -90,5 +88,6 @@ ThemeData theme() {
         fontSize: 10,
       ),
     ),
+    colorScheme: ColorScheme.fromSwatch().copyWith(secondary: purple),
   );
 }

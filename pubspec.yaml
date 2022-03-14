@@ -54,7 +54,7 @@ dependencies:
   quick_feedback: ^0.1.1
   smooth_star_rating: ^1.1.1
   percent_indicator: ^4.0.0
-  flutter_local_notifications: ^9.3.2
+  flutter_local_notifications: ^9.4.0
   timezone: ^0.8.0
   firebase_messaging: ^11.2.6
   firebase_analytics: ^9.1.0
@@ -62,6 +62,8 @@ dependencies:
   cached_network_image: ^3.2.0
   cloud_functions: ^3.2.9
   url_launcher: ^6.0.20
+  flutter_keyboard_visibility: ^5.2.0
+  connectivity_plus: ^2.2.1
 
 dependency_overrides:
   photo_view:
@@ -103,6 +105,8 @@ flutter:
     - assets/onboarding.png
     - assets/google_plus.png
     - assets/facebook.png
+    - assets/veleMajstor.png
+    - assets/noInternet.jpg
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

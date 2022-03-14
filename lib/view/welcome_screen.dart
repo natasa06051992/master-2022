@@ -1,12 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_master/view/slider_layout_view.dart';
 
+import '../locator.dart';
+import '../view_controller/user_controller.dart';
+import 'no_internet.dart';
+
 class WelcomeScreen extends StatefulWidget {
   static const String routeName = '/Welcome';
   static Route route() {
     return MaterialPageRoute(
-        builder: (_) => WelcomeScreen(),
-        settings: RouteSettings(name: routeName));
+        builder: (_) {
+          if (locator.get<UserController>().checkForInternetConnection(_)) {
+            return WelcomeScreen();
+          } else {
+            return const NoInternetScreen();
+          }
+        },
+        settings: const RouteSettings(name: routeName));
   }
 
   @override
@@ -22,7 +32,5 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     );
   }
 
-  Widget onBordingBody() => Container(
-        child: SliderLayoutView(),
-      );
+  Widget onBordingBody() => SliderLayoutView();
 }

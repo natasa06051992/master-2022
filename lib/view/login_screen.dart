@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:flutter_master/config/app_router.dart';
 import 'package:flutter_master/config/theme.dart';
 import 'package:flutter_master/cubit/auth_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -17,7 +16,13 @@ class LoginScreen extends StatefulWidget {
   static const String routeName = '/login';
   static Route route() {
     return MaterialPageRoute(
-        builder: (_) => LoginScreen(),
+        builder: (_) {
+          if (locator.get<UserController>().checkForInternetConnection(_)) {
+            return LoginScreen();
+          } else {
+            return const NoInternetScreen();
+          }
+        },
         settings: const RouteSettings(name: routeName));
   }
 
@@ -33,7 +38,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Login'),
+        title: const Text('Ulogujte se'),
       ),
       body: BlocConsumer<AuthCubit, AuthState>(
         listener: (context, state) {
@@ -85,12 +90,12 @@ class _LoginScreenState extends State<LoginScreen> {
                             name: 'email',
                             validator: FormBuilderValidators.compose([
                               FormBuilderValidators.email(context,
-                                  errorText: "Enter a valid email adress")
+                                  errorText: "Unesite validni email")
                             ]),
                             decoration: InputDecoration(
                                 prefixIcon: const Icon(Icons.email),
                                 contentPadding: const EdgeInsets.all(8),
-                                hintText: "Enter email",
+                                hintText: "email",
                                 fillColor: Colors.grey[200]),
                             textInputAction: TextInputAction.next,
                           )),
@@ -105,7 +110,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             decoration: InputDecoration(
                                 prefixIcon: const Icon(Icons.lock),
                                 contentPadding: const EdgeInsets.all(8),
-                                hintText: "Enter password",
+                                hintText: "lozinka",
                                 fillColor: Colors.grey[200],
                                 suffixIcon: InkWell(
                                   child: Icon(isObscure
@@ -131,31 +136,26 @@ class _LoginScreenState extends State<LoginScreen> {
                                 formKey.currentState!.fields['email']!.value,
                                 formKey
                                     .currentState!.fields['password']!.value);
-
-                            // await locator.get<UserController>().login(
-                            //     formKey.currentState!.fields['email']!.value,
-                            //     formKey
-                            //         .currentState!.fields['password']!.value);
                           }
                         },
                       ),
                       TextButton(
                           onPressed: () => Navigator.pushNamed(
                               context, ForgotPasswordScreen.routeName),
-                          child: const Text("Forgot Password?")),
+                          child: const Text("Lozinka zaboravljena?")),
                       const SizedBox(
                         height: 30,
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Container(
+                          SizedBox(
                             height: 50.0,
                             width: 120.0,
                             child: RaisedButton.icon(
                               label: Text(
                                 'Google',
-                                style: new TextStyle(
+                                style: const TextStyle(
                                   color: Colors.white,
                                 ),
                               ),
@@ -169,14 +169,14 @@ class _LoginScreenState extends State<LoginScreen> {
                               color: primary,
                             ),
                           ),
-                          SizedBox(width: 10),
-                          Container(
+                          const SizedBox(width: 10),
+                          SizedBox(
                             height: 50.0,
                             width: 130.0,
                             child: RaisedButton.icon(
-                              label: Text(
+                              label: const Text(
                                 'Facebook',
-                                style: new TextStyle(
+                                style: TextStyle(
                                   color: Colors.white,
                                 ),
                               ),
@@ -222,7 +222,7 @@ class LoginButton extends StatelessWidget {
                       valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                     ));
               } else {
-                return const Text('Login');
+                return const Text('Ulogujte se');
               }
             },
             listener: (context, state) {}),

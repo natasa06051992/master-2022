@@ -26,3 +26,4 @@ exports.notifySubscribers = functions.https.onCall(async (data, _) => {
         return false;
     }
 });
+

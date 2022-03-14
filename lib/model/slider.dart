@@ -1,5 +1,4 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter_master/constants/constants.dart';
+import 'package:flutter_master/config/constants.dart';
 
 class Slider {
   final String sliderImageUrl;
@@ -15,10 +14,10 @@ class Slider {
 final sliderArrayList = [
   Slider(
       sliderImageUrl: 'assets/handymenOnBoarding.png',
-      sliderHeading: Constants.SLIDER_HEADING_1,
-      sliderSubHeading: Constants.SLIDER_DESC_1),
+      sliderHeading: Constants.sliderHeading1,
+      sliderSubHeading: Constants.sliderDesc1),
   Slider(
       sliderImageUrl: 'assets/handymen2.png',
-      sliderHeading: Constants.SLIDER_HEADING_2,
-      sliderSubHeading: Constants.SLIDER_DESC_2),
+      sliderHeading: Constants.sliderHeading2,
+      sliderSubHeading: Constants.sliderDesc2),
 ];
