@@ -37,6 +37,7 @@ class HandymanDetailScreen extends StatefulWidget {
 class _HandymanDetailScreenState extends State<HandymanDetailScreen> {
   late HandymanModel handymanModel;
   late NavigatorState _navigator;
+
   @override
   void didChangeDependencies() {
     _navigator = Navigator.of(context);
@@ -117,7 +118,7 @@ class _HandymanDetailScreenState extends State<HandymanDetailScreen> {
                               ),
                               Padding(
                                 padding: const EdgeInsets.only(top: 22.0),
-                                child: Text(handymanModel.displayName!,
+                                child: Text(handymanModel.displayName ?? "",
                                     style: const TextStyle(
                                         color: textColor,
                                         fontWeight: FontWeight.w600,
@@ -125,7 +126,7 @@ class _HandymanDetailScreenState extends State<HandymanDetailScreen> {
                               ),
                               Padding(
                                 padding: const EdgeInsets.only(top: 8.0),
-                                child: Text(handymanModel.service!,
+                                child: Text(handymanModel.service ?? "",
                                     style: TextStyle(
                                         color: textColor.withOpacity(0.85),
                                         fontSize: 15,
@@ -147,9 +148,12 @@ class _HandymanDetailScreenState extends State<HandymanDetailScreen> {
                                           MainAxisAlignment.center,
                                       children: [
                                         //cr dodati provjeru da li je null
+
                                         Text(
-                                            handymanModel.yearsInBusiness!
-                                                .toString(),
+                                            handymanModel.startingPrice != null
+                                                ? handymanModel.startingPrice
+                                                    .toString()
+                                                : "",
                                             style: const TextStyle(
                                                 color: textColor,
                                                 fontSize: 18.0,
@@ -168,8 +172,10 @@ class _HandymanDetailScreenState extends State<HandymanDetailScreen> {
                                           MainAxisAlignment.center,
                                       children: [
                                         Text(
-                                            handymanModel.startingPrice
-                                                .toString(),
+                                            handymanModel.startingPrice != null
+                                                ? handymanModel.startingPrice
+                                                    .toString()
+                                                : "",
                                             style: const TextStyle(
                                                 color: textColor,
                                                 fontSize: 18.0,
@@ -188,8 +194,10 @@ class _HandymanDetailScreenState extends State<HandymanDetailScreen> {
                                           MainAxisAlignment.center,
                                       children: [
                                         Text(
-                                            handymanModel.averageReviews
-                                                .toString(),
+                                            handymanModel.averageReviews != null
+                                                ? handymanModel.averageReviews
+                                                    .toString()
+                                                : "",
                                             style: const TextStyle(
                                                 color: textColor,
                                                 fontSize: 18.0,
@@ -228,7 +236,9 @@ class _HandymanDetailScreenState extends State<HandymanDetailScreen> {
                             left: 24.0, right: 24, top: 30, bottom: 24),
                         child: Text(
                             //cr provjeriti za null
-                            handymanModel.description!,
+                            handymanModel.description != null
+                                ? handymanModel.description.toString()
+                                : "",
                             textAlign: TextAlign.center,
                             style: const TextStyle(
                                 color: textColor, fontSize: 15)),
