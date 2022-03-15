@@ -284,7 +284,6 @@ class FirebaseFirestoreRepo {
       result.add(ReviewModel.fromDocumentSnapshot(doc));
     }
     return result;
-    //cr
   }
 
   Future<List<Category>?> getCategories() async {

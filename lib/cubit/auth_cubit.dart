@@ -136,8 +136,8 @@ class AuthCubit extends Cubit<AuthState> {
       if (user != null) {
         user
             .updateDisplayName(name)
-            .then((value) => createNewUser(selectedLocation, selectedRole,
-                selectedService, 0, 0, [], [])) //cr nepotrebno
+            .then((value) => createNewUser(
+                selectedLocation, selectedRole, selectedService, 0, 0, [], []))
             .then((value) =>
                 locator.get<FirebaseFirestoreRepo>().addUserToFirebase(value))
             .then((value) => emit(const AuthSignUpSuccess()));
