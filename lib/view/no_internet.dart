@@ -17,10 +17,21 @@ class NoInternetScreen extends StatelessWidget {
           automaticallyImplyLeading: false,
           title: const Text('Nema interneta'),
         ),
-        body: const Center(
-            child: Text(
-          'Nema interneta',
-          style: TextStyle(fontSize: 24),
+        body: Center(
+            child: Column(
+          children: [
+            Container(
+              height: MediaQuery.of(context).size.width * 0.6,
+              width: MediaQuery.of(context).size.height * 0.4,
+              decoration: const BoxDecoration(
+                  image: DecorationImage(
+                      image: AssetImage('assets/noInternet.jpg'))),
+            ),
+            Text(
+              'Nema interneta',
+              style: TextStyle(fontSize: 24),
+            ),
+          ],
         )));
   }
 }

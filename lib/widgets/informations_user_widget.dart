@@ -236,13 +236,13 @@ class _InformationsAboutUserWidgetState
           if (widget.currentUser is CustomerModel)
             ElevatedButton(
                 style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all(purple)),
+                    backgroundColor: MaterialStateProperty.all(green)),
                 onPressed: () =>
                     Navigator.pushNamed(context, CustomersProjects.routeName),
                 child: const Text('Moji oglasi')),
           if (widget.currentUser is HandymanModel)
             RaisedButton(
-              color: purple,
+              color: green,
               onPressed: () {
                 Navigator.pushNamed(context, ReviewsScreen.routeName,
                     arguments: locator.get<UserController>().currentUser);

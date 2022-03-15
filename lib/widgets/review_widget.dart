@@ -1,5 +1,7 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_master/config/theme.dart';
+import 'package:flutter_master/widgets/custom_image.dart';
 import 'package:smooth_star_rating/smooth_star_rating.dart';
 
 class ReviewUI extends StatelessWidget {
@@ -38,16 +40,33 @@ class ReviewUI extends StatelessWidget {
                 width: 45.0,
                 margin: const EdgeInsets.only(right: 16.0),
                 child: Center(
-                  child: image == null
-                      ? const CircleAvatar(
-                          radius: 50.0,
-                          child: Icon(Icons.photo_camera),
-                        )
-                      : CircleAvatar(
-                          radius: 50.0,
-                          backgroundImage: NetworkImage(image!),
-                        ),
-                ),
+                    child: image == null
+                        ? const CircleAvatar(
+                            radius: 50.0,
+                            child: Icon(Icons.photo_camera),
+                          )
+                        : CachedNetworkImage(
+                            width: 120.0,
+                            imageUrl: image!,
+                            placeholder: (context, url) =>
+                                const BlankImageWidget(),
+                            errorWidget: (context, url, error) =>
+                                const BlankImageWidget(),
+                            imageBuilder: (context, imageProvider) => Container(
+                              width: 120.0,
+                              height: 120.0,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                image: DecorationImage(
+                                    image: imageProvider, fit: BoxFit.cover),
+                              ),
+                            ),
+                          )
+                    // CircleAvatar(
+                    //     radius: 50.0,
+                    //     backgroundImage: NetworkImage(image!),
+                    //   ),
+                    ),
               ),
               Expanded(
                 child: Text(

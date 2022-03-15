@@ -6,6 +6,7 @@ import 'package:path/path.dart' as path;
 import 'package:flutter_master/model/user.dart';
 
 class StorageRepo {
+  String featuredProjects = "user/featuredProjects/";
   Future<String> uploadProfileImage(File imageFile, UserModel user) async {
     Future<String> downloadUrl = Future<String>.value("");
     var storageReference =
@@ -26,13 +27,12 @@ class StorageRepo {
     }
   }
 
-//cr lokacija slika u konstantu
   Future<List<String>?> uploadImagesFeaturedProjects(
       List<File> images, UserModel userModel) async {
     List<String> listOfUrls = [];
     for (var img in images) {
       var ref = FirebaseStorage.instance.ref().child(
-          "user/featuredProjects/${userModel.uid}/${path.basename(img.path)}");
+          "${featuredProjects}${userModel.uid}/${path.basename(img.path)}");
       await ref.putFile(img).whenComplete(() async {
         await ref.getDownloadURL().then((value) {
           listOfUrls.add(value);

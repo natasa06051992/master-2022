@@ -50,11 +50,14 @@ class CustomImage extends StatelessWidget {
         child: isNetwork
             ? CachedNetworkImage(
                 imageUrl: image,
-                placeholder: (context, url) => const BlankImageWidget(),
+                placeholder: (context, url) =>
+                    const CircularProgressIndicator(),
                 errorWidget: (context, url, error) => const BlankImageWidget(),
                 imageBuilder: (context, imageProvider) => Container(
+                  width: width,
+                  height: height,
                   decoration: BoxDecoration(
-                    borderRadius: borderRadius ?? BorderRadius.circular(radius),
+                    shape: BoxShape.circle,
                     image: DecorationImage(image: imageProvider, fit: fit),
                   ),
                 ),

@@ -1,4 +1,6 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_master/widgets/custom_image.dart';
 
 class PhotoAlbum extends StatelessWidget {
   final List<String> imgArray;
@@ -32,11 +34,20 @@ class PhotoAlbum extends StatelessWidget {
               children: imgArray
                   .map((item) => Container(
                       height: 100,
-                      decoration: BoxDecoration(
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(4.0)),
-                          image: DecorationImage(
-                              image: NetworkImage(item), fit: BoxFit.cover))))
+                      child: CachedNetworkImage(
+                        imageUrl: item,
+                        placeholder: (context, url) => const BlankImageWidget(),
+                        errorWidget: (context, url, error) =>
+                            const BlankImageWidget(),
+                        imageBuilder: (context, imageProvider) => Container(
+                          decoration: BoxDecoration(
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(4.0)),
+                            image: DecorationImage(
+                                image: imageProvider, fit: BoxFit.cover),
+                          ),
+                        ),
+                      )))
                   .toList()),
         )
       ],

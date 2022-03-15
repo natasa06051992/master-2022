@@ -1,7 +1,9 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_master/config/theme.dart';
 import 'package:flutter_master/model/user.dart';
 import 'package:flutter_master/view/handyman_details_screen.dart';
+import 'package:flutter_master/widgets/custom_image.dart';
 
 class MiniCard extends StatefulWidget {
   UserModel? userModel;
@@ -47,20 +49,22 @@ class _MiniCardState extends State<MiniCard> {
           children: [
             user.avatarUrl != null
                 ? Container(
-                    height: 125.0,
-                    width: 125.0,
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: const Color.fromRGBO(233, 233, 233, 1),
+                    child: CachedNetworkImage(
+                    imageUrl: user.avatarUrl!,
+                    placeholder: (context, url) =>
+                        const CircularProgressIndicator(),
+                    errorWidget: (context, url, error) =>
+                        const BlankImageWidget(),
+                    imageBuilder: (context, imageProvider) => Container(
+                      width: 125.0,
+                      height: 125.0,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        image: DecorationImage(
+                            image: imageProvider, fit: BoxFit.cover),
                       ),
-                      image: DecorationImage(
-                        image: NetworkImage(
-                          user.avatarUrl!,
-                        ),
-                      ),
-                      borderRadius: BorderRadius.circular(20.0),
                     ),
-                  )
+                  ))
                 : Container(
                     height: 125.0,
                     width: 125.0,

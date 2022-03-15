@@ -54,7 +54,7 @@ class FeatureItem extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: purple,
+                  color: green,
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: [
                     BoxShadow(

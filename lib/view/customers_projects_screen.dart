@@ -137,7 +137,7 @@ class _CustomersProjectsState extends State<CustomersProjects> {
                     Navigator.pushNamed(context, AddNewProjectScreen.routeName);
                   }
                 },
-                backgroundColor: purple,
+                backgroundColor: green,
                 child: const Icon(Icons.add),
               )
             : null);

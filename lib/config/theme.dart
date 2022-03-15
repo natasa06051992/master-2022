@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 
 const primary = Color(0xFFf77080);
-const secondary = Color(0xFFe96561);
 
-const mainColor = Color(0xFF000000);
-const darker = Color(0xFF3E4249);
 const cardColor = Colors.white;
 const appBgColor = Color(0xFFF7F7F7);
 const appBarColor = Color(0xFFF7F7F7);
@@ -15,34 +12,14 @@ const textBoxColor = Colors.white;
 const textColor = Color(0xFF333333);
 const glassTextColor = Colors.white;
 const labelColor = Color(0xFF8A8989);
-const glassLabelColor = Colors.white;
-const actionColor = Color(0xFFe54140);
 
-const yellow1 = Color(0xFFF8F1AE);
-//const yellow = Color(0xFFcdacf9);
-const green = Color(0xFFa2e1a6);
-const pink = Color(0xFFf5bde8);
-//const purple = Color(0xFFcdacf9);
-const purple = Color(0xFFB6CFB6);
-const red = Color(0xFFf77080);
+const green = Color(0xFFB6CFB6);
 const orange = Color(0xFFf5ba92);
-const sky = Color(0xFFABDEE6);
-const blue = Color(0xFF509BE4);
 
-const listColors = [
-  green,
-  purple,
-  orange,
-  sky,
-  secondary,
-  red,
-  blue,
-  pink,
-];
 ThemeData theme() {
   return ThemeData(
-    appBarTheme: const AppBarTheme(color: purple, centerTitle: true),
-    primaryColor: purple,
+    appBarTheme: const AppBarTheme(color: green, centerTitle: true),
+    primaryColor: green,
     scaffoldBackgroundColor: Colors.white,
     backgroundColor: const Color(0xFFF4F4F4),
     fontFamily: 'Futura',
@@ -88,6 +65,6 @@ ThemeData theme() {
         fontSize: 10,
       ),
     ),
-    colorScheme: ColorScheme.fromSwatch().copyWith(secondary: purple),
+    colorScheme: ColorScheme.fromSwatch().copyWith(secondary: green),
   );
 }
