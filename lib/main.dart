@@ -121,11 +121,10 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-
   setupServices();
+  locator.get<UserController>().initCategories();
   setupFCM();
   await messageHandler();
-  locator.get<UserController>().initCategories();
   runApp(MyApp());
 }
 

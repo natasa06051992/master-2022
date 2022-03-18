@@ -115,7 +115,8 @@ class _CustomersProjectsState extends State<CustomersProjects> {
                               );
                       });
                 } else {
-                  return Container();
+                  return Center(
+                      child: Text('Trenutno nemamo oglasa iz ove kategorije!'));
                 }
               } else {
                 return Container();

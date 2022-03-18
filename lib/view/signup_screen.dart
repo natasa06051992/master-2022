@@ -129,7 +129,7 @@ class _SignupScreenState extends State<SignupScreen> {
                               decoration: InputDecoration(
                                   prefixIcon: const Icon(Icons.email),
                                   contentPadding: const EdgeInsets.all(8),
-                                  hintText: "email",
+                                  hintText: "Email",
                                   fillColor: Colors.grey[200]),
                               textInputAction: TextInputAction.next,
                             )),
@@ -150,7 +150,7 @@ class _SignupScreenState extends State<SignupScreen> {
                               decoration: InputDecoration(
                                   prefixIcon: const Icon(Icons.lock),
                                   contentPadding: const EdgeInsets.all(8),
-                                  hintText: "lozinka",
+                                  hintText: "Lozinka",
                                   fillColor: Colors.grey[200],
                                   suffixIcon: InkWell(
                                     child: Icon(isObscurePassword
@@ -208,11 +208,11 @@ class _SignupScreenState extends State<SignupScreen> {
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
                                 const SizedBox(
-                                  width: 10,
+                                  width: 8,
                                 ),
                                 Icon(Icons.handyman, color: Colors.grey[600]),
                                 const SizedBox(
-                                  width: 15,
+                                  width: 20,
                                 ),
                                 DropdownButton(
                                   style: TextStyle(
@@ -239,32 +239,39 @@ class _SignupScreenState extends State<SignupScreen> {
                           ),
                         ),
                         if (_selectedRole.contains(Constants.role[0]))
-                          Row(
-                            children: [
-                              const SizedBox(
-                                width: 30,
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: SizedBox(
+                              width: MediaQuery.of(context).size.width * 0.9,
+                              child: Row(
+                                children: [
+                                  const SizedBox(
+                                    width: 8,
+                                  ),
+                                  Icon(Icons.room_service,
+                                      color: Colors.grey[600]),
+                                  const SizedBox(
+                                    width: 20,
+                                  ),
+                                  DropdownButton(
+                                    style: TextStyle(
+                                        color: Colors.grey[600], fontSize: 16),
+                                    value: _selectedService,
+                                    onChanged: (newValue) {
+                                      setState(() {
+                                        _selectedService = newValue.toString();
+                                      });
+                                    },
+                                    items: Constants.services.map((service) {
+                                      return DropdownMenuItem(
+                                        child: Text(service),
+                                        value: service,
+                                      );
+                                    }).toList(),
+                                  ),
+                                ],
                               ),
-                              Icon(Icons.room_service, color: Colors.grey[600]),
-                              const SizedBox(
-                                width: 15,
-                              ),
-                              DropdownButton(
-                                style: TextStyle(
-                                    color: Colors.grey[600], fontSize: 16),
-                                value: _selectedService,
-                                onChanged: (newValue) {
-                                  setState(() {
-                                    _selectedService = newValue.toString();
-                                  });
-                                },
-                                items: Constants.services.map((service) {
-                                  return DropdownMenuItem(
-                                    child: Text(service),
-                                    value: service,
-                                  );
-                                }).toList(),
-                              ),
-                            ],
+                            ),
                           ),
                         const SizedBox(
                           height: 20,

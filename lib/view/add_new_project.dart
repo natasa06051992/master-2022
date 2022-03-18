@@ -60,6 +60,9 @@ class _AddNewProjectScreenState extends State<AddNewProjectScreen> {
               child: SingleChildScrollView(
                 child: Column(
                   children: [
+                    const SizedBox(
+                      height: 30,
+                    ),
                     Center(
                       child: SizedBox(
                         width: MediaQuery.of(context).size.width * 0.9,
