@@ -1,10 +1,10 @@
-import 'package:flutter_master/cubit/auth_cubit.dart';
-import 'package:flutter_master/cubit/push_notification_service.dart';
-import 'package:flutter_master/cubit/storage_repo.dart';
+import 'package:flutter_master/services/auth_cubit.dart';
+import 'package:flutter_master/services/push_notification_service.dart';
+import 'package:flutter_master/services/storage_repo.dart';
 import 'package:flutter_master/view_controller/user_controller.dart';
 import 'package:get_it/get_it.dart';
 
-import 'cubit/firebase_firestore_repo.dart';
+import 'services/firebase_firestore_repo.dart';
 
 final locator = GetIt.instance;
 

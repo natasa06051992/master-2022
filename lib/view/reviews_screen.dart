@@ -7,7 +7,7 @@ import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:quick_feedback/quick_feedback.dart';
 import 'package:smooth_star_rating/smooth_star_rating.dart';
 
-import 'package:flutter_master/cubit/push_notification_service.dart';
+import 'package:flutter_master/services/push_notification_service.dart';
 import 'package:flutter_master/locator.dart';
 import 'package:flutter_master/model/user.dart';
 
@@ -39,10 +39,10 @@ class ReviewsScreen extends StatefulWidget {
 }
 
 class _ReviewsScreenState extends State<ReviewsScreen> {
-  var isInitStateCalled = false;
+  late UserModel user;
   @override
   void initState() {
-    isInitStateCalled = true;
+    user = locator.get<UserController>().currentUser!;
     // TODO: implement initState
     super.initState();
   }
@@ -59,19 +59,14 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
           textBoxHint: 'Napišite recenziju',
           submitText: 'Pošalji',
           onSubmitCallback: (feedback) {
-            if (feedback["rating"] != null &&
-                !ReviewsScreen.handymanModel!.reviews!.any((element) =>
-                    element.idReviewer ==
-                    locator.get<UserController>().currentUser!.uid)) {
-              var user = locator.get<UserController>().currentUser;
+            if (feedback["rating"] != null && userHaventAlreadyGivenReview()) {
               locator.get<UserController>().addReview(feedback["rating"],
                   feedback["feedback"], ReviewsScreen.handymanModel!);
               if (user!.uid != ReviewsScreen.handymanModel!.uid) {
                 setState(() {});
-
                 locator.get<NotificationService>().sendPushMessage(
                     "Dobio si ocenu!",
-                    "Korisnik ${user.displayName} te ocenio!",
+                    "Korisnik ${user!.displayName} te ocenio!",
                     ReviewsScreen.handymanModel!.token!);
               }
             } else {
@@ -89,6 +84,11 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
         );
       },
     );
+  }
+
+  bool userHaventAlreadyGivenReview() {
+    return !ReviewsScreen.handymanModel!.reviews!.any((element) =>
+        element.idReviewer == locator.get<UserController>().currentUser!.uid);
   }
 
   @override

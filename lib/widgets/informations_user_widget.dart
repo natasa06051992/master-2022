@@ -7,7 +7,7 @@ import 'package:photo_view/photo_view.dart';
 
 import 'package:flutter_master/config/constants.dart';
 import 'package:flutter_master/config/theme.dart';
-import 'package:flutter_master/cubit/auth_cubit.dart';
+import 'package:flutter_master/services/auth_cubit.dart';
 import 'package:flutter_master/locator.dart';
 import 'package:flutter_master/model/user.dart';
 import 'package:flutter_master/view/add_pictures_featured_projects.dart';

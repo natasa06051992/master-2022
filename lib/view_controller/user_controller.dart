@@ -2,9 +2,9 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_master/cubit/connectivity.dart';
-import 'package:flutter_master/cubit/firebase_firestore_repo.dart';
-import 'package:flutter_master/cubit/storage_repo.dart';
+import 'package:flutter_master/services/connectivity.dart';
+import 'package:flutter_master/services/firebase_firestore_repo.dart';
+import 'package:flutter_master/services/storage_repo.dart';
 import 'package:flutter_master/locator.dart';
 import 'package:flutter_master/model/category.dart';
 import 'package:flutter_master/model/reviewModel.dart';
@@ -141,5 +141,10 @@ class UserController {
 
   bool checkForInternetConnection(BuildContext buildContext) {
     return Provider.of<ConnectivityProvider>(buildContext).isOnline;
+  }
+
+  Future<QuerySnapshot<Map<String, dynamic>>> handymansWithMostReviews(
+      choosenService) {
+    return _firebaseFirestoreRepo.handymansWithMostReviews(choosenService);
   }
 }

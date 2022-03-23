@@ -7,8 +7,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_master/config/constants.dart';
 import 'package:flutter_master/config/theme.dart';
-import 'package:flutter_master/cubit/auth_cubit.dart';
-import 'package:flutter_master/cubit/connectivity.dart';
+import 'package:flutter_master/services/auth_cubit.dart';
+import 'package:flutter_master/services/connectivity.dart';
 import 'package:flutter_master/locator.dart';
 import 'package:flutter_master/model/user.dart';
 import 'package:flutter_master/view/customers_projects_screen.dart';
@@ -29,7 +29,6 @@ void setupFCM() {
 }
 
 Future<void> onSelectNotification(String? payload) async {
-  print("onSelectNotification");
   if (locator.get<UserController>().currentUser is HandymanModel) {
     ScaffoldMessenger.of(Constants.navigatorKey.currentState!.context)
       ..hideCurrentSnackBar()
