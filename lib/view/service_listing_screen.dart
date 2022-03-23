@@ -113,59 +113,70 @@ class ListOfHandyman extends StatelessWidget {
           } else {
             return Container();
           }
-          // var email = (snapshot.data as QuerySnapshot).docs[0]['email'];
         });
   }
 
   Future<QuerySnapshot<Map<String, dynamic>>> getHandymans() {
-    if (_selectedSort == Constants.sortBy[3]) //najpopularnije
-    {
-      return FirebaseFirestore.instance
-          .collection("users")
-          .where("role", isEqualTo: Constants.role[0])
-          .where("location",
-              isEqualTo: locator.get<UserController>().currentUser?.location)
-          .where("service", isEqualTo: choosenService)
-          .orderBy('numberOfReviews', descending: true)
-          .get();
-    } else if (_selectedSort == Constants.sortBy[2]) //najveca ocena
-    {
-      return FirebaseFirestore.instance
-          .collection("users")
-          .where("role", isEqualTo: Constants.role[0])
-          .where("location",
-              isEqualTo: locator.get<UserController>().currentUser?.location)
-          .where("service", isEqualTo: choosenService)
-          .orderBy('averageReviews', descending: true)
-          .get();
-    } else if (_selectedSort == Constants.sortBy[1]) //skuplje
-    {
-      return FirebaseFirestore.instance
-          .collection("users")
-          .where("role", isEqualTo: Constants.role[0])
-          .where("location",
-              isEqualTo: locator.get<UserController>().currentUser?.location)
-          .where("service", isEqualTo: choosenService)
-          .orderBy('startingPrice', descending: true)
-          .get();
-    } else if (_selectedSort == Constants.sortBy[0]) //jeftinije
-    {
-      return FirebaseFirestore.instance
-          .collection("users")
-          .where("role", isEqualTo: Constants.role[0])
-          .where("location",
-              isEqualTo: locator.get<UserController>().currentUser?.location)
-          .where("service", isEqualTo: choosenService)
-          .orderBy('startingPrice', descending: false)
-          .get();
+    if (_selectedSort == Constants.sortBy[3]) {
+      return handymansWithMostReviews(choosenService);
+    } else if (_selectedSort == Constants.sortBy[2]) {
+      return handymansWithHighestGrade();
+    } else if (_selectedSort == Constants.sortBy[1]) {
+      return handymansWithHighestPrice();
+    } else if (_selectedSort == Constants.sortBy[0]) {
+      return handymansWithLowestPrice();
     } else {
-      return FirebaseFirestore.instance
-          .collection("users")
-          .where("role", isEqualTo: Constants.role[0])
-          .where("location",
-              isEqualTo: locator.get<UserController>().currentUser?.location)
-          .where("service", isEqualTo: choosenService)
-          .get();
+      return handymans();
     }
+  }
+
+  Future<QuerySnapshot<Map<String, dynamic>>> handymansWithMostReviews(
+      choosenService) {
+    return locator
+        .get<UserController>()
+        .handymansWithMostReviews(choosenService);
+  }
+
+  Future<QuerySnapshot<Map<String, dynamic>>> handymans() {
+    return FirebaseFirestore.instance
+        .collection("users")
+        .where("role", isEqualTo: Constants.role[0])
+        .where("location",
+            isEqualTo: locator.get<UserController>().currentUser?.location)
+        .where("service", isEqualTo: choosenService)
+        .get();
+  }
+
+  Future<QuerySnapshot<Map<String, dynamic>>> handymansWithLowestPrice() {
+    return FirebaseFirestore.instance
+        .collection("users")
+        .where("role", isEqualTo: Constants.role[0])
+        .where("location",
+            isEqualTo: locator.get<UserController>().currentUser?.location)
+        .where("service", isEqualTo: choosenService)
+        .orderBy('startingPrice', descending: false)
+        .get();
+  }
+
+  Future<QuerySnapshot<Map<String, dynamic>>> handymansWithHighestPrice() {
+    return FirebaseFirestore.instance
+        .collection("users")
+        .where("role", isEqualTo: Constants.role[0])
+        .where("location",
+            isEqualTo: locator.get<UserController>().currentUser?.location)
+        .where("service", isEqualTo: choosenService)
+        .orderBy('startingPrice', descending: true)
+        .get();
+  }
+
+  Future<QuerySnapshot<Map<String, dynamic>>> handymansWithHighestGrade() {
+    return FirebaseFirestore.instance
+        .collection("users")
+        .where("role", isEqualTo: Constants.role[0])
+        .where("location",
+            isEqualTo: locator.get<UserController>().currentUser?.location)
+        .where("service", isEqualTo: choosenService)
+        .orderBy('averageReviews', descending: true)
+        .get();
   }
 }

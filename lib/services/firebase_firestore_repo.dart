@@ -359,7 +359,7 @@ class FirebaseFirestoreRepo {
     List<double> result = [];
     for (var doc in listOfHandymans.docs) {
       var starting = doc['startingPrice'];
-      if (starting != 0) {
+      if (starting != 0 || starting == null) {
         result.add(starting.toDouble());
       }
     }
@@ -384,5 +384,17 @@ class FirebaseFirestoreRepo {
     }
 
     await docRef.update({"pricePerLocation": services});
+  }
+
+  Future<QuerySnapshot<Map<String, dynamic>>> handymansWithMostReviews(
+      choosenService) {
+    return FirebaseFirestore.instance
+        .collection("users")
+        .where("role", isEqualTo: Constants.role[0])
+        .where("location",
+            isEqualTo: locator.get<UserController>().currentUser?.location)
+        .where("service", isEqualTo: choosenService)
+        .orderBy('numberOfReviews', descending: true)
+        .get();
   }
 }

@@ -39,18 +39,6 @@ class MiniCardProject extends StatelessWidget {
                   ? Container(
                       height: 90.0,
                       width: 90.0,
-                      // decoration: BoxDecoration(
-                      //   border: Border.all(
-                      //     color: const Color.fromRGBO(233, 233, 233, 1),
-                      //   ),
-                      //   image: DecorationImage(
-                      //     image: NetworkImage(
-                      //       project.imageOfCustomer!,
-                      //     ),
-                      //   ),
-                      //   borderRadius: BorderRadius.circular(20.0),
-                      // ),
-
                       child: CachedNetworkImage(
                         width: 100.0,
                         imageUrl: project.imageOfCustomer!,
@@ -59,8 +47,6 @@ class MiniCardProject extends StatelessWidget {
                         errorWidget: (context, url, error) =>
                             const BlankImageWidget(),
                         imageBuilder: (context, imageProvider) => Container(
-                          width: 100.0,
-                          height: 100.0,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             image: DecorationImage(
@@ -68,13 +54,11 @@ class MiniCardProject extends StatelessWidget {
                           ),
                         ),
                       ))
-                  : SizedBox(
+                  : const SizedBox(
                       height: 90.0,
                       width: 90.0,
-                      child: const Image(
+                      child: Image(
                         image: AssetImage('assets/logo/LogoMakr-4NVCFS.png'),
-                        height: 125,
-                        width: 125,
                       ),
                     ),
               const SizedBox(

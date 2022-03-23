@@ -47,6 +47,7 @@ class _HandymanDetailScreenState extends State<HandymanDetailScreen> {
   @override
   Widget build(BuildContext context) {
     List<Widget> imageSliders = [];
+
     Future<void> _makePhoneCall(String phoneNumber) async {
       final Uri launchUri = Uri(
         scheme: 'tel',
@@ -148,8 +149,9 @@ class _HandymanDetailScreenState extends State<HandymanDetailScreen> {
                                           MainAxisAlignment.center,
                                       children: [
                                         Text(
-                                            handymanModel.startingPrice != null
-                                                ? handymanModel.startingPrice
+                                            handymanModel.yearsInBusiness !=
+                                                    null
+                                                ? handymanModel.yearsInBusiness
                                                     .toString()
                                                 : "",
                                             style: const TextStyle(
